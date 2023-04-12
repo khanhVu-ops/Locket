@@ -97,49 +97,17 @@ class PhotosViewController: UIViewController {
     }
     
     private func requestPermission() {
-        PHPhotoLibrary.requestAuthorization { [weak self] status in
-            switch status {
-            case.authorized:
+        self.requestPermissionAccessPhotos { [weak self] isEnable in
+            if isEnable {
                 self?.photoViewModel.fetchAssets()
-            case.limited:
-                self?.photoViewModel.fetchAssets()
-            case.denied, .restricted:
+            } else {
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: {
                         self?.showAlertOpenSettingPhotos()
                     })
                 }
-                
-                
-            case .notDetermined:
-                DispatchQueue.main.async {
-                    self?.dismiss(animated: true, completion: {
-                        self?.showAlertOpenSettingPhotos()
-                    })
-                }
-            @unknown default:
-                print("NO")
             }
-
         }
-    }
-    
-    func showAlertOpenSettingPhotos() {
-        let changePrivacySetting = "Chat App doesn't have permission to use the Photos, please change privacy settings"
-        let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the Photos")
-        let alertController = UIAlertController(title: "Chat App", message: message, preferredStyle: .alert)
-        
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
-                                                style: .cancel,
-                                                handler: nil))
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
-                                                style: .`default`,
-                                                handler: { _ in
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-        }))
-        
-        self.chatVC?.present(alertController, animated: true, completion: nil)
-
     }
     
     func bindingToViewModel() {

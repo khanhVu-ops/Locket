@@ -28,7 +28,7 @@ class LoginViewModel {
                 self?.loadingBehavior.accept(false)
                 return
             }
-            self?.checkAcountLogin(username: username, password: password, users: users, completion: { error in
+            self?.checkAcountLogin(username: username.trimmingCharacters(in: .whitespacesAndNewlines), password: password.trimmingCharacters(in: .whitespacesAndNewlines), users: users, completion: { error in
                 completion(error)
             })
         }
@@ -40,6 +40,12 @@ class LoginViewModel {
                 self.loadingBehavior.accept(false)
                 if user.password! == password {
                     UserDefaultManager.shared.updateIDWhenLogin(id: user.id!)
+                    FirebaseManager.shared.updateUserActive(isActive: true) { err in
+                        guard err == nil else {
+                            completion(.getUserError)
+                            return
+                        }
+                    }
                     completion(nil)
                 } else {
                     completion(.passwordFailed)

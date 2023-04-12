@@ -352,7 +352,6 @@
 		3315357229D5472500100006 /* CommonView */ = {
 			isa = PBXGroup;
 			children = (
-				338C679429E3C05F002474B9 /* CameraView.swift */,
 				338C679329E3C05F002474B9 /* CustomCaptureButton.swift */,
 				3315357329D5472500100006 /* IndicatorView.swift */,
 			);
@@ -403,6 +402,7 @@
 			isa = PBXGroup;
 			children = (
 				338C679A29E3C094002474B9 /* FilterViewController.swift */,
+				338C679429E3C05F002474B9 /* CameraView.swift */,
 				338C679829E3C08D002474B9 /* DetailImageView.swift */,
 			);
 			path = CameraView;

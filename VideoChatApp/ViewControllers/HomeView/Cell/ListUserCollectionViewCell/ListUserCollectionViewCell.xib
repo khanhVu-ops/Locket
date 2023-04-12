@@ -1,22 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_12" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ListUserCollectionViewCell" customModule="ChatApp" customModuleProvider="target">
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ListUserCollectionViewCell" customModule="VideoChatApp" customModuleProvider="target">
             <rect key="frame" x="0.0" y="0.0" width="100" height="139"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
                 <rect key="frame" x="0.0" y="0.0" width="100" height="139"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avata1" translatesAutoresizingMaskIntoConstraints="NO" id="02s-Gl-HCa">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avata1" translatesAutoresizingMaskIntoConstraints="NO" id="02s-Gl-HCa">
                         <rect key="frame" x="10" y="10" width="80" height="80"/>
                         <constraints>
                             <constraint firstAttribute="width" constant="80" id="rKB-Mz-eRT"/>
@@ -29,10 +31,20 @@
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QqK-gh-rul">
+                        <rect key="frame" x="65" y="75" width="15" height="15"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="QqK-gh-rul" secondAttribute="height" multiplier="1:1" id="n9b-gH-Sox"/>
+                            <constraint firstAttribute="width" constant="15" id="nYn-5m-2MG"/>
+                        </constraints>
+                    </view>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
+                <constraint firstItem="QqK-gh-rul" firstAttribute="bottom" secondItem="02s-Gl-HCa" secondAttribute="bottom" id="745-IJ-zHQ"/>
+                <constraint firstItem="QqK-gh-rul" firstAttribute="trailing" secondItem="02s-Gl-HCa" secondAttribute="trailing" constant="-10" id="9w3-A6-LLA"/>
                 <constraint firstAttribute="bottom" secondItem="1FH-C4-hTg" secondAttribute="bottom" constant="10" id="Uuh-kH-Mly"/>
                 <constraint firstAttribute="trailing" secondItem="02s-Gl-HCa" secondAttribute="trailing" constant="10" id="a2h-2m-9px"/>
                 <constraint firstAttribute="trailing" secondItem="1FH-C4-hTg" secondAttribute="trailing" constant="10" id="hOG-SM-lzY"/>
@@ -45,11 +57,15 @@
             <connections>
                 <outlet property="imvAvata" destination="02s-Gl-HCa" id="xkD-7y-9dF"/>
                 <outlet property="lbUsername" destination="1FH-C4-hTg" id="K0n-E5-tdo"/>
+                <outlet property="vActive" destination="QqK-gh-rul" id="yvo-0k-TtX"/>
             </connections>
-            <point key="canvasLocation" x="82.44274809160305" y="22.183098591549296"/>
+            <point key="canvasLocation" x="81.159420289855078" y="21.763392857142858"/>
         </collectionViewCell>
     </objects>
     <resources>
         <image name="avata1" width="50" height="50"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
     </resources>
 </document>

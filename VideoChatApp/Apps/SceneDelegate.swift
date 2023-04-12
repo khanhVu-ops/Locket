@@ -16,14 +16,36 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let st = UIStoryboard(name: "Main", bundle: nil)
         var rootVC = UIViewController()
         if UserDefaultManager.shared.getID() != "" {
-            rootVC = st.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+            FirebaseManager.shared.updateUserActive(isActive: true) { error in
+                guard error == nil else {
+                    print(error!.localizedDescription)
+                    return
+                }
+                DispatchQueue.main.async {
+                    rootVC = st.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+                    let nav = UINavigationController(rootViewController: rootVC)
+                    nav.navigationBar.isHidden = true
+                    window.rootViewController = nav
+                    self.window = window
+                    self.window?.makeKeyAndVisible()
+                }
+            }
+            
         } else {
             rootVC = st.instantiateViewController(withIdentifier: "IntroViewController") as! IntroViewController
+            let nav = UINavigationController(rootViewController: rootVC)
+            nav.navigationBar.isHidden = true
+            window.rootViewController = nav
+            self.window = window
+            self.window?.makeKeyAndVisible()
         }
-        let nav = UINavigationController(rootViewController: rootVC)
-        nav.navigationBar.isHidden = true
-        window.rootViewController = nav
-        self.window = window
-        self.window?.makeKeyAndVisible()
+//        DispatchQueue.main.async {
+//            let nav = UINavigationController(rootViewController: rootVC)
+//            nav.navigationBar.isHidden = true
+//            window.rootViewController = nav
+//            self.window = window
+//            self.window?.makeKeyAndVisible()
+//        }
+        
     }
 }

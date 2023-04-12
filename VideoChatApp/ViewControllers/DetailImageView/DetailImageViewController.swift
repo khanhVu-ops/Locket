@@ -82,6 +82,32 @@ class DetailImageViewController: UIViewController {
         return cltv
     }()
     
+    private lazy var imvCheckMark: UIImageView = {
+        let imv = UIImageView()
+        imv.image = UIImage(systemName: "checkmark")
+        imv.tintColor = .black.withAlphaComponent(0.6)
+        return imv
+    }()
+    
+    private lazy var lbSaved: UILabel = {
+        let lb = UILabel()
+        lb.text = "Saved"
+        lb.textColor = .black.withAlphaComponent(0.6)
+        lb.textAlignment = .center
+        lb.font = UIFont.boldSystemFont(ofSize: 17)
+        return lb
+    }()
+    private lazy var vPopUpSaved: UIView = {
+        let v = UIView()
+        v.backgroundColor = .white.withAlphaComponent(0.8)
+        [imvCheckMark, lbSaved].forEach { sub in
+            v.addSubview(sub)
+        }
+        v.addConnerRadius(radius: 10)
+        v.isHidden = true
+        return v
+    }()
+    
     private lazy var myPageControl: UIPageControl = {
         let page = UIPageControl()
         page.currentPage = 0
@@ -92,6 +118,7 @@ class DetailImageViewController: UIViewController {
     
     private lazy var btnNext: UIButton = {
         let btn = UIButton()
+        btn.isHidden = true
         btn.setBackgroundImage(UIImage(systemName: "chevron.right"), for: .normal)
         btn.tintColor = .gray.withAlphaComponent(0.4)
         btn.addTarget(self, action: #selector(btnNextTapped), for: .touchUpInside)
@@ -100,6 +127,7 @@ class DetailImageViewController: UIViewController {
     
     private lazy var btnPrevious: UIButton = {
         let btn = UIButton()
+        btn.isHidden = true
         btn.setBackgroundImage(UIImage(systemName: "chevron.left"), for: .normal)
         btn.tintColor = .gray.withAlphaComponent(0.4)
         btn.addTarget(self, action: #selector(btnPreviousTapped), for: .touchUpInside)
@@ -127,7 +155,7 @@ class DetailImageViewController: UIViewController {
     }
     
     func configureView() {
-        [stvTop, cltvListImage, myPageControl, btnPrevious, btnNext, btnLibary].forEach { subView in
+        [stvTop, cltvListImage, myPageControl, btnPrevious, btnNext, btnLibary, vPopUpSaved].forEach { subView in
             self.view.addSubview(subView)
         }
         self.view.backgroundColor = .white
@@ -179,7 +207,20 @@ class DetailImageViewController: UIViewController {
             make.trailing.equalToSuperview().offset(-20)
             make.centerY.equalTo(self.myPageControl.snp.centerY)
         }
-        
+        self.vPopUpSaved.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+            make.width.height.equalTo(120)
+        }
+        self.imvCheckMark.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.centerY.equalToSuperview().offset(-20)
+            make.width.height.equalTo(60)
+        }
+        self.lbSaved.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(self.imvCheckMark.snp.bottom).offset(5)
+            make.width.equalTo(100)
+        }
     }
     
     func bindDataToViewModel() {
@@ -187,7 +228,7 @@ class DetailImageViewController: UIViewController {
         self.cltvListImage.register(UINib(nibName: "DetailVideoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "DetailVideoCollectionViewCell")
         
         self.detailImageViewModel.listImages
-            .bind(to: self.cltvListImage.rx.items) { collectionView, index, element -> UICollectionViewCell in
+            .bind(to: self.cltvListImage.rx.items) { [weak self] collectionView, index, element -> UICollectionViewCell in
                 switch element.type {
                 case .image:
                     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DetailImageCollectionViewCell", for: IndexPath(row: index, section: 0)) as! DetailImageCollectionViewCell
@@ -195,7 +236,7 @@ class DetailImageViewController: UIViewController {
                     return cell
                 case.video:
                     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DetailVideoCollectionViewCell", for: IndexPath(row: index, section: 0)) as! DetailVideoCollectionViewCell
-                    cell.configure(item: element)
+                    cell.configure(item: element, viewModel: self?.detailImageViewModel)
                     return cell
                 }
             }
@@ -227,8 +268,16 @@ class DetailImageViewController: UIViewController {
                 }
             })
             .disposed(by: disposeBag)
+        
+        self.detailImageViewModel.loadingBehavior
+            .subscribe(onNext: { [weak self] isLoading in
+                DispatchQueue.main.async {
+                    isLoading ? self?.showActivityIndicator() : self?.hideActivityIndicator()
+                }
+            })
+            .disposed(by: disposeBag)
     }
-    
+        
     @objc func btnNextTapped() {
         let visibleIndexPaths = cltvListImage.indexPathsForVisibleItems
         if let lastIndexPath = visibleIndexPaths.last {
@@ -253,6 +302,24 @@ class DetailImageViewController: UIViewController {
     }
     
     @objc func btnDownloadTapped() {
+        self.requestPermissionAccessPhotos { isEnable in
+            if isEnable {
+                self.detailImageViewModel.saveToLibrary {[weak self] error in
+                    DispatchQueue.main.async {
+                        guard error == nil else {
+                            self?.showAlert(title: "Chat App", message: "Save error: \(error!)", completion: nil)
+                            return
+                        }
+                        self?.vPopUpSaved.isHidden = false
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                            self?.vPopUpSaved.isHidden = true
+                        }
+                    }
+                }
+            } else {
+                self.showAlertOpenSettingPhotos()
+            }
+        }
         
     }
     

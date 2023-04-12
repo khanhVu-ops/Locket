@@ -17,7 +17,7 @@ import SnapKit
 import AVFoundation
 import CoreMotion
 import Vision
-
+import Photos
 enum OutputType {
     case video
     case photo
@@ -29,6 +29,7 @@ protocol CameraViewDelegate: AnyObject {
     func didShowAlertSetting(title: String, message: String)
     func didShowAlert(title: String, message: String)
     func didCapturedImage(imageCaptured: UIImage)
+    func btnLibraryTapped()
 }
 
 class CameraView: UIView {
@@ -104,6 +105,14 @@ class CameraView: UIView {
         return btn
     }()
     
+    private lazy var btnLibrary: UIButton = {
+        let btn = UIButton()
+        btn.addConnerRadius(radius: 10)
+        btn.addBorder(borderWidth: 2, borderColor: .white)
+        btn.addTarget(self, action: #selector(btnLibraryTapped), for: .touchUpInside)
+        return btn
+    }()
+    
     weak var delegate: CameraViewDelegate?
     init(cameraType: OutputType) {
         super.init(frame: .zero)
@@ -121,7 +130,7 @@ class CameraView: UIView {
     
     func configView() {
         self.backgroundColor = UIColor(hexString: "#242121")
-        [self.vPreviewVideo,self.btnCancel, self.btnSwitchCamera, self.btnFlash, self.btnCapture].forEach { subView in
+        [self.vPreviewVideo,self.btnCancel, self.btnSwitchCamera, self.btnFlash, self.btnCapture, self.btnLibrary].forEach { subView in
             self.addSubview(subView)
         }
         self.vPreviewVideo.snp.makeConstraints { make in
@@ -158,6 +167,17 @@ class CameraView: UIView {
                 make.bottom.equalTo(self.vPreviewVideo.snp.bottom).offset(-40)
             }
         }
+        self.btnLibrary.snp.makeConstraints { make in
+            make.width.height.equalTo(60)
+            make.centerY.equalTo(self.btnCapture.snp.centerY)
+            make.leading.equalToSuperview().offset(20)
+        }
+        self.fetchFirstAssets {[weak self] image in
+            DispatchQueue.main.async {
+                self?.btnLibrary.setBackgroundImage(image, for: .normal)
+            }
+        }
+        
         
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
         self.addGestureRecognizer(pinchGesture)
@@ -237,7 +257,7 @@ class CameraView: UIView {
             // Choose the back dual camera if available, otherwise default to a wide angle camera.
             switch outputType {
             case .portrait:
-                guard let backCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) else {
+                guard let backCameraDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) else {
                     self.delegate?.didShowAlertSetting(title: "App", message: "No Camera Portrait!")
                     return
                 }
@@ -494,6 +514,10 @@ class CameraView: UIView {
         }
     }
     
+    @objc func btnLibraryTapped() {
+        self.delegate?.btnLibraryTapped()
+    }
+    
     private func focus(with focusMode: AVCaptureDevice.FocusMode, exposureMode: AVCaptureDevice.ExposureMode, at devicePoint: CGPoint, monitorSubjectAreaChange: Bool) {
         sessionQueue.async {
             let device = self.videoDeviceInput.device
@@ -604,6 +628,35 @@ extension CameraView {
             return flippedImage
         }
         return nil
-        
+    }
+    
+    func fetchFirstAssets(completion: @escaping (UIImage?)->Void)  {
+        let options = PHFetchOptions()
+        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        DispatchQueue.global(qos: .background).async {
+            guard let result = PHAsset.fetchAssets(with: options).firstObject else {
+                completion(nil)
+                return
+            }
+            let key = "thumbnailFirst-\(result.localIdentifier)"
+            if let cachedImage = ImageCache.shared.image(forKey: key) {
+                completion(cachedImage)
+            } else {
+                let imageManager = PHImageManager.default()
+                let thumbnailOptions = PHImageRequestOptions()
+                thumbnailOptions.deliveryMode = .fastFormat
+                thumbnailOptions.resizeMode = .exact
+                thumbnailOptions.isNetworkAccessAllowed = false
+                thumbnailOptions.isSynchronous = true
+                imageManager.requestImage(for: result, targetSize: self.btnLibrary.frame.size, contentMode: .aspectFill, options: thumbnailOptions) { (image, info) in
+                    guard let image = image else {
+                        completion(nil)
+                        return
+                    }
+                    completion(image)
+                    ImageCache.shared.setImage(image, forKey: key)
+                }
+            }
+        }
     }
 }

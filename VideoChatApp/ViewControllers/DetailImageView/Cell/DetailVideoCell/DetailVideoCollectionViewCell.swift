@@ -66,13 +66,13 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         self.btnPlay.snp.makeConstraints { make in
             make.width.height.equalTo(30)
         }
-        
+        setUpPreViewLayer()
+
     }
     
     private func setUpPreViewLayer() {
         self.playerLayer = AVPlayerLayer(player: player)
         self.playerLayer?.player = self.player
-        self.playerLayer?.frame = CGRect(x: 20, y: 0, width: self.bounds.width-40, height: self.bounds.height)
         self.playerLayer?.videoGravity = .resizeAspect
         self.layer.insertSublayer(self.playerLayer!, below: self.stvStatus.layer)
 
@@ -95,8 +95,13 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
 
     
 
-    func configure(item: DetailItem) {
+    func configure(item: DetailItem, viewModel: DetailImageViewModel?) {
+        guard let viewModel = viewModel else {
+            print("NIL")
+            return
+        }
         self.item = item
+        viewModel.loadingBehavior.accept(true)
         DispatchQueue.global(qos: .background).async {
             guard let videoURL = URL(string: item.url) else {
                 return
@@ -106,9 +111,11 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             let playerItem = AVPlayerItem(asset: asset)
             self.player.replaceCurrentItem(with: playerItem)
             DispatchQueue.main.async {
-                self.setUpPreViewLayer()
+                self.playerLayer?.frame = CGRect(x: 20, y: 0, width: self.bounds.width-40, height: self.bounds.height)
                 self.addObserverPeriodicTime()
                 self.configVideo(isPlaying: item.isPlaying, currentTime: item.currentTime)
+                viewModel.loadingBehavior.accept(false)
+
             }
         }
     }

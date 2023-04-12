@@ -25,6 +25,10 @@ class ChatViewModel {
     var uid2: String?
     var originalConstraintValue: CGFloat = 0
     var imageSentRelay = PublishRelay<UIImage>()
+    var lastDocument: QueryDocumentSnapshot?
+    var newMessagesFetch = PublishRelay<[MessageModel]>()
+    var isScrollToBottom = PublishRelay<Bool>()
+    var tbvListMessage: UITableView?
     func getData() {
         if let uid2 = uid2 {
             self.getInfoUsers2WithUID(uid2: uid2)
@@ -33,7 +37,9 @@ class ChatViewModel {
                     return
                 }
                 self?.roomRef = doc
-                self?.getMessages()
+                self?.getMessages(completion: { error in
+                    print(error!.localizedDescription)
+                })
                 
             }
         }
@@ -57,16 +63,40 @@ class ChatViewModel {
         }
     }
     
-    func getMessages() {
+    func getMessages(completion: @escaping(Error?)->Void) {
         guard let roomRef = roomRef else {
             return
         }
-        FirebaseManager.shared.getMessages(docRef: roomRef) {[weak self] messages, error in
+        FirebaseManager.shared.getMessages(docRef: roomRef) {[weak self] messages, lastDoc, error in
             guard let messages = messages, error == nil else {
                 print(error!.localizedDescription)
                 return
             }
+            self?.lastDocument = lastDoc
             self?.listMessages.accept(messages)
+            guard let tbvListMessage = self?.tbvListMessage else {
+                return
+            }
+            self?.reloadData(tableView: tbvListMessage)
+        }
+    }
+    
+    func loadingMessage(completion: @escaping(Error?) -> Void) {
+        guard let roomRef = roomRef, let lastDocument = lastDocument else {
+            return
+        }
+        FirebaseManager.shared.getMessagesWithLastDoc(docRef: roomRef, lastDocument: lastDocument, limitQuery: 20) { [weak self] messages, lastDoc, error in
+            guard let messages = messages, error == nil else {
+                completion(error)
+                return
+            }
+            let currentMess = self?.listMessages.value ?? []
+            var newMess = messages
+            newMess.append(contentsOf: currentMess)
+            self?.newMessagesFetch.accept(messages)
+            self?.listMessages.accept(newMess)
+            self?.lastDocument = lastDoc
+            completion(nil)
         }
     }
     
@@ -78,7 +108,7 @@ class ChatViewModel {
                 completion(nil, nil)
                 return
             }
-            content = MessageModel(type: .text, message: self.txtTypeHere.value, senderID: self.uid, created: Timestamp(date: Date()))
+            content = MessageModel(type: .text, message: self.txtTypeHere.value.trimmingCharacters(in: .whitespacesAndNewlines), senderID: self.uid, created: Timestamp(date: Date()))
         case .image:
             guard let images = images, let ratio = ratio else {
                 return
@@ -115,8 +145,10 @@ class ChatViewModel {
                 return
             }
             self?.roomRef = roomRef
-            self?.getMessages()
-            completion(roomRef, messRef,nil)
+            self?.getMessages(completion: { err in
+                completion(roomRef, messRef, err)
+            })
+            
         })
     }
     
@@ -327,21 +359,36 @@ class ChatViewModel {
         
     }
     
-    func scrollToBottom(tableView: UITableView){
+    func scrollToBottom(tableView: UITableView?){
         if self.listMessages.value.count > 0 {
             DispatchQueue.main.async { [weak self] in
                 let indexPath = IndexPath(row: (self?.listMessages.value.count)!-1, section: 0)
-                tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+                tableView?.scrollToRow(at: indexPath, at: .bottom, animated: false)
             }
         }
-        
+    }
+    
+    func setContentOffsetOfTableView(tableView: UITableView?, messages: [MessageModel]) {
+        guard let tableView = tableView else {
+            return
+        }
+        DispatchQueue.main.async {
+            var newOffset = tableView.contentOffset
+            for i in 0..<messages.count{
+                let indexPath = IndexPath(row: i, section: 0)
+                let cellRect = tableView.rectForRow(at: indexPath)
+                newOffset.y += cellRect.height
+            }
+            tableView.contentOffset = newOffset
+        }
     }
     
     func reloadData(tableView: UITableView) {
         DispatchQueue.main.async { [weak self] in
-//            tableView.reloadData()
+            tableView.reloadData()
             self?.scrollToBottom(tableView: tableView)
         }
+        
     }
     
 }

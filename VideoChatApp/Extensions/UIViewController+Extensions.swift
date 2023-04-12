@@ -7,6 +7,7 @@
 
 import Foundation
 import UIKit
+import Photos
 
 extension UIViewController {
     
@@ -87,6 +88,25 @@ extension UIViewController {
 
     }
     
+    func showAlertOpenSettingPhotos() {
+        let changePrivacySetting = "Chat App doesn't have permission to use the library, please change privacy settings"
+        let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the library")
+        let alertController = UIAlertController(title: "Chat App", message: message, preferredStyle: .alert)
+        
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
+                                                style: .cancel,
+                                                handler: nil))
+        alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
+                                                style: .`default`,
+                                                handler: { _ in
+            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
+        }))
+        
+        self.present(alertController, animated: true, completion: nil)
+
+    }
+    
+    
     func showAlertSetting(title: String, message: String) {
         let changePrivacySetting = message
         let message = NSLocalizedString(changePrivacySetting, comment: message)
@@ -103,6 +123,25 @@ extension UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 
-
+    func requestPermissionAccessPhotos(completion: @escaping(Bool)->Void) {
+        PHPhotoLibrary.requestAuthorization { (status) in
+            switch status {
+            case .authorized:
+                completion(true)
+            case .denied, .restricted:
+                completion(false)
+                print("Access to Photos library denied or restricted.")
+            case .notDetermined:
+                completion(false)
+                print("Access to Photos library not determined.")
+            case .limited:
+                completion(false)
+                print("Limit")
+            @unknown default:
+                completion(false)
+                print("Unknown authorization status for Photos library.")
+            }
+        }
+    }
     
 }

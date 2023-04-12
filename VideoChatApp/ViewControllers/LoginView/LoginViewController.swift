@@ -40,11 +40,11 @@ class LoginViewController: UIViewController {
         self.btnEye.setBackgroundImage(UIImage(systemName: "eye.slash"), for: .normal)
         
         self.vUsername.backgroundColor = .white
-        self.vUsername.addBorder(borderWidth: 1, borderColor: .white)
+        self.vUsername.addBorder(borderWidth: 1, borderColor: .black)
         self.vUsername.addConnerRadius(radius: 20)
         
         self.vPassword.backgroundColor = .white
-        self.vPassword.addBorder(borderWidth: 1, borderColor: .white)
+        self.vPassword.addBorder(borderWidth: 1, borderColor: .black)
         self.vPassword.addConnerRadius(radius: 20)
         
         self.tfUsername.returnKeyType = .continue

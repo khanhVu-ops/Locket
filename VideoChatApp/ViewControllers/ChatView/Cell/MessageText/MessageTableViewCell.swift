@@ -35,6 +35,8 @@ class MessageTableViewCell: UITableViewCell {
     func configure(item: MessageModel) {
         if item.senderID != UserDefaultManager.shared.getID() {
             self.stvMessage.alignment = .leading
+            self.vMessage.backgroundColor = .white
+            self.lbMessage.textColor = .black
         } else {
             self.stvMessage.alignment = .trailing
             self.vMessage.backgroundColor = Constants.Color.mainColor

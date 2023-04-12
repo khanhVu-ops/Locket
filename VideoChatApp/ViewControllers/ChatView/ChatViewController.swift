@@ -26,12 +26,15 @@ class ChatViewController: UIViewController {
     @IBOutlet weak var imvAvata: UIImageView!
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var lbActive: UILabel!
+    @IBOutlet weak var vActive: UIView!
     @IBOutlet weak var heightTxtConstraint: NSLayoutConstraint!
-    
     @IBOutlet weak var btnLibrary: UIButton!
-    private var imagePicker = UIImagePickerController()
+    
+    private weak var refreshControl: UIRefreshControl!
     let disposeBag = DisposeBag()
     let chatViewModel = ChatViewModel()
+    
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,10 +57,12 @@ class ChatViewController: UIViewController {
     
     func setUpView() {
         self.chatViewModel.originalConstraintValue = bottomConstraint.constant
-        
+        self.chatViewModel.tbvListMessage = tbvListMessage
         self.vTopScreen.addConnerRadius(radius: 15)
         self.vTopScreen.addShadow(color: .black, opacity: 0.2, radius: 5, offset: CGSize(width: 1, height: 1))
-        
+        self.vActive.addConnerRadius(radius: self.vActive.frame.width/2)
+        self.vActive.addBorder(borderWidth: 1, borderColor: .white)
+        self.imvAvata.addConnerRadius(radius: self.imvAvata.frame.width/2)
         self.btnSend.isHidden = true
         
         self.tbvListMessage.register(UINib(nibName: "MessageTableViewCell", bundle: nil), forCellReuseIdentifier: "MessageTableViewCell")
@@ -72,13 +77,12 @@ class ChatViewController: UIViewController {
         self.vTypeHere.addConnerRadius(radius: 15)
         self.vTypeHere.addShadow(color: .gray, opacity: 0.2, radius: 5, offset: CGSize(width: 1, height: 1))
         
-        
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
+        tbvListMessage.refreshControl = refreshControl
         
         self.btnSend.layer.cornerRadius = 5
         self.btnSend.layer.masksToBounds = true
-        
-        self.imagePicker.delegate = self
-        self.imagePicker.sourceType = .photoLibrary
         
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self.view, action: #selector(self.view.endEditing(_:))))
     }
@@ -93,6 +97,10 @@ class ChatViewController: UIViewController {
         let typeBottom =  vBodyScreen.frame.origin.y + vBodyScreen.frame.height
         let distance = abs(typeBottom -  view.bounds.height)
         self.bottomConstraint.constant = keyboardHeight > 0 ? (keyboardHeight - distance) : self.chatViewModel.originalConstraintValue
+//        DispatchQueue.main.async { [weak self] in
+//            self?.tbvListMessage.reloadData()
+//            self?.chatViewModel.scrollToBottom(tableView: self?.tbvListMessage)
+//        }
         self.chatViewModel.reloadData(tableView: self.tbvListMessage)
         view.layoutIfNeeded()
     }
@@ -124,12 +132,18 @@ class ChatViewController: UIViewController {
             .setDelegate(self)
             .disposed(by: disposeBag)
         
-        self.chatViewModel.listMessages
-            .subscribe(onNext: {[weak self] _ in
-                self?.chatViewModel.reloadData(tableView: (self?.tbvListMessage)!)
+//        self.chatViewModel.listMessages
+//            .subscribe(onNext: {[weak self] _ in
+////                self?.chatViewModel.reloadData(tableView: (self?.tbvListMessage)!)
+//            })
+//            .disposed(by: disposeBag)
+        
+        // subscribe to set content offset when fetch more messages
+        self.chatViewModel.newMessagesFetch
+            .subscribe(onNext: { [weak self] messages in
+                self?.chatViewModel.setContentOffsetOfTableView(tableView: self?.tbvListMessage, messages: messages)
             })
             .disposed(by: disposeBag)
-        
         // bind txtTypeHere
         self.txtTypeHere.rx
             .text
@@ -192,7 +206,8 @@ class ChatViewController: UIViewController {
         //bind lbActive
         self.chatViewModel.isActive
             .subscribe(onNext: { [weak self] isActive in
-                self?.lbActive.text = isActive ? "Online" : "Offline"
+                self?.lbActive.text = isActive ? "Active" : "Offline"
+                self?.vActive.backgroundColor = isActive ? .green : .gray
             })
             .disposed(by: disposeBag)
         
@@ -215,7 +230,9 @@ class ChatViewController: UIViewController {
     @IBAction func btnCameraTapped(_ sender: Any) {
         let filterVC = FilterViewController()
         filterVC.delegate = self
-        self.navigationController?.pushViewController(filterVC, animated: true)
+        filterVC.modalPresentationStyle = .fullScreen
+        self.present(filterVC, animated: true, completion: nil)
+//        self.navigationController?.pushViewController(filterVC, animated: true)
     }
     @IBAction func btnLibraryTapped(_ sender: Any) {
         let libraryVC = PhotosViewController()
@@ -235,12 +252,35 @@ class ChatViewController: UIViewController {
     @IBAction func btnAudioCall(_ sender: Any) {
         
     }
+    
+    @objc func refreshTable() {
+        print("REFRESH")
+        self.chatViewModel.loadingMessage {[weak self] error in
+            guard let error = error else {
+                self?.tbvListMessage.refreshControl?.endRefreshing()
+                return
+            }
+            self?.tbvListMessage.refreshControl?.endRefreshing()
+//            self?.chatViewModel.setContentOffsetOfTableView(tableView: self?.tbvListMessage)
+        }
+        tbvListMessage.refreshControl?.endRefreshing()
+    }
 }
 
 extension ChatViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         self.chatViewModel.calculateHeightMessage(messageWidth: self.tbvListMessage.frame.width * 0.6, index: indexPath.item)
     }
+//
+//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+//            if scrollView.contentOffset.y < 0 {
+//                // Hiển thị indicator khi người dùng cuộn lên đầu
+//                tbvListMessage.refreshControl?.beginRefreshing()
+//
+//                // Gọi hàm thực hiện tác vụ bạn muốn khi người dùng cuộn lên đầu
+//                refreshTable()
+//            }
+//        }
 }
 
 extension ChatViewController: PhotosDelegate {
@@ -276,22 +316,4 @@ extension ChatViewController: CameraProtocol {
     }
 }
 
-extension ChatViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        let img = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
-        guard let image = img else {
-            return
-        }
-//        self.chatViewModel.sendImage(images: [image], videos: []) { [weak self] error in
-//            guard error == nil else {
-//                self?.showAlert(title: "Send Image Error!", message: error!.localizedDescription)
-//                return
-//            }
-//        }
-        picker.dismiss(animated: true, completion: nil)
-    }
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true, completion: nil)
-    }
-}
+

@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import FirebaseFirestore
 class ListChatTableViewCell: UITableViewCell {
 
     @IBOutlet weak var vBorder: UIView!
@@ -31,7 +31,7 @@ class ListChatTableViewCell: UITableViewCell {
         self.vBorder.addBorder(borderWidth: 2, borderColor: Constants.Color.mainColor)
         
         self.imvAvata.addConnerRadius(radius: self.imvAvata.frame.width/2)
-        self.imvAvata.addBorder(borderWidth: 2, borderColor: UIColor(hexString: "#ff9600"))
+//        self.imvAvata.addBorder(borderWidth: 2, borderColor: UIColor(hexString: "#ff9600"))
         
         self.lbNewMessage.textColor = UIColor(hexString: "#5C5C5C")
         self.lbTime.textColor = UIColor(hexString: "#5C5C5C")
@@ -58,7 +58,8 @@ class ListChatTableViewCell: UITableViewCell {
         }
         self.lbNewMessage.text = txt
         self.lbUsername.text = item.roomName
-        self.lbTime.text = self.convertToString(timestamp: item.lastCreated!)
+
+        self.lbTime.text = self.convertToString(timestamp: item.lastCreated ?? Timestamp(date: Date()))
     }
     
 }

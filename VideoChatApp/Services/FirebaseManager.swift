@@ -17,11 +17,14 @@ protocol FirestoreManagerProtocol {
     func creatNewChat(newRoom: ChatModel, content: MessageModel, completion: @escaping (DocumentReference?, DocumentReference?, Error?) -> Void)
     func addNewMessage(content: MessageModel,docRef: DocumentReference, completion: @escaping(Error?, DocumentReference?)->Void)
     func updateImageMessage(messRef: DocumentReference, images: [String], videoURL: String, thumbVideo: String, completion: @escaping(Error?) -> Void)
+    func updateAvatar(url: String, completion: @escaping (Error?)->Void)
     func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void)
-    func getMessages(docRef: DocumentReference, completion: @escaping([MessageModel]?, Error?)->Void)
+    func getMessagesWithLastDoc(docRef: DocumentReference, lastDocument: QueryDocumentSnapshot?, limitQuery: Int, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
+    func getMessages(docRef: DocumentReference, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getDocumentReferenceWithUserID(userId2: String, completion: @escaping(DocumentReference?, Error?)->Void)
     func uploadImageToStorage(with image: UIImage, completion: @escaping(URL?, Error?) -> Void)
     func uploadVideo(url: URL, thumb: UIImage, messRef: DocumentReference, completion: @escaping(Error?) -> Void)
+    func updateUserActive(isActive: Bool, completion: @escaping(Error?)->Void)
     func logOut(completion: @escaping (Error?) -> Void)
 }
 
@@ -137,9 +140,17 @@ class FirestoreManager: FirestoreManagerProtocol {
         }
     }
     
+    func updateAvatar(url: String, completion: @escaping (Error?)->Void) {
+        let userID = UserDefaultManager.shared.getID()
+        let ref = db.collection(usersCollection).document(userID)
+        ref.updateData(["avataURL": url]) { error in
+            completion(error)
+        }
+    }
+    
     func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void) {
         let userID = UserDefaultManager.shared.getID()
-        let ref = db.collection("chats").whereField("users", arrayContains: userID).order(by: "lastCreated", descending: true)
+        let ref = db.collection(chatsCollection).whereField("users", arrayContains: userID).order(by: "lastCreated", descending: true)
         ref.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot, error == nil else {
                 completion(nil,nil, error)
@@ -173,18 +184,39 @@ class FirestoreManager: FirestoreManagerProtocol {
         })
     }
     
-    func getMessages(docRef: DocumentReference, completion: @escaping([MessageModel]?, Error?)->Void) {
-        docRef.collection(threadCollection).order(by: "created", descending: false).addSnapshotListener({ snapshot, error in
+    func getMessages(docRef: DocumentReference, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void) {
+        let query = docRef.collection(threadCollection).order(by: "created", descending: true).limit(to: 20)
+        query.addSnapshotListener({ snapshot, error in
             guard let snapshot = snapshot, error == nil else {
-                completion(nil, error)
+                completion(nil, nil, error)
                 return
             }
             var messages: [MessageModel] = []
-            for document in snapshot.documents {
+            for document in snapshot.documents.reversed() {
                 let mess = MessageModel(json: document.data())
                 messages.append(mess)
             }
-            completion(messages, nil)
+            completion(messages, snapshot.documents.last, nil)
+        })
+    }
+    
+    func getMessagesWithLastDoc(docRef: DocumentReference, lastDocument: QueryDocumentSnapshot?, limitQuery: Int, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void) {
+        guard let lastDocument = lastDocument else {
+            return
+        }
+        let query = docRef.collection(threadCollection).order(by: "created", descending: true).limit(to: limitQuery).start(afterDocument: lastDocument)
+        
+        query.getDocuments(completion: { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                completion(nil, nil, error)
+                return
+            }
+            var messages: [MessageModel] = []
+            for document in snapshot.documents.reversed() {
+                let mess = MessageModel(json: document.data())
+                messages.append(mess)
+            }
+            completion(messages, snapshot.documents.last, nil)
         })
     }
     
@@ -212,7 +244,8 @@ class FirestoreManager: FirestoreManagerProtocol {
     }
     
     func uploadVideo(url: URL, thumb: UIImage, messRef: DocumentReference, completion: @escaping(Error?) -> Void) {
-        let name = "\(Int(Date().timeIntervalSince1970)).mp4"
+        print("URL:", url)
+        let name = "\(url).mp4"
         do {
             let data = try Data(contentsOf: url)
             let storageRef = storage.child("Videos").child(name)
@@ -252,17 +285,25 @@ class FirestoreManager: FirestoreManagerProtocol {
         
     }
     
-    func logOut(completion: @escaping (Error?) -> Void) {
+    func updateUserActive(isActive: Bool, completion: @escaping(Error?)->Void) {
         let uid = UserDefaultManager.shared.getID()
-        db.collection(usersCollection).document(uid).updateData([
-            "isActive": false
+        let ref = db.collection(usersCollection).document(uid)
+        ref.updateData([
+            "isActive": isActive
         ]) { err in
             guard err == nil else {
                 completion(err)
                 return
             }
-            UserDefaultManager.shared.updateIDWhenLogOut()
+            if !isActive {
+                UserDefaultManager.shared.updateIDWhenLogOut()
+            }
             completion(nil)
         }
+        
+    }
+    
+    func logOut(completion: @escaping (Error?) -> Void) {
+        self.updateUserActive(isActive: false, completion: completion)
     }
 }
