@@ -29,7 +29,6 @@ class AssetModel {
         self.thumbnail = thumbnail
         self.duration = duration
     }
-    
 }
 
 class PhotosViewModel {
@@ -98,17 +97,14 @@ class PhotosViewModel {
         guard fileManager.fileExists(atPath: url.path) else {
             return nil
         }
-
         return UIImage(contentsOfFile: url.path)
     }
 
     func saveImageToCache(_ image: UIImage, forKey key: String) {
         let fileManager = FileManager.default
         let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
-
         let url = cacheDirectory.appendingPathComponent(key)
         let data = image.jpegData(compressionQuality: 0.8)
-
         try? data?.write(to: url)
     }
     
@@ -132,36 +128,6 @@ class PhotosViewModel {
         }
         return result
     }
-    
-    //    func getDetail() {
-    //        let options = PHFetchOptions()
-    //        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-    //        let results = PHAsset.fetchAssets(with: options)
-    //
-    //        results.enumerateObjects { (asset, _, _) in
-//                if asset.mediaType == .image {
-//                    // handle image
-//                    let requestOptions = PHImageRequestOptions()
-//                    requestOptions.isSynchronous = true
-//                    PHImageManager.default().requestImageData(for: asset, options: requestOptions) { (data, _, _, _) in
-//                        if let imageData = data {
-//                            let image = UIImage(data: imageData)
-//                            // do something with the image
-//                        }
-//                    }
-//                } else if asset.mediaType == .video {
-//                    // handle video
-//                    let requestOptions = PHVideoRequestOptions()
-//                    requestOptions.isNetworkAccessAllowed = true
-//                    PHImageManager.default().requestPlayerItem(forVideo: asset, options: requestOptions) { (playerItem, _) in
-//                        if let playerItem = playerItem {
-//                            let player = AVPlayer(playerItem: playerItem)
-//                            // do something with the player
-//                        }
-//                    }
-//                }
-    //        }
-    //    }
 }
 
 

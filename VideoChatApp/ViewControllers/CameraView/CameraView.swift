@@ -46,19 +46,6 @@ class CameraView: UIView {
     private var setupResult: SessionSetupResult = .success
     private let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera], mediaType: .video, position: .unspecified)
     
-//    private lazy var imvPreviewImage: UIImageView = {
-//        let imv = UIImageView()
-//        imv.isHidden = true
-//        imv.layer.cornerRadius = 20
-//        imv.layer.masksToBounds = true
-//        imv.layer.borderWidth = 3
-//        imv.layer.borderColor = UIColor.white.cgColor
-//        imv.isUserInteractionEnabled = true
-//        imv.contentMode = .scaleAspectFill
-//        imv.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapPreviewImage)))
-//        return imv
-//    }()
-    
     lazy var vPreviewVideo: UIView = {
         let v = UIView()
         v.layer.cornerRadius = 15
@@ -192,16 +179,18 @@ class CameraView: UIView {
         self.session.sessionPreset = .photo
         // Add input.
         self.setUpCamera()
-        // Add preview
-        DispatchQueue.main.async {
-            self.setUpPreviewLayer()
-        }
+
         //Add ouput
         switch outputType {
         case .video:
             self.setupVideoOutput()
         default:
             self.setUpPhotoOutput()
+        }
+        
+        // Add preview
+        DispatchQueue.main.async {
+            self.setUpPreviewLayer()
         }
         self.session.commitConfiguration()
     }
@@ -340,11 +329,9 @@ class CameraView: UIView {
         self.photoOutput = AVCapturePhotoOutput()
         if self.session.canAddOutput(self.photoOutput) {
             self.session.addOutput(self.photoOutput)
-            
             self.photoOutput.isHighResolutionCaptureEnabled = true
             self.photoOutput.isLivePhotoCaptureEnabled = self.photoOutput.isLivePhotoCaptureSupported
             self.photoOutput.isDepthDataDeliveryEnabled = self.photoOutput.isDepthDataDeliverySupported
-            
         } else {
             print("Could not add photo output to the session")
             self.setupResult = .configurationFailed
@@ -359,24 +346,17 @@ class CameraView: UIView {
         let camera = self.videoDeviceInput.device
         if gestureRecognizer.state == .began {
             print("began")
-
         } else if gestureRecognizer.state == .changed {
             do {
                 try camera.lockForConfiguration()
                 let scale = gestureRecognizer.scale
                 var zoomFactor = 0.0
-                print("////////")
-                print("scalePink", zoomCamera)
-                print("scale",scale)
                 if scale < 1 && self.zoomCamera > 1{
                     zoomFactor = self.zoomCamera * scale
                 } else {
                     zoomFactor = self.zoomCamera * scale
                 }
-                // Giới hạn giá trị zoomFactor trong khoảng từ 1 đến 10
                 zoomFactor = max(1.0, min(zoomFactor, 10))
-                print(zoomFactor)
-                // Áp dụng zoomFactor lên camera
                 camera.videoZoomFactor = zoomFactor
                 camera.unlockForConfiguration()
             }catch {
@@ -476,9 +456,6 @@ class CameraView: UIView {
                     } else {
                         self.session.addInput(self.videoDeviceInput)
                     }
-                    
-//    Set Live Photo capture and depth data delivery if it is supported. When changing cameras, the
-//    livePhotoCaptureEnabled and depthDataDeliveryEnabled` properties of the AVCapturePhotoOutput gets set to NO when a video device is disconnected from the session. After the new video device is added to the session, re-enable them on the AVCapturePhotoOutput if it is supported.
                     switch self.outputType {
                     case .video:
                         self.videoOutput.connections.first?.videoOrientation = .portrait
@@ -527,7 +504,6 @@ class CameraView: UIView {
                     device.focusPointOfInterest = devicePoint
                     device.focusMode = focusMode
                 }
-                
                 if device.isExposurePointOfInterestSupported && device.isExposureModeSupported(exposureMode) {
                     device.exposurePointOfInterest = devicePoint
                     device.exposureMode = exposureMode

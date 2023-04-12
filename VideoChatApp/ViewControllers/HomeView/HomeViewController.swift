@@ -110,8 +110,6 @@ extension HomeViewController: UITableViewDelegate {
         let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
         if tableView == tbvListChats {
             if indexPath.item > 0 {
-//                chatVC.chatViewModel.roomRef = self.homeViewModel.listDocRefChats.value[indexPath.item - 1]
-//                chatVC.chatViewModel.chatRoom = self.homeViewModel.listChatRooms.value[indexPath.item]
                 chatVC.chatViewModel.uid2 = self.homeViewModel.getUid2FromUsers(users: self.homeViewModel.listChatRooms.value[indexPath.item].users!)
             }
         } else {

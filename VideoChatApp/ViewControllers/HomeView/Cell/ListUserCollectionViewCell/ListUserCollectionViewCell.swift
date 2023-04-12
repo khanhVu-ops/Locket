@@ -21,7 +21,6 @@ class ListUserCollectionViewCell: UICollectionViewCell {
     
     func setUpView() {
         self.imvAvata.addConnerRadius(radius: self.imvAvata.frame.width/2)
-//        self.imvAvata.addBorder(borderWidth: 2, borderColor: .green)
         self.vActive.addConnerRadius(radius: self.vActive.frame.width/2)
         self.vActive.addBorder(borderWidth: 1, borderColor: .white)
     }

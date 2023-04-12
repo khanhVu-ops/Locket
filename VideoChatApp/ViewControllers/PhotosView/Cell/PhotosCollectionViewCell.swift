@@ -9,9 +9,6 @@ import UIKit
 import SnapKit
 class PhotosCollectionViewCell: UICollectionViewCell {
     
-    var isSelect = false
-    
-//    let imv = UIImageView()
     private lazy var imv: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFill
@@ -38,7 +35,6 @@ class PhotosCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
         self.setUpView()
     }
     
@@ -79,7 +75,6 @@ class PhotosCollectionViewCell: UICollectionViewCell {
         } else {
             self.lbDuration.isHidden = true
         }
-//        self.imv.sd_setImage(with: item.url, completed: nil)
     }
     
     @objc func btnSelectionTapped() {

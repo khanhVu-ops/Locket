@@ -10,8 +10,6 @@ import AVFoundation
 import SnapKit
 import AVKit
 class DetailImageCollectionViewCell: UICollectionViewCell {
-//    @IBOutlet weak var imvDetail: UIImageView!
-    
     private lazy var imvDetail: UIImageView = {
         let imv = UIImageView()
         imv.addConnerRadius(radius: 10)
@@ -23,7 +21,6 @@ class DetailImageCollectionViewCell: UICollectionViewCell {
         super.awakeFromNib()
         
         self.addSubview(self.imvDetail)
-        
         // Initialization code
     }
     override func prepareForReuse() {
@@ -31,8 +28,6 @@ class DetailImageCollectionViewCell: UICollectionViewCell {
     }
     
     func loadImage(url: String) {
-
-       
         if let imageUrl = URL(string: url) {
             self.imvDetail.sd_setImage(with: imageUrl, completed: { (image, error, cacheType, url) in
                 if let image = image {

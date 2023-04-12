@@ -30,7 +30,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                     self.window?.makeKeyAndVisible()
                 }
             }
-            
         } else {
             rootVC = st.instantiateViewController(withIdentifier: "IntroViewController") as! IntroViewController
             let nav = UINavigationController(rootViewController: rootVC)
@@ -39,13 +38,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.window = window
             self.window?.makeKeyAndVisible()
         }
-//        DispatchQueue.main.async {
-//            let nav = UINavigationController(rootViewController: rootVC)
-//            nav.navigationBar.isHidden = true
-//            window.rootViewController = nav
-//            self.window = window
-//            self.window?.makeKeyAndVisible()
-//        }
-        
     }
 }

@@ -153,5 +153,4 @@ extension PhotosViewController: UICollectionViewDelegate, UICollectionViewDelega
         collectionView.deselectItem(at: indexPath, animated: true)
         self.photoViewModel.didSelectItem(index: indexPath.item)
     }
-    
 }

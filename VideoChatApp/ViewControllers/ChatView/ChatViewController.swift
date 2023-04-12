@@ -97,10 +97,6 @@ class ChatViewController: UIViewController {
         let typeBottom =  vBodyScreen.frame.origin.y + vBodyScreen.frame.height
         let distance = abs(typeBottom -  view.bounds.height)
         self.bottomConstraint.constant = keyboardHeight > 0 ? (keyboardHeight - distance) : self.chatViewModel.originalConstraintValue
-//        DispatchQueue.main.async { [weak self] in
-//            self?.tbvListMessage.reloadData()
-//            self?.chatViewModel.scrollToBottom(tableView: self?.tbvListMessage)
-//        }
         self.chatViewModel.reloadData(tableView: self.tbvListMessage)
         view.layoutIfNeeded()
     }
@@ -131,12 +127,6 @@ class ChatViewController: UIViewController {
         self.tbvListMessage.rx
             .setDelegate(self)
             .disposed(by: disposeBag)
-        
-//        self.chatViewModel.listMessages
-//            .subscribe(onNext: {[weak self] _ in
-////                self?.chatViewModel.reloadData(tableView: (self?.tbvListMessage)!)
-//            })
-//            .disposed(by: disposeBag)
         
         // subscribe to set content offset when fetch more messages
         self.chatViewModel.newMessagesFetch
@@ -210,7 +200,6 @@ class ChatViewController: UIViewController {
                 self?.vActive.backgroundColor = isActive ? .green : .gray
             })
             .disposed(by: disposeBag)
-        
     }
     
     @IBAction func btnBackTapped(_ sender: Any) {
@@ -232,25 +221,12 @@ class ChatViewController: UIViewController {
         filterVC.delegate = self
         filterVC.modalPresentationStyle = .fullScreen
         self.present(filterVC, animated: true, completion: nil)
-//        self.navigationController?.pushViewController(filterVC, animated: true)
     }
     @IBAction func btnLibraryTapped(_ sender: Any) {
         let libraryVC = PhotosViewController()
         libraryVC.delegate = self
         libraryVC.chatVC = self
         self.present(libraryVC, animated: true, completion: nil)
-//        self.present(imagePicker, animated: true)
-    }
-    
-    @IBAction func btnVideoCall(_ sender: Any) {
-        let detailVC = DetailImageViewController()
-//        detailVC.modalPresentationStyle = .fullScreen
-//        self.present(detailVC, animated: true, completion: nil)
-        self.navigationController?.pushViewController(detailVC, animated: true)
-    }
-    
-    @IBAction func btnAudioCall(_ sender: Any) {
-        
     }
     
     @objc func refreshTable() {
@@ -261,7 +237,6 @@ class ChatViewController: UIViewController {
                 return
             }
             self?.tbvListMessage.refreshControl?.endRefreshing()
-//            self?.chatViewModel.setContentOffsetOfTableView(tableView: self?.tbvListMessage)
         }
         tbvListMessage.refreshControl?.endRefreshing()
     }
@@ -271,16 +246,6 @@ extension ChatViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         self.chatViewModel.calculateHeightMessage(messageWidth: self.tbvListMessage.frame.width * 0.6, index: indexPath.item)
     }
-//
-//    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-//            if scrollView.contentOffset.y < 0 {
-//                // Hiển thị indicator khi người dùng cuộn lên đầu
-//                tbvListMessage.refreshControl?.beginRefreshing()
-//
-//                // Gọi hàm thực hiện tác vụ bạn muốn khi người dùng cuộn lên đầu
-//                refreshTable()
-//            }
-//        }
 }
 
 extension ChatViewController: PhotosDelegate {

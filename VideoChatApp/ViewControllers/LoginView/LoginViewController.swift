@@ -19,7 +19,6 @@ class LoginViewController: UIViewController {
     @IBOutlet weak var btnBack: UIButton!
     
     var eyeType = EyeType.hide
-    
     let disposeBag = DisposeBag()
     let loginViewModel = LoginViewModel()
     var ishiddenBtnBack = false
@@ -117,7 +116,6 @@ extension LoginViewController: UITextFieldDelegate {
         }
         return true
     }
-
 }
 
 enum EyeType{

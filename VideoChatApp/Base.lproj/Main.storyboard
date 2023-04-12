@@ -110,9 +110,8 @@
                                 </constraints>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Hello, Welcome Back" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Gir-it-Ozk">
-                                <rect key="frame" x="22" y="184.5" width="255" height="36"/>
+                                <rect key="frame" x="22" y="184.5" width="232" height="36"/>
                                 <constraints>
-                                    <constraint firstAttribute="width" constant="255" id="FCF-v8-sCd"/>
                                     <constraint firstAttribute="height" constant="36" id="QuT-WF-mey"/>
                                 </constraints>
                                 <fontDescription key="fontDescription" type="boldSystem" pointSize="24"/>
@@ -444,35 +443,6 @@
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
                                     </label>
-                                    <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="ffh-ut-dlg">
-                                        <rect key="frame" x="284" y="78.5" width="100" height="30"/>
-                                        <subviews>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ego-WR-zIc">
-                                                <rect key="frame" x="0.0" y="1.5" width="30" height="27.5"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="30" id="BGl-SL-6kj"/>
-                                                    <constraint firstAttribute="width" constant="30" id="wjU-bR-Jjl"/>
-                                                </constraints>
-                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" backgroundImage="phone.fill" catalog="system"/>
-                                                <connections>
-                                                    <action selector="btnAudioCall:" destination="mvg-t0-OUv" eventType="touchUpInside" id="tQN-qc-paI"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8U0-z7-vHL">
-                                                <rect key="frame" x="50" y="2.5" width="50" height="25.5"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="height" constant="30" id="Kf2-MO-Nuv"/>
-                                                    <constraint firstAttribute="width" constant="50" id="VzJ-ME-dmo"/>
-                                                </constraints>
-                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" backgroundImage="video.fill" catalog="system"/>
-                                                <connections>
-                                                    <action selector="btnVideoCall:" destination="mvg-t0-OUv" eventType="touchUpInside" id="LlQ-Tz-Gxs"/>
-                                                </connections>
-                                            </button>
-                                        </subviews>
-                                    </stackView>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PUY-Vp-sQ7">
                                         <rect key="frame" x="174.5" y="95" width="15" height="15"/>
                                         <color key="backgroundColor" systemColor="systemGreenColor"/>
@@ -491,10 +461,8 @@
                                     <constraint firstAttribute="bottom" secondItem="ZaQ-MX-S2z" secondAttribute="bottom" constant="10" id="OCN-Y2-KGg"/>
                                     <constraint firstAttribute="bottom" secondItem="2Ca-2v-a69" secondAttribute="bottom" constant="25" id="PuF-Jr-tNg"/>
                                     <constraint firstAttribute="trailing" secondItem="sB5-zL-aZ3" secondAttribute="trailing" constant="30" id="WAe-0e-QJu"/>
-                                    <constraint firstAttribute="trailing" secondItem="ffh-ut-dlg" secondAttribute="trailing" constant="30" id="Z9I-UU-qUa"/>
                                     <constraint firstItem="PUY-Vp-sQ7" firstAttribute="leading" secondItem="GL4-7c-Fk6" secondAttribute="trailing" constant="8" symbolic="YES" id="bk3-Pg-4Nx"/>
                                     <constraint firstItem="sB5-zL-aZ3" firstAttribute="top" secondItem="2Ca-2v-a69" secondAttribute="top" id="lKq-uc-dRp"/>
-                                    <constraint firstItem="ffh-ut-dlg" firstAttribute="centerY" secondItem="2Ca-2v-a69" secondAttribute="centerY" id="lt2-WA-bbf"/>
                                     <constraint firstItem="GL4-7c-Fk6" firstAttribute="top" secondItem="sB5-zL-aZ3" secondAttribute="bottom" constant="5" id="oh7-NM-XaH"/>
                                     <constraint firstItem="ZaQ-MX-S2z" firstAttribute="leading" secondItem="gFc-9y-0MT" secondAttribute="leading" id="puK-UQ-k5A"/>
                                     <constraint firstItem="ZaQ-MX-S2z" firstAttribute="centerY" secondItem="2Ca-2v-a69" secondAttribute="centerY" id="xay-a6-FgT"/>
@@ -543,7 +511,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="lgC-zs-6kI">
-                                <rect key="frame" x="176.5" y="431" width="61" height="34"/>
+                                <rect key="frame" x="40" y="768" width="334" height="34"/>
                                 <color key="backgroundColor" systemColor="systemGrayColor"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
                                 <state key="normal" title="Log out"/>
@@ -593,14 +561,16 @@
                             <constraint firstItem="nwg-Ls-SV0" firstAttribute="bottom" secondItem="efj-AO-vSY" secondAttribute="bottom" id="9Va-ek-Otd"/>
                             <constraint firstItem="nwg-Ls-SV0" firstAttribute="top" secondItem="efj-AO-vSY" secondAttribute="top" id="DES-yL-cDQ"/>
                             <constraint firstItem="f4l-yv-1X8" firstAttribute="bottom" secondItem="efj-AO-vSY" secondAttribute="bottom" id="I8a-dN-NZz"/>
+                            <constraint firstItem="ej4-9C-sU1" firstAttribute="trailing" secondItem="lgC-zs-6kI" secondAttribute="trailing" constant="40" id="LAe-mf-VZb"/>
                             <constraint firstItem="f4l-yv-1X8" firstAttribute="trailing" secondItem="efj-AO-vSY" secondAttribute="trailing" id="Qhu-nU-ikX"/>
-                            <constraint firstItem="lgC-zs-6kI" firstAttribute="centerY" secondItem="z7U-Ig-Dui" secondAttribute="centerY" id="TVn-Fs-HJh"/>
                             <constraint firstItem="nwg-Ls-SV0" firstAttribute="leading" secondItem="efj-AO-vSY" secondAttribute="leading" id="h4x-Yk-age"/>
                             <constraint firstItem="efj-AO-vSY" firstAttribute="centerX" secondItem="ej4-9C-sU1" secondAttribute="centerX" id="hEp-ef-s1M"/>
                             <constraint firstItem="lgC-zs-6kI" firstAttribute="centerX" secondItem="z7U-Ig-Dui" secondAttribute="centerX" id="jA7-GC-DE8"/>
                             <constraint firstItem="beY-Uw-9iR" firstAttribute="centerX" secondItem="nwg-Ls-SV0" secondAttribute="centerX" id="qqo-jo-Yi7"/>
+                            <constraint firstItem="lgC-zs-6kI" firstAttribute="leading" secondItem="ej4-9C-sU1" secondAttribute="leading" constant="40" id="tHN-nh-q4e"/>
                             <constraint firstItem="efj-AO-vSY" firstAttribute="top" secondItem="ej4-9C-sU1" secondAttribute="top" constant="40" id="tqc-fk-SK5"/>
                             <constraint firstItem="nwg-Ls-SV0" firstAttribute="trailing" secondItem="efj-AO-vSY" secondAttribute="trailing" id="vue-JE-UWz"/>
+                            <constraint firstItem="ej4-9C-sU1" firstAttribute="bottom" secondItem="lgC-zs-6kI" secondAttribute="bottom" constant="60" id="zSX-BE-fgV"/>
                         </constraints>
                     </view>
                     <connections>
@@ -655,10 +625,8 @@
         <image name="ic-sent" width="225" height="224"/>
         <image name="intro" width="358" height="358"/>
         <image name="login" width="151" height="236"/>
-        <image name="phone.fill" catalog="system" width="128" height="114"/>
         <image name="photo.on.rectangle.angled" catalog="system" width="128" height="100"/>
         <image name="plus" catalog="system" width="128" height="113"/>
-        <image name="video.fill" catalog="system" width="128" height="82"/>
         <systemColor name="linkColor">
             <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>

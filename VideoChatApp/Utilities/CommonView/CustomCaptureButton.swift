@@ -28,14 +28,12 @@ class CustomCaptureButton: UIView {
         self.layer.cornerRadius = frame.width/2
         self.layer.borderWidth = 6
         self.layer.borderColor = UIColor.black.cgColor
-//        self.layer.masksToBounds = true
         self.backgroundColor = .white
         
         btn.layer.cornerRadius = frame.width/2
         btn.layer.borderWidth = 2
         btn.layer.borderColor = UIColor.white.cgColor
         btn.backgroundColor = .clear
-//        btn.layer.masksToBounds = true
     }
     
 

@@ -40,6 +40,7 @@ class FilterViewController: UIViewController {
         self.view.backgroundColor = UIColor(hexString: "#242121")
         self.cameraView = CameraView(cameraType: .photo)
         self.cameraView.delegate = self
+        self.cameraView.isHidden = false
         self.detailView = DetailImageView()
         self.detailView.delegate = self
         self.detailView.isHidden = true

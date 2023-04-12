@@ -282,7 +282,6 @@ class FirestoreManager: FirestoreManagerProtocol {
         }catch let error {
             print(error.localizedDescription)
         }
-        
     }
     
     func updateUserActive(isActive: Bool, completion: @escaping(Error?)->Void) {
@@ -300,7 +299,6 @@ class FirestoreManager: FirestoreManagerProtocol {
             }
             completion(nil)
         }
-        
     }
     
     func logOut(completion: @escaping (Error?) -> Void) {

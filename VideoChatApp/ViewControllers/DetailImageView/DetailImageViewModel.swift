@@ -27,27 +27,9 @@ class DetailItem {
 }
 
 class DetailImageViewModel {
-    let listImages = BehaviorRelay<[DetailItem]>(value: [
-        DetailItem(type: .image, url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSjs3GF1Wtku7I-3ne8zqpvG8aZpybu_jzKy4UvH6KVJQ&s"),
-        
-        DetailItem(type: .video, url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", isPlaying: true, currentTime: 0.0),
-        
-        DetailItem(type: .image, url: "https://firebasestorage.googleapis.com:443/v0/b/chatapp-3a479.appspot.com/o/M87gwHYab0ZuAPBvbaKV%2FM87gwHYab0ZuAPBvbaKV1680231239.001993?alt=media&token=93355787-1fa5-41dd-aa2d-e6a05a2a105a"),
-        
-        DetailItem(type: .image, url: "https://firebasestorage.googleapis.com:443/v0/b/chatapp-3a479.appspot.com/o/M87gwHYab0ZuAPBvbaKV%2FM87gwHYab0ZuAPBvbaKV1680231239.001993?alt=media&token=93355787-1fa5-41dd-aa2d-e6a05a2a105a"),
-        DetailItem(type: .image, url: "https://firebasestorage.googleapis.com:443/v0/b/chatapp-3a479.appspot.com/o/M87gwHYab0ZuAPBvbaKV%2FM87gwHYab0ZuAPBvbaKV1680231239.001993?alt=media&token=93355787-1fa5-41dd-aa2d-e6a05a2a105a"),
-        DetailItem(type: .video, url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", isPlaying: true, currentTime: 0.0),
-        DetailItem(type: .video, url: "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4", isPlaying: true, currentTime: 0.0),
-        DetailItem(type: .image, url: "https://firebasestorage.googleapis.com:443/v0/b/chatapp-3a479.appspot.com/o/M87gwHYab0ZuAPBvbaKV%2FM87gwHYab0ZuAPBvbaKV1680231239.001993?alt=media&token=93355787-1fa5-41dd-aa2d-e6a05a2a105a"),
-        
-        DetailItem(type: .image, url: "https://firebasestorage.googleapis.com:443/v0/b/chatapp-3a479.appspot.com/o/M87gwHYab0ZuAPBvbaKV%2FM87gwHYab0ZuAPBvbaKV1680231239.001993?alt=media&token=93355787-1fa5-41dd-aa2d-e6a05a2a105a"),
-        DetailItem(type: .image, url: "https://firebasestorage.googleapis.com:443/v0/b/chatapp-3a479.appspot.com/o/M87gwHYab0ZuAPBvbaKV%2FM87gwHYab0ZuAPBvbaKV1680231239.001993?alt=media&token=93355787-1fa5-41dd-aa2d-e6a05a2a105a"),
-        DetailItem(type: .image, url: "https://firebasestorage.googleapis.com:443/v0/b/chatapp-3a479.appspot.com/o/M87gwHYab0ZuAPBvbaKV%2FM87gwHYab0ZuAPBvbaKV1680231239.001993?alt=media&token=93355787-1fa5-41dd-aa2d-e6a05a2a105a"),
-    ])
-    
+    let listImages = BehaviorRelay<[DetailItem]>(value: [])
     let indexItemBehavior = BehaviorRelay<Int>(value: 0)
     let loadingBehavior = BehaviorRelay<Bool>(value: false)
-    
     var currentURL: String?
     
     func scrollToCurrentURL(collectionView: UICollectionView?) {
@@ -61,7 +43,6 @@ class DetailImageViewModel {
         guard let index = listItem.firstIndex(where: {$0.url == currentURL}) else {
             return
         }
-        print(index)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1, execute: {
             let targetIndexPath = IndexPath(item: index, section: 0) // Specify the target index path
             // Scroll to the item at the target index path
@@ -85,7 +66,6 @@ class DetailImageViewModel {
                     let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
                     let filePath = "\(docPath)/tempFile.mp4"
                     try data.write(to: URL(fileURLWithPath: filePath))
-//                    data.write(toFile: filePath, atomically: true)
                     PHPhotoLibrary.shared().performChanges({
                         let request = PHAssetCreationRequest.forAsset()
                         request.addResource(with: .video, fileURL: URL(fileURLWithPath: filePath), options: nil)

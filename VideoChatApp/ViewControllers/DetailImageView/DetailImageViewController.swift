@@ -134,15 +134,6 @@ class DetailImageViewController: UIViewController {
         return btn
     }()
     
-    private lazy var btnLibary: UIButton = {
-        let btn = UIButton()
-        btn.setBackgroundImage(UIImage(systemName: "photo"), for: .normal)
-        btn.tintColor = .black
-        btn.addTarget(self, action: #selector(btnLibraryTapped), for: .touchUpInside)
-        return btn
-    }()
-    
-    
     let detailImageViewModel = DetailImageViewModel()
     let disposeBag = DisposeBag()
     
@@ -155,24 +146,21 @@ class DetailImageViewController: UIViewController {
     }
     
     func configureView() {
-        [stvTop, cltvListImage, myPageControl, btnPrevious, btnNext, btnLibary, vPopUpSaved].forEach { subView in
+        [stvTop, cltvListImage, myPageControl, btnPrevious, btnNext, vPopUpSaved].forEach { subView in
             self.view.addSubview(subView)
         }
         self.view.backgroundColor = .white
-        
         self.stvTop.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
             make.leading.trailing.equalToSuperview().inset(20)
             make.height.equalTo(40)
         }
-        
         self.btnCancel.snp.makeConstraints { make in
             make.width.height.equalTo(40)
         }
         self.btnDownload.snp.makeConstraints { make in
             make.width.height.equalTo(40)
         }
-        
         self.myPageControl.snp.makeConstraints { make in
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom).offset(-10)
             make.centerX.equalToSuperview()
@@ -186,26 +174,17 @@ class DetailImageViewController: UIViewController {
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(self.myPageControl.snp.top).offset(-20)
         }
-        
         self.btnNext.snp.makeConstraints { make in
             make.height.equalTo(40)
             make.width.equalTo(30)
             make.trailing.equalToSuperview().offset(-10)
             make.centerY.equalTo(self.cltvListImage.snp.centerY)
         }
-        
         self.btnPrevious.snp.makeConstraints { make in
             make.height.equalTo(40)
             make.width.equalTo(30)
             make.leading.equalToSuperview().offset(10)
             make.centerY.equalTo(self.cltvListImage.snp.centerY)
-        }
-        
-        self.btnLibary.snp.makeConstraints { make in
-            make.width.equalTo(40)
-            make.height.equalTo(30)
-            make.trailing.equalToSuperview().offset(-20)
-            make.centerY.equalTo(self.myPageControl.snp.centerY)
         }
         self.vPopUpSaved.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
@@ -323,65 +302,6 @@ class DetailImageViewController: UIViewController {
         
     }
     
-    @objc func btnLibraryTapped() {
-        let photosVC = PhotosViewController()
-        photosVC.delegate = self
-        self.present(photosVC, animated: true, completion: nil)
-//        self.navigationController?.pushViewController(photosVC, animated: true)
-    }
-    
-}
-
-extension DetailImageViewController: PhotosDelegate {
-    func didTapSendImage(assets: [AssetModel]) {
-        for asset in assets {
-            if asset.type == .image {
-                // handle image
-                let manager = PHImageManager.default()
-                let requestOptions = PHImageRequestOptions()
-                requestOptions.isNetworkAccessAllowed = true
-                
-                // Fetch the image data
-                manager.requestImageDataAndOrientation(for: asset.asset, options: requestOptions) { imageData, _, _, _ in
-                    if let imageData = imageData {
-                        // Generate a unique file name for the image
-                        let uniqueFileName = ProcessInfo.processInfo.globallyUniqueString
-                        let fileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(uniqueFileName).jpg")
-                        
-                        do {
-                            // Save the image data to the file URL
-                            try imageData.write(to: fileURL)
-                            var newArr = self.detailImageViewModel.listImages.value
-                            newArr.append(DetailItem(type: .image, url: "\(fileURL)"))
-                            self.detailImageViewModel.listImages.accept(newArr)
-                            
-                        } catch {
-                            print("Error saving image to URL: \(error.localizedDescription)")
-                        }
-                    } else {
-                        print("Can't get url")
-                    }
-                }
-
-            } else if asset.type == .video {
-                // handle video
-                let manager = PHImageManager.default()
-                let requestOptions = PHVideoRequestOptions()
-                requestOptions.isNetworkAccessAllowed = true
-                
-                // Fetch the URL of the video
-                manager.requestAVAsset(forVideo: asset.asset, options: requestOptions, resultHandler: { (avAsset, audioMix, info) in
-                    if let avURLAsset = avAsset as? AVURLAsset {
-                        let videoURL = avURLAsset.url
-                        var newArr = self.detailImageViewModel.listImages.value
-                        newArr.append(DetailItem(type: .video, url: "\(videoURL)"))
-                        self.detailImageViewModel.listImages.accept(newArr)
-                        // Use the videoURL as needed
-                    }
-                })
-            }
-        }
-    }
 }
 
 extension DetailImageViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {

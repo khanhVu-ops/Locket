@@ -110,7 +110,6 @@ class DetailImageView: UIView {
     
     @objc func btnDownloadTapped() {
         delegate?.btnDownloadTapped()
-        
     }
     
     @objc func btnSendImageTapped() {
