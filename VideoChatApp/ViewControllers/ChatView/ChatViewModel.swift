@@ -11,6 +11,7 @@ import RxCocoa
 import FirebaseFirestore
 import Photos
 import UIKit
+import QuickLook
 class ChatViewModel {
     
     var listMessages = BehaviorRelay<[MessageModel]>(value: [])
@@ -29,6 +30,7 @@ class ChatViewModel {
     var newMessagesFetch = PublishRelay<[MessageModel]>()
     var isScrollToBottom = PublishRelay<Bool>()
     var tbvListMessage: UITableView?
+    var fileURLPreview: URL?
     func getData() {
         if let uid2 = uid2 {
             self.getInfoUsers2WithUID(uid2: uid2)
@@ -100,7 +102,7 @@ class ChatViewModel {
         }
     }
     
-    func didTapSendMessage(type: MessageType, images: [String]? = nil, ratio: Double? = nil, videoURL: String? = nil, thumbVideo: String? = nil, duration: Double? = nil, completion: @escaping(Error?, DocumentReference?)->Void) {
+    func didTapSendMessage(type: MessageType, images: [String]? = nil, ratio: Double? = nil, videoURL: String? = nil, thumbVideo: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, completion: @escaping(Error?, DocumentReference?)->Void) {
         var content: MessageModel?
         switch type {
         case .text:
@@ -119,7 +121,11 @@ class ChatViewModel {
                 return
             }
             content = MessageModel(type: .video, ratioImage: ratio, thumbVideo: thumbVideo, videoURL: videoURL, duration: duration, senderID: self.uid, created: Timestamp(date: Date()))
-            
+        case .file:
+            guard let fileName = fileName else {
+                return
+            }
+            content = MessageModel(type: .file, fileName: fileName, senderID: self.uid, created: Timestamp(date: Date()))
         }
         
         if let roomRef = roomRef {
@@ -215,10 +221,21 @@ class ChatViewModel {
                             completion(error)
                             return
                         }
-                        
-                       
+                        completion(nil)
                     }
                 }
+            }
+        }
+    }
+    
+    func sendFile(fileName: String, fileURL: URL, completion: @escaping(Error?)->Void) {
+        self.didTapSendMessage(type: .file, fileName: fileName) { error, messRef in
+            guard let messRef = messRef, error == nil else {
+                completion(error)
+                return
+            }
+            FirebaseManager.shared.uploadFile(messRef: messRef, fileURL: fileURL) { err in
+                completion(err)
             }
         }
     }
@@ -353,12 +370,13 @@ class ChatViewModel {
             return messageWidth * (messageSend.ratioImage ?? 1) + 45
         case .text:
             return UITableView.automaticDimension
+        case .file:
+            return UITableView.automaticDimension
         case .none:
             return UITableView.automaticDimension
         }
-        
     }
-    
+
     func scrollToBottom(tableView: UITableView?){
         if self.listMessages.value.count > 0 {
             DispatchQueue.main.async { [weak self] in
@@ -390,5 +408,46 @@ class ChatViewModel {
         }
         
     }
+    // file
+    func previewFileFromURL(url: URL, completion: @escaping(URL?, Error?)->Void) {
+        //download file
+        guard let fileName = self.getFileNameFromURL(fileURL: url) else {
+            completion(nil, NSError(domain: "com.example.error", code: 0, userInfo: [NSLocalizedDescriptionKey: "Don't get file name!"]))
+            return
+        }
+        let fileManager = FileManager.default
+        let documentsDirectory = fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        let localFileURL = documentsDirectory.appendingPathComponent(fileName)
+        if fileManager.fileExists(atPath: localFileURL.path) {
+            print("file Exist", fileName)
+            completion(localFileURL, nil)
+            // file exists
+        } else {
+            DispatchQueue.global(qos: .background).async {
+                let downloadTask = URLSession.shared.downloadTask(with: url) { (location, response, error) in
+                    if let location = location {
+                        do {
+                            // move item to local file
+                            try fileManager.moveItem(at: location, to: localFileURL)
+                            completion(localFileURL, nil)
+                            print("File saved to local path: \(localFileURL.path)")
+                        } catch {
+                            completion(nil, NSError(domain: "com.example.error", code: 0, userInfo: [NSLocalizedDescriptionKey: "Save file to local Error!"]))
+                            print("Failed to save file to local path: \(error.localizedDescription)")
+                        }
+                    }
+                }
+                downloadTask.resume()
+            }
+        }
+        
+    }
     
+    func getFileNameFromURL(fileURL: URL) -> String? {
+        if let unescapedURL = fileURL.absoluteString.removingPercentEncoding,
+           let unescapedFileURL = URL(string: unescapedURL) {
+            return unescapedFileURL.lastPathComponent
+        }
+        return nil
+    }
 }

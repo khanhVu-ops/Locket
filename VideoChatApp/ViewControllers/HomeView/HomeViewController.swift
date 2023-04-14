@@ -57,7 +57,7 @@ class HomeViewController: UIViewController {
                 if index == 0 {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "ListFriendCell") as! ListFriendCell
                     cell.homeVC = self
-                    cell.bindingToViewModel(viewModel: self!.homeViewModel)
+                    cell.bindingToViewModel(viewModel: self?.homeViewModel)
                     return cell
                 } else {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "ListChatTableViewCell", for: IndexPath(row: index, section: 0)) as! ListChatTableViewCell
@@ -90,10 +90,10 @@ class HomeViewController: UIViewController {
             .disposed(by: disposeBag)
         
         self.homeViewModel.isEnableSearch
-            .subscribe(onNext: { isEnable in
-                self.searchBar.showsCancelButton = isEnable
-                self.tbvSearch.isHidden = !isEnable
-                self.vTitle.isHidden = isEnable
+            .subscribe(onNext: {[weak self] isEnable in
+                self?.searchBar.showsCancelButton = isEnable
+                self?.tbvSearch.isHidden = !isEnable
+                self?.vTitle.isHidden = isEnable
             })
             .disposed(by: disposeBag)
         

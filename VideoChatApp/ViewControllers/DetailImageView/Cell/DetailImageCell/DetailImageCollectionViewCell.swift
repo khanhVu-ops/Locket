@@ -38,11 +38,11 @@ class DetailImageCollectionViewCell: UICollectionViewCell {
                         self.imvDetail.snp.removeConstraints()
                         self.imvDetail.snp.makeConstraints { make in
                             if ratio < 2 {
-                                make.leading.trailing.equalToSuperview().inset(30)
+                                make.leading.trailing.equalToSuperview().inset(20)
                                 make.centerY.equalToSuperview()
                                 make.height.equalTo(self.imvDetail.snp.width).multipliedBy(ratio)
                             } else {
-                                make.top.bottom.equalToSuperview().inset(15)
+                                make.top.bottom.equalToSuperview().inset(10)
                                 make.centerX.equalToSuperview()
                                 make.width.equalTo(self.imvDetail.snp.height).multipliedBy(1/ratio)
                             }

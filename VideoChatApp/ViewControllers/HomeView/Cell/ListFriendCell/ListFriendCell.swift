@@ -14,7 +14,7 @@ class ListFriendCell: UITableViewCell {
     @IBOutlet weak var cltvListUser: UICollectionView!
     let disposeBag = DisposeBag()
     weak var viewModel: HomeViewModel?
-    var homeVC: HomeViewController?
+    weak var homeVC: HomeViewController?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -31,11 +31,11 @@ class ListFriendCell: UITableViewCell {
         self.cltvListUser.register(UINib(nibName: "ListUserCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "ListUserCollectionViewCell")
     }
     
-    func bindingToViewModel(viewModel: HomeViewModel) {
+    func bindingToViewModel(viewModel: HomeViewModel?) {
         self.cltvListUser.delegate = nil
         self.cltvListUser.dataSource = nil
         self.viewModel = viewModel
-        viewModel.listUsers.bind(to: self.cltvListUser.rx.items(cellIdentifier: "ListUserCollectionViewCell", cellType: ListUserCollectionViewCell.self)) {row, item, cell in
+        viewModel?.listUsers.bind(to: self.cltvListUser.rx.items(cellIdentifier: "ListUserCollectionViewCell", cellType: ListUserCollectionViewCell.self)) {row, item, cell in
             cell.configure(item: item)
         }.disposed(by: disposeBag)
         self.cltvListUser.rx.setDelegate(self).disposed(by: disposeBag)

@@ -17,6 +17,7 @@ protocol FirestoreManagerProtocol {
     func creatNewChat(newRoom: ChatModel, content: MessageModel, completion: @escaping (DocumentReference?, DocumentReference?, Error?) -> Void)
     func addNewMessage(content: MessageModel,docRef: DocumentReference, completion: @escaping(Error?, DocumentReference?)->Void)
     func updateImageMessage(messRef: DocumentReference, images: [String], videoURL: String, thumbVideo: String, completion: @escaping(Error?) -> Void)
+    func updateFileMessage(messRef: DocumentReference, fileURL: String, completion: @escaping(Error?)->Void)
     func updateAvatar(url: String, completion: @escaping (Error?)->Void)
     func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void)
     func getMessagesWithLastDoc(docRef: DocumentReference, lastDocument: QueryDocumentSnapshot?, limitQuery: Int, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
@@ -24,7 +25,9 @@ protocol FirestoreManagerProtocol {
     func getDocumentReferenceWithUserID(userId2: String, completion: @escaping(DocumentReference?, Error?)->Void)
     func uploadImageToStorage(with image: UIImage, completion: @escaping(URL?, Error?) -> Void)
     func uploadVideo(url: URL, thumb: UIImage, messRef: DocumentReference, completion: @escaping(Error?) -> Void)
+    func uploadFile(messRef:DocumentReference, fileURL: URL, completion: @escaping(Error?)-> Void)
     func updateUserActive(isActive: Bool, completion: @escaping(Error?)->Void)
+    func updateProgress(messRef: DocumentReference, value: Double)
     func logOut(completion: @escaping (Error?) -> Void)
 }
 
@@ -132,11 +135,15 @@ class FirestoreManager: FirestoreManagerProtocol {
             "videoURL": videoURL,
             "thumbVideo": thumbVideo,
         ]) { error in
-            guard error == nil else {
-                completion(error)
-                return
-            }
-            completion(nil)
+            completion(error)
+        }
+    }
+    
+    func updateFileMessage(messRef: DocumentReference, fileURL: String, completion: @escaping(Error?)->Void) {
+        messRef.updateData([
+            "fileURL": fileURL,
+        ]) { error in
+            completion(error)
         }
     }
     
@@ -241,6 +248,7 @@ class FirestoreManager: FirestoreManagerProtocol {
                 completion(url, nil)
             }
         }
+        
     }
     
     func uploadVideo(url: URL, thumb: UIImage, messRef: DocumentReference, completion: @escaping(Error?) -> Void) {
@@ -251,7 +259,7 @@ class FirestoreManager: FirestoreManagerProtocol {
             let storageRef = storage.child("Videos").child(name)
             let metaData = StorageMetadata()
             metaData.contentType = "video/mp4"
-            storageRef.putData(data, metadata: metaData
+            let uploadTask = storageRef.putData(data, metadata: metaData
                                , completion: { (metadata, error) in
                 guard error == nil else {
                     completion(error)
@@ -279,29 +287,76 @@ class FirestoreManager: FirestoreManagerProtocol {
                     }
                 }
             })
+            uploadTask.observe(.progress) { snapshot in
+                let percentComplete = 100.0 * Double(snapshot.progress!.completedUnitCount) / Double(snapshot.progress!.totalUnitCount)
+                self.updateProgress(messRef: messRef, value: percentComplete)
+            }
         }catch let error {
             print(error.localizedDescription)
         }
     }
     
+    func uploadFile(messRef:DocumentReference, fileURL: URL, completion: @escaping(Error?)-> Void) {
+         guard let fileData = try? Data(contentsOf: fileURL) else {
+             print("Failed to convert file to data")
+             completion(NSError(domain: "com.example.error", code: 0, userInfo: [NSLocalizedDescriptionKey: "Don't get data from URL"]))
+             return
+         }
+         let storageRef = storage.child("documents/\(fileURL)")
+         let uploadTask = storageRef.putData(fileData, metadata: nil) { (metadata, error) in
+             guard error == nil else {
+                 completion(error)
+                 return
+             }
+             // Handle the upload success
+             print("File uploaded successfully")
+             // You can also get the download URL of the uploaded file from the metadata
+             storageRef.downloadURL { url, err in
+                 guard let url = url, err == nil else {
+                     completion(err)
+                     return
+                 }
+                 self.updateFileMessage(messRef: messRef, fileURL: "\(url)") { er in
+                     completion(er)
+                 }
+                 print((url))
+             }
+         }
+        uploadTask.observe(.progress) { snapshot in
+            let percentComplete = 100.0 * Double(snapshot.progress!.completedUnitCount) / Double(snapshot.progress!.totalUnitCount)
+            self.updateProgress(messRef: messRef, value: percentComplete)
+        }
+     }
+    
+    func updateProgress(messRef: DocumentReference, value: Double) {
+        messRef.updateData(["progress": value])
+    }
+    
     func updateUserActive(isActive: Bool, completion: @escaping(Error?)->Void) {
         let uid = UserDefaultManager.shared.getID()
+        print("HI")
         let ref = db.collection(usersCollection).document(uid)
         ref.updateData([
             "isActive": isActive
         ]) { err in
             guard err == nil else {
                 completion(err)
+                print("eee")
                 return
             }
-            if !isActive {
-                UserDefaultManager.shared.updateIDWhenLogOut()
-            }
+            print("OKE")
             completion(nil)
         }
     }
     
     func logOut(completion: @escaping (Error?) -> Void) {
-        self.updateUserActive(isActive: false, completion: completion)
+        self.updateUserActive(isActive: false, completion: { error in
+            guard error == nil else {
+                completion(error)
+                return
+            }
+            UserDefaultManager.shared.updateIDWhenLogOut()
+            completion(nil)
+        })
     }
 }

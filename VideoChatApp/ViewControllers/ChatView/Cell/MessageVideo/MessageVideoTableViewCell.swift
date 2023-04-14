@@ -9,6 +9,7 @@ import UIKit
 
 class MessageVideoTableViewCell: UITableViewCell {
 
+    @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var vContent: UIView!
     @IBOutlet weak var lbDuration: UILabel!
     @IBOutlet weak var imvThumbnail: UIImageView!
@@ -32,6 +33,8 @@ class MessageVideoTableViewCell: UITableViewCell {
     
     func setUpView() {
         self.vContent.addConnerRadius(radius: 10)
+        self.lbTime.backgroundColor = UIColor(hexString: "#F1F1F1")
+        self.lbTime.addConnerRadius(radius: 8)
     }
     
     func configure(item: MessageModel) {
@@ -49,6 +52,12 @@ class MessageVideoTableViewCell: UITableViewCell {
             print("Invalid URL")
         }
         self.lbTime.text = self.convertToString(timestamp: item.created!)
+        self.progressView.progress = Float((item.progress ?? 0.0)/100.0)
+        if progressView.progress == 1 {
+            self.progressView.isHidden = true
+        } else {
+            self.progressView.isHidden = false
+        }
         if let duration = item.duration {
             let minutes = Int(duration / 60)
             let seconds = Int(duration.truncatingRemainder(dividingBy: 60))

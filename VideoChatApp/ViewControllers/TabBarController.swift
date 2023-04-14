@@ -30,6 +30,12 @@ class TabBarController: UITabBarController {
        // MARK: Private methods
        
     func setUpView() {
+        FirebaseManager.shared.updateUserActive(isActive: true) { error in
+            guard error == nil else {
+                print(error!.localizedDescription)
+                return
+            }
+        }
         let homeVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "HomeViewController") as! HomeViewController
         homeVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 0)
         let settingVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingViewController") as! SettingViewController

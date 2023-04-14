@@ -20,6 +20,18 @@ extension UIViewController {
         present(alertController, animated: true, completion: nil)
     }
     
+    func showAlertWithActionCancel(title: String?, message: String, completion: (()->Void)? = nil) {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alertController.addAction(okAction)
+        alertController.addAction(cancelAction)
+        present(alertController, animated: true, completion: nil)
+    }
+    
     func showActivityIndicator() {
         // Create the activity indicator
         let activityIndicator = UIActivityIndicatorView(style: .large)

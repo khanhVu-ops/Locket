@@ -42,9 +42,13 @@
                                             <action selector="btnPlayTapped:" destination="KGk-i7-Jjw" eventType="touchUpInside" id="ClD-Sh-I8M"/>
                                         </connections>
                                     </button>
+                                    <progressView opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" progress="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="Q0K-tS-vUF">
+                                        <rect key="frame" x="0.0" y="177" width="188" height="4"/>
+                                    </progressView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemGray2Color"/>
                                 <constraints>
+                                    <constraint firstAttribute="trailing" secondItem="Q0K-tS-vUF" secondAttribute="trailing" id="Clb-QN-Lmj"/>
                                     <constraint firstItem="bnL-zj-fxG" firstAttribute="centerY" secondItem="u7F-4R-Pyl" secondAttribute="centerY" id="Pcr-6H-gwo"/>
                                     <constraint firstAttribute="trailing" secondItem="UoF-1T-Szd" secondAttribute="trailing" id="TzR-TJ-jHb"/>
                                     <constraint firstAttribute="bottom" secondItem="bnL-zj-fxG" secondAttribute="bottom" id="XG8-0c-ZZR"/>
@@ -53,6 +57,8 @@
                                     <constraint firstItem="bnL-zj-fxG" firstAttribute="leading" secondItem="u7F-4R-Pyl" secondAttribute="leading" id="btr-LG-mBz"/>
                                     <constraint firstAttribute="bottom" secondItem="UoF-1T-Szd" secondAttribute="bottom" id="fIk-Jp-k7g"/>
                                     <constraint firstAttribute="trailing" secondItem="6kf-li-42l" secondAttribute="trailing" constant="10" id="iLT-mU-k2B"/>
+                                    <constraint firstAttribute="bottom" secondItem="Q0K-tS-vUF" secondAttribute="bottom" id="nnc-7i-bOy"/>
+                                    <constraint firstItem="Q0K-tS-vUF" firstAttribute="leading" secondItem="u7F-4R-Pyl" secondAttribute="leading" id="oTj-eW-yxv"/>
                                     <constraint firstItem="bnL-zj-fxG" firstAttribute="top" secondItem="u7F-4R-Pyl" secondAttribute="top" id="sw9-IK-WXS"/>
                                     <constraint firstAttribute="bottom" secondItem="6kf-li-42l" secondAttribute="bottom" constant="6" id="tUc-Ak-UbB"/>
                                     <constraint firstItem="UoF-1T-Szd" firstAttribute="leading" secondItem="u7F-4R-Pyl" secondAttribute="leading" id="vtp-uc-rK2"/>
@@ -84,6 +90,7 @@
                 <outlet property="imvThumbnail" destination="UoF-1T-Szd" id="JSo-Zu-LIB"/>
                 <outlet property="lbDuration" destination="6kf-li-42l" id="A7E-eq-ze3"/>
                 <outlet property="lbTime" destination="fkI-Sm-9Qf" id="Xqn-Sf-Xpa"/>
+                <outlet property="progressView" destination="Q0K-tS-vUF" id="btI-XC-5NG"/>
                 <outlet property="stv" destination="YuY-Zi-ghA" id="bmM-9b-yt9"/>
                 <outlet property="vContent" destination="u7F-4R-Pyl" id="BLu-6G-E3x"/>
             </connections>

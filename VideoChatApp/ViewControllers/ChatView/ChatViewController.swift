@@ -9,6 +9,8 @@ import UIKit
 import IQKeyboardManagerSwift
 import RxSwift
 import RxCocoa
+import MobileCoreServices
+import QuickLook
 
 protocol DetailImageProtocol: NSObject {
     func didSelectDetailImage(url: String)
@@ -31,6 +33,7 @@ class ChatViewController: UIViewController {
     @IBOutlet weak var btnLibrary: UIButton!
     
     private weak var refreshControl: UIRefreshControl!
+    
     let disposeBag = DisposeBag()
     let chatViewModel = ChatViewModel()
     
@@ -64,11 +67,10 @@ class ChatViewController: UIViewController {
         self.vActive.addBorder(borderWidth: 1, borderColor: .white)
         self.imvAvata.addConnerRadius(radius: self.imvAvata.frame.width/2)
         self.btnSend.isHidden = true
-        
         self.tbvListMessage.register(UINib(nibName: "MessageTableViewCell", bundle: nil), forCellReuseIdentifier: "MessageTableViewCell")
         self.tbvListMessage.register(UINib(nibName: "MessageImageTableViewCell", bundle: nil), forCellReuseIdentifier: "MessageImageTableViewCell")
         self.tbvListMessage.register(UINib(nibName: "MessageVideoTableViewCell", bundle: nil), forCellReuseIdentifier: "MessageVideoTableViewCell")
-        
+        self.tbvListMessage.register(UINib(nibName: "MessageFileTableViewCell", bundle: nil), forCellReuseIdentifier: "MessageFileTableViewCell")
         self.txtTypeHere.text = "Type here"
         self.txtTypeHere.textColor = UIColor.lightGray
         self.txtTypeHere.backgroundColor = UIColor(hexString: "#F8F8F8")
@@ -113,6 +115,11 @@ class ChatViewController: UIViewController {
                     return cell
                 } else if element.type == .video {
                     let cell = tableView.dequeueReusableCell(withIdentifier: "MessageVideoTableViewCell", for: IndexPath(row: index, section: 0)) as! MessageVideoTableViewCell
+                    cell.delegate = self
+                    cell.configure(item: element)
+                    return cell
+                } else if element.type == .file {
+                    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageFileTableViewCell", for: IndexPath(row: index, section: 0)) as! MessageFileTableViewCell
                     cell.delegate = self
                     cell.configure(item: element)
                     return cell
@@ -229,6 +236,12 @@ class ChatViewController: UIViewController {
         self.present(libraryVC, animated: true, completion: nil)
     }
     
+    @IBAction func btnFileTapped(_ sender: Any) {
+        let documentPicker = UIDocumentPickerViewController(documentTypes: [kUTTypeData as String], in: .import)
+        documentPicker.delegate = self // Set the delegate to handle the selected file
+        self.present(documentPicker, animated: true, completion: nil)
+    }
+    
     @objc func refreshTable() {
         print("REFRESH")
         self.chatViewModel.loadingMessage {[weak self] error in
@@ -236,6 +249,7 @@ class ChatViewController: UIViewController {
                 self?.tbvListMessage.refreshControl?.endRefreshing()
                 return
             }
+            self?.showAlert(title: "Error!", message: error.localizedDescription, completion: nil)
             self?.tbvListMessage.refreshControl?.endRefreshing()
         }
         tbvListMessage.refreshControl?.endRefreshing()
@@ -281,4 +295,55 @@ extension ChatViewController: CameraProtocol {
     }
 }
 
+extension ChatViewController: MessageFileProtocol {
+    func didSelectOpenFile(fileURL: URL) {
+        print("FileURL", fileURL)
+        self.chatViewModel.previewFileFromURL(url: fileURL) { [weak self] localURL, error in
+            guard let localURL = localURL, error == nil else {
+                self?.showAlert(title: "Error!", message: error!.localizedDescription, completion: nil)
+                return
+            }
+            self?.chatViewModel.fileURLPreview = localURL
+            let qlPreview = QLPreviewController()
+            qlPreview.dataSource = self
+            DispatchQueue.main.async {
+                self?.present(qlPreview, animated: true, completion: nil)
+            }
+        }
+    }
+}
 
+extension ChatViewController: UIDocumentPickerDelegate {
+    func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
+           // Handle the selected file URLs here
+        guard let fileURL = urls.first else {
+            return
+        }
+        let fileName = fileURL.lastPathComponent
+        self.showAlertWithActionCancel(title: "Remind", message: "You want to send the file \(fileName) to \(self.chatViewModel.user2?.username ?? "")") {
+            print("Hi")
+            self.chatViewModel.sendFile(fileName: fileName,fileURL: fileURL) { error in
+                guard let error = error else {
+                    return
+                }
+                self.showAlert(title: "Error!", message: error.localizedDescription, completion: nil)
+            }
+        }
+    }
+    
+    func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
+        // Handle cancellation
+    }
+}
+
+extension ChatViewController: QLPreviewControllerDataSource {
+    func numberOfPreviewItems(in controller: QLPreviewController) -> Int {
+        return 1
+    }
+    
+    func previewController(_ controller: QLPreviewController, previewItemAt index: Int) -> QLPreviewItem {
+        return self.chatViewModel.fileURLPreview! as QLPreviewItem
+    }
+    
+    
+}

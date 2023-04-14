@@ -51,6 +51,9 @@
 		3315359629D5481E00100006 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3315359529D5481E00100006 /* GoogleService-Info.plist */; };
 		334DA7A429E2CBE50067F235 /* MessageVideoTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 334DA7A229E2CBE50067F235 /* MessageVideoTableViewCell.swift */; };
 		334DA7A529E2CBE50067F235 /* MessageVideoTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 334DA7A329E2CBE50067F235 /* MessageVideoTableViewCell.xib */; };
+		337D53A129E8E3370067EC0F /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337D53A029E8E3370067EC0F /* String+Extensions.swift */; };
+		337D53A529E8EB9F0067EC0F /* MessageFileTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337D53A329E8EB9F0067EC0F /* MessageFileTableViewCell.swift */; };
+		337D53A629E8EB9F0067EC0F /* MessageFileTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 337D53A429E8EB9F0067EC0F /* MessageFileTableViewCell.xib */; };
 		338C679529E3C060002474B9 /* CustomCaptureButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338C679329E3C05F002474B9 /* CustomCaptureButton.swift */; };
 		338C679629E3C060002474B9 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338C679429E3C05F002474B9 /* CameraView.swift */; };
 		338C679929E3C08D002474B9 /* DetailImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 338C679829E3C08D002474B9 /* DetailImageView.swift */; };
@@ -113,6 +116,9 @@
 		3315359529D5481E00100006 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		334DA7A229E2CBE50067F235 /* MessageVideoTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageVideoTableViewCell.swift; sourceTree = "<group>"; };
 		334DA7A329E2CBE50067F235 /* MessageVideoTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageVideoTableViewCell.xib; sourceTree = "<group>"; };
+		337D53A029E8E3370067EC0F /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
+		337D53A329E8EB9F0067EC0F /* MessageFileTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageFileTableViewCell.swift; sourceTree = "<group>"; };
+		337D53A429E8EB9F0067EC0F /* MessageFileTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = MessageFileTableViewCell.xib; sourceTree = "<group>"; };
 		338C679329E3C05F002474B9 /* CustomCaptureButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomCaptureButton.swift; sourceTree = "<group>"; };
 		338C679429E3C05F002474B9 /* CameraView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		338C679829E3C08D002474B9 /* DetailImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DetailImageView.swift; sourceTree = "<group>"; };
@@ -364,6 +370,7 @@
 				3315357529D5472500100006 /* UIViewController+Extensions.swift */,
 				3315357629D5472500100006 /* UIView+Extensions.swift */,
 				3315357729D5472500100006 /* UIColor+Extensions.swift */,
+				337D53A029E8E3370067EC0F /* String+Extensions.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -371,6 +378,7 @@
 		334DA79B29E2C84C0067F235 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				337D53A229E8EB040067EC0F /* MesseageFile */,
 				334DA79D29E2C92E0067F235 /* MessageVideo */,
 				3315355C29D5472500100006 /* MessageImage */,
 				3315356229D5472500100006 /* MessageText */,
@@ -396,6 +404,15 @@
 				334DA7A329E2CBE50067F235 /* MessageVideoTableViewCell.xib */,
 			);
 			path = MessageVideo;
+			sourceTree = "<group>";
+		};
+		337D53A229E8EB040067EC0F /* MesseageFile */ = {
+			isa = PBXGroup;
+			children = (
+				337D53A329E8EB9F0067EC0F /* MessageFileTableViewCell.swift */,
+				337D53A429E8EB9F0067EC0F /* MessageFileTableViewCell.xib */,
+			);
+			path = MesseageFile;
 			sourceTree = "<group>";
 		};
 		338C679729E3C075002474B9 /* CameraView */ = {
@@ -524,6 +541,7 @@
 			files = (
 				331534E629D5446B00100006 /* LaunchScreen.storyboard in Resources */,
 				3315358729D5472500100006 /* MessageTableViewCell.xib in Resources */,
+				337D53A629E8EB9F0067EC0F /* MessageFileTableViewCell.xib in Resources */,
 				3399E1D629D6714100DF8021 /* ImageCollectionViewCell.xib in Resources */,
 				3315358529D5472500100006 /* ListFriendCell.xib in Resources */,
 				3315358229D5472500100006 /* MessageImageTableViewCell.xib in Resources */,
@@ -601,6 +619,7 @@
 				3315358B29D5472500100006 /* HomeViewModel.swift in Sources */,
 				3315358929D5472500100006 /* ListChatTableViewCell.swift in Sources */,
 				3399E1D129D66A2800DF8021 /* DetailImageViewController.swift in Sources */,
+				337D53A529E8EB9F0067EC0F /* MessageFileTableViewCell.swift in Sources */,
 				3315358C29D5472500100006 /* HomeViewController.swift in Sources */,
 				3315358629D5472500100006 /* MessageTableViewCell.swift in Sources */,
 				338C679629E3C060002474B9 /* CameraView.swift in Sources */,
@@ -610,6 +629,7 @@
 				3315358429D5472500100006 /* ListFriendCell.swift in Sources */,
 				3315357C29D5472500100006 /* ChatViewController.swift in Sources */,
 				331534DA29D5446A00100006 /* AppDelegate.swift in Sources */,
+				337D53A129E8E3370067EC0F /* String+Extensions.swift in Sources */,
 				334DA7A429E2CBE50067F235 /* MessageVideoTableViewCell.swift in Sources */,
 				3315359329D5472500100006 /* UIView+Extensions.swift in Sources */,
 				331534DC29D5446A00100006 /* SceneDelegate.swift in Sources */,

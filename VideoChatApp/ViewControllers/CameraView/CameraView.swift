@@ -217,6 +217,7 @@ class CameraView: UIView {
         sessionQueue.async {
             if self.setupResult == .success {
                 self.session.stopRunning()
+                self.session = nil
             }
         }
     }

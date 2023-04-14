@@ -345,7 +345,7 @@
                                                 </connections>
                                             </button>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="Type here" translatesAutoresizingMaskIntoConstraints="NO" id="4pc-sJ-YQP">
-                                                <rect key="frame" x="60" y="10" width="294" height="40"/>
+                                                <rect key="frame" x="110" y="10" width="244" height="40"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -364,7 +364,7 @@
                                                 </connections>
                                             </button>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dAw-fz-gOO">
-                                                <rect key="frame" x="10" y="10.5" width="40" height="39"/>
+                                                <rect key="frame" x="60" y="10.5" width="40" height="39"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="40" id="Dyq-ll-s2m"/>
                                                     <constraint firstAttribute="width" constant="40" id="Je7-yp-elT"/>
@@ -376,6 +376,19 @@
                                                     <action selector="btnCameraTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="3Ld-XJ-zA8"/>
                                                 </connections>
                                             </button>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NB8-T0-U1L">
+                                                <rect key="frame" x="10" y="10.5" width="40" height="39"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" secondItem="NB8-T0-U1L" secondAttribute="height" multiplier="1:1" id="P91-yS-siG"/>
+                                                    <constraint firstAttribute="width" constant="40" id="vwI-gO-X8D"/>
+                                                </constraints>
+                                                <color key="tintColor" systemColor="systemPurpleColor"/>
+                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                <state key="normal" backgroundImage="link.circle.fill" catalog="system"/>
+                                                <connections>
+                                                    <action selector="btnFileTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="5cE-aH-71f"/>
+                                                </connections>
+                                            </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
@@ -383,9 +396,11 @@
                                             <constraint firstAttribute="bottom" secondItem="dAw-fz-gOO" secondAttribute="bottom" constant="10" id="1AZ-k5-sKu"/>
                                             <constraint firstAttribute="bottom" secondItem="4pc-sJ-YQP" secondAttribute="bottom" constant="10" id="Bpy-9e-O6p"/>
                                             <constraint firstAttribute="bottom" secondItem="v9K-6F-XYg" secondAttribute="bottom" constant="15" id="E5Y-nQ-PZf"/>
-                                            <constraint firstItem="dAw-fz-gOO" firstAttribute="leading" secondItem="lmE-Ky-agn" secondAttribute="leading" constant="10" id="Fhi-wg-5jI"/>
                                             <constraint firstAttribute="height" constant="60" id="MF3-gT-ujB"/>
+                                            <constraint firstItem="NB8-T0-U1L" firstAttribute="leading" secondItem="lmE-Ky-agn" secondAttribute="leading" constant="10" id="NRo-oO-8cT"/>
                                             <constraint firstItem="4pc-sJ-YQP" firstAttribute="leading" secondItem="dAw-fz-gOO" secondAttribute="trailing" constant="10" id="Q0j-xw-IkT"/>
+                                            <constraint firstAttribute="bottom" secondItem="NB8-T0-U1L" secondAttribute="bottom" constant="10" id="QK2-k9-lHu"/>
+                                            <constraint firstItem="dAw-fz-gOO" firstAttribute="leading" secondItem="NB8-T0-U1L" secondAttribute="trailing" constant="10" id="RyC-hE-fPI"/>
                                             <constraint firstItem="v9K-6F-XYg" firstAttribute="leading" secondItem="4pc-sJ-YQP" secondAttribute="trailing" constant="10" id="Z48-PE-170"/>
                                             <constraint firstItem="4pc-sJ-YQP" firstAttribute="top" secondItem="lmE-Ky-agn" secondAttribute="top" constant="10" id="bAm-GZ-MZl"/>
                                             <constraint firstAttribute="trailing" secondItem="v9K-6F-XYg" secondAttribute="trailing" constant="10" id="glD-jU-Tf6"/>
@@ -624,6 +639,7 @@
         <image name="home" width="30" height="30"/>
         <image name="ic-sent" width="225" height="224"/>
         <image name="intro" width="358" height="358"/>
+        <image name="link.circle.fill" catalog="system" width="128" height="121"/>
         <image name="login" width="151" height="236"/>
         <image name="photo.on.rectangle.angled" catalog="system" width="128" height="100"/>
         <image name="plus" catalog="system" width="128" height="113"/>

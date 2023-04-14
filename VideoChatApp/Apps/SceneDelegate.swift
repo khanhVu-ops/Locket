@@ -16,27 +16,48 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let st = UIStoryboard(name: "Main", bundle: nil)
         var rootVC = UIViewController()
         if UserDefaultManager.shared.getID() != "" {
-            FirebaseManager.shared.updateUserActive(isActive: true) { error in
-                guard error == nil else {
-                    print(error!.localizedDescription)
-                    return
-                }
-                DispatchQueue.main.async {
-                    rootVC = st.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
-                    let nav = UINavigationController(rootViewController: rootVC)
-                    nav.navigationBar.isHidden = true
-                    window.rootViewController = nav
-                    self.window = window
-                    self.window?.makeKeyAndVisible()
-                }
-            }
+            rootVC = st.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
         } else {
             rootVC = st.instantiateViewController(withIdentifier: "IntroViewController") as! IntroViewController
-            let nav = UINavigationController(rootViewController: rootVC)
-            nav.navigationBar.isHidden = true
-            window.rootViewController = nav
-            self.window = window
-            self.window?.makeKeyAndVisible()
         }
+        let nav = UINavigationController(rootViewController: rootVC)
+        nav.navigationBar.isHidden = true
+        window.rootViewController = nav
+        self.window = window
+        self.window?.makeKeyAndVisible()
+    }
+    
+    func sceneDidDisconnect(_ scene: UIScene) {
+        FirebaseManager.shared.updateUserActive(isActive: false) { error in
+            guard let error = error else {
+                return
+            }
+            print(error.localizedDescription)
+        }
+        // Called as the scene is being released by the system.
+        // This occurs shortly after the scene enters the background, or when its session is discarded.
+        // Release any resources associated with this scene that can be re-created the next time the scene connects.
+        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
+    }
+
+    func sceneDidBecomeActive(_ scene: UIScene) {
+        // Called when the scene has moved from an inactive state to an active state.
+        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+    }
+
+    func sceneWillResignActive(_ scene: UIScene) {
+        // Called when the scene will move from an active state to an inactive state.
+        // This may occur due to temporary interruptions (ex. an incoming phone call).
+    }
+
+    func sceneWillEnterForeground(_ scene: UIScene) {
+        // Called as the scene transitions from the background to the foreground.
+        // Use this method to undo the changes made on entering the background.
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        // Called as the scene transitions from the foreground to the background.
+        // Use this method to save data, release shared resources, and store enough scene-specific state information
+        // to restore the scene back to its current state.
     }
 }

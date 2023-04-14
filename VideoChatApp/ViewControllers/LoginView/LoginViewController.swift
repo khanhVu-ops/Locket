@@ -69,8 +69,8 @@ class LoginViewController: UIViewController {
             .disposed(by: disposeBag)
         
         self.loginViewModel.loadingBehavior
-            .subscribe(onNext: { isLoading in
-                isLoading ? self.showIndicatorWithMessage("Signing in...") : self.hideIndicatorWithMessage()
+            .subscribe(onNext: { [weak self] isLoading in
+                isLoading ? self?.showIndicatorWithMessage("Signing in...") : self?.hideIndicatorWithMessage()
             })
             .disposed(by: disposeBag)
     }
