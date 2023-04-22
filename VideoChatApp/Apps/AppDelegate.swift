@@ -9,7 +9,6 @@ import UIKit
 import IQKeyboardManagerSwift
 import FirebaseCore
 import FirebaseFirestore
-
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
@@ -20,6 +19,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared.enable = true
         IQKeyboardManager.shared.enableAutoToolbar = false
         FirebaseApp.configure()
+ 
         // Override point for customization after application launch.
         return true
     }

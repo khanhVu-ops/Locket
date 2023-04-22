@@ -19,12 +19,14 @@ protocol FirestoreManagerProtocol {
     func updateImageMessage(messRef: DocumentReference, images: [String], videoURL: String, thumbVideo: String, completion: @escaping(Error?) -> Void)
     func updateFileMessage(messRef: DocumentReference, fileURL: String, completion: @escaping(Error?)->Void)
     func updateAvatar(url: String, completion: @escaping (Error?)->Void)
+    func updateAudioMessage(messRef: DocumentReference, audioURL: String, completion: @escaping(Error?)->Void)
     func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void)
     func getMessagesWithLastDoc(docRef: DocumentReference, lastDocument: QueryDocumentSnapshot?, limitQuery: Int, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getMessages(docRef: DocumentReference, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getDocumentReferenceWithUserID(userId2: String, completion: @escaping(DocumentReference?, Error?)->Void)
     func uploadImageToStorage(with image: UIImage, completion: @escaping(URL?, Error?) -> Void)
     func uploadVideo(url: URL, thumb: UIImage, messRef: DocumentReference, completion: @escaping(Error?) -> Void)
+    func uploadAudio(url: URL, messRef: DocumentReference, completion: @escaping(Error?) -> Void)
     func uploadFile(messRef:DocumentReference, fileURL: URL, completion: @escaping(Error?)-> Void)
     func updateUserActive(isActive: Bool, completion: @escaping(Error?)->Void)
     func updateProgress(messRef: DocumentReference, value: Double)
@@ -155,6 +157,14 @@ class FirestoreManager: FirestoreManagerProtocol {
         }
     }
     
+    func updateAudioMessage(messRef: DocumentReference, audioURL: String, completion: @escaping(Error?)->Void) {
+        messRef.updateData([
+            "audioURL": audioURL,
+        ]) { error in
+            completion(error)
+        }
+    }
+
     func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void) {
         let userID = UserDefaultManager.shared.getID()
         let ref = db.collection(chatsCollection).whereField("users", arrayContains: userID).order(by: "lastCreated", descending: true)
@@ -293,6 +303,31 @@ class FirestoreManager: FirestoreManagerProtocol {
             }
         }catch let error {
             print(error.localizedDescription)
+        }
+    }
+    
+    func uploadAudio(url: URL, messRef: DocumentReference, completion: @escaping(Error?) -> Void) {
+        let metadata = StorageMetadata()
+        metadata.contentType = "audio/m4a"
+        let riversRef = storage.child("audio").child("\(Date()).m4a")
+        do {
+            let audioData = try Data(contentsOf: url)
+            riversRef.putData(audioData, metadata: metadata){ (data, error) in
+                guard error == nil else {
+                    completion(error)
+                    return
+                }
+                riversRef.downloadURL {url, err in
+                    guard let downloadURL = url, err == nil else {
+                        completion(err)
+                        return
+                    }
+                    print(downloadURL)
+                    self.updateAudioMessage(messRef: messRef, audioURL: "\(downloadURL)", completion: completion)
+                }
+            }
+        } catch {
+            debugPrint(error.localizedDescription)
         }
     }
     

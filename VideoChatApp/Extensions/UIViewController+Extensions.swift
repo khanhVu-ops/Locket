@@ -83,39 +83,15 @@ extension UIViewController {
     }
     
     func showAlertOpenSettingCamera() {
-        let changePrivacySetting = "Chat App doesn't have permission to use the camera, please change privacy settings"
-        let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the camera")
-        let alertController = UIAlertController(title: "Chat App", message: message, preferredStyle: .alert)
-        
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
-                                                style: .cancel,
-                                                handler: nil))
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
-                                                style: .`default`,
-                                                handler: { _ in
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-        }))
-        
-        self.present(alertController, animated: true, completion: nil)
-
+        self.showAlertSetting(title: "Chat App", message: "Chat App doesn't have permission to use the camera, please change privacy settings")
     }
     
     func showAlertOpenSettingPhotos() {
-        let changePrivacySetting = "Chat App doesn't have permission to use the library, please change privacy settings"
-        let message = NSLocalizedString(changePrivacySetting, comment: "Alert message when the user has denied access to the library")
-        let alertController = UIAlertController(title: "Chat App", message: message, preferredStyle: .alert)
-        
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Alert OK button"),
-                                                style: .cancel,
-                                                handler: nil))
-        alertController.addAction(UIAlertAction(title: NSLocalizedString("Settings", comment: "Alert button to open Settings"),
-                                                style: .`default`,
-                                                handler: { _ in
-            UIApplication.shared.open(URL(string: UIApplication.openSettingsURLString)!, options: [:], completionHandler: nil)
-        }))
-        
-        self.present(alertController, animated: true, completion: nil)
-
+        self.showAlertSetting(title: "Chat App", message: "Chat App doesn't have permission to use the library, please change privacy settings")
+    }
+    
+    func showAlertOpenSettingAudio() {
+        self.showAlertSetting(title: "Chat App", message: "Chat App doesn't have permission to use the microphone, please change privacy settings")
     }
     
     
@@ -155,5 +131,7 @@ extension UIViewController {
             }
         }
     }
+    
+    
     
 }

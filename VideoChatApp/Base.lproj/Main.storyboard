@@ -345,7 +345,7 @@
                                                 </connections>
                                             </button>
                                             <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="Type here" translatesAutoresizingMaskIntoConstraints="NO" id="4pc-sJ-YQP">
-                                                <rect key="frame" x="110" y="10" width="244" height="40"/>
+                                                <rect key="frame" x="160" y="10" width="194" height="40"/>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                 <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
@@ -363,48 +363,90 @@
                                                     <action selector="btnLibraryTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="LWS-kZ-Pgn"/>
                                                 </connections>
                                             </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dAw-fz-gOO">
-                                                <rect key="frame" x="60" y="10.5" width="40" height="39"/>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Grf-Hi-KZ6">
+                                                <rect key="frame" x="10" y="10" width="140" height="40"/>
+                                                <subviews>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dAw-fz-gOO">
+                                                        <rect key="frame" x="50" y="0.5" width="40" height="39"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="40" id="Je7-yp-elT"/>
+                                                            <constraint firstAttribute="width" secondItem="dAw-fz-gOO" secondAttribute="height" multiplier="1:1" id="fY8-l6-CSq"/>
+                                                        </constraints>
+                                                        <color key="tintColor" systemColor="systemPurpleColor"/>
+                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                        <state key="normal" backgroundImage="camera.circle.fill" catalog="system"/>
+                                                        <connections>
+                                                            <action selector="btnCameraTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="3Ld-XJ-zA8"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NB8-T0-U1L">
+                                                        <rect key="frame" x="0.0" y="0.5" width="40" height="39"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" secondItem="NB8-T0-U1L" secondAttribute="height" multiplier="1:1" id="SOA-ks-tTy"/>
+                                                            <constraint firstAttribute="width" constant="40" id="vWK-M9-9Zz"/>
+                                                        </constraints>
+                                                        <color key="tintColor" systemColor="systemPurpleColor"/>
+                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                        <state key="normal" backgroundImage="link.circle.fill" catalog="system"/>
+                                                        <connections>
+                                                            <action selector="btnFileTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="5cE-aH-71f"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Vob-PL-WcU">
+                                                        <rect key="frame" x="100" y="0.5" width="40" height="39"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="width" constant="40" id="N1e-wI-owC"/>
+                                                        </constraints>
+                                                        <color key="tintColor" systemColor="systemPurpleColor"/>
+                                                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                                                        <state key="normal" backgroundImage="mic.circle.fill" catalog="system"/>
+                                                        <connections>
+                                                            <action selector="btnAudioTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="YoZ-zP-Lza"/>
+                                                        </connections>
+                                                    </button>
+                                                </subviews>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <constraints>
-                                                    <constraint firstAttribute="height" constant="40" id="Dyq-ll-s2m"/>
-                                                    <constraint firstAttribute="width" constant="40" id="Je7-yp-elT"/>
+                                                    <constraint firstItem="Vob-PL-WcU" firstAttribute="centerY" secondItem="Grf-Hi-KZ6" secondAttribute="centerY" id="6cS-Bq-zZ2"/>
+                                                    <constraint firstItem="Vob-PL-WcU" firstAttribute="width" secondItem="Vob-PL-WcU" secondAttribute="height" multiplier="1:1" id="7Ml-EF-BfY"/>
+                                                    <constraint firstItem="NB8-T0-U1L" firstAttribute="centerY" secondItem="Grf-Hi-KZ6" secondAttribute="centerY" id="EIm-lf-Czn"/>
+                                                    <constraint firstAttribute="trailing" secondItem="Vob-PL-WcU" secondAttribute="trailing" id="GcM-q6-0La"/>
+                                                    <constraint firstItem="dAw-fz-gOO" firstAttribute="centerY" secondItem="Grf-Hi-KZ6" secondAttribute="centerY" id="Pg4-NK-Qdh"/>
+                                                    <constraint firstAttribute="height" constant="40" id="gYf-Cv-RUM"/>
+                                                    <constraint firstItem="NB8-T0-U1L" firstAttribute="leading" secondItem="Grf-Hi-KZ6" secondAttribute="leading" id="r3Z-f7-mru"/>
+                                                    <constraint firstItem="Vob-PL-WcU" firstAttribute="leading" secondItem="dAw-fz-gOO" secondAttribute="trailing" constant="10" id="v2H-e2-Z6L"/>
+                                                    <constraint firstItem="dAw-fz-gOO" firstAttribute="leading" secondItem="NB8-T0-U1L" secondAttribute="trailing" constant="10" id="wV4-NC-h90"/>
+                                                </constraints>
+                                            </view>
+                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="or9-mn-yX9">
+                                                <rect key="frame" x="0.0" y="10" width="40" height="40"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <constraints>
+                                                    <constraint firstAttribute="width" constant="40" id="5LW-wa-USZ"/>
+                                                    <constraint firstAttribute="width" secondItem="or9-mn-yX9" secondAttribute="height" multiplier="1:1" id="BFB-sx-94B"/>
                                                 </constraints>
                                                 <color key="tintColor" systemColor="systemPurpleColor"/>
                                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" backgroundImage="camera.circle.fill" catalog="system"/>
+                                                <state key="normal" image="chevron.right" catalog="system"/>
                                                 <connections>
-                                                    <action selector="btnCameraTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="3Ld-XJ-zA8"/>
-                                                </connections>
-                                            </button>
-                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NB8-T0-U1L">
-                                                <rect key="frame" x="10" y="10.5" width="40" height="39"/>
-                                                <constraints>
-                                                    <constraint firstAttribute="width" secondItem="NB8-T0-U1L" secondAttribute="height" multiplier="1:1" id="P91-yS-siG"/>
-                                                    <constraint firstAttribute="width" constant="40" id="vwI-gO-X8D"/>
-                                                </constraints>
-                                                <color key="tintColor" systemColor="systemPurpleColor"/>
-                                                <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                                <state key="normal" backgroundImage="link.circle.fill" catalog="system"/>
-                                                <connections>
-                                                    <action selector="btnFileTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="5cE-aH-71f"/>
+                                                    <action selector="btnArrowRightTapped:" destination="mvg-t0-OUv" eventType="touchUpInside" id="07m-Kb-h3z"/>
                                                 </connections>
                                             </button>
                                         </subviews>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <constraints>
                                             <constraint firstAttribute="trailing" secondItem="LPo-QV-UuH" secondAttribute="trailing" constant="10" id="0WC-Wx-IWj"/>
-                                            <constraint firstAttribute="bottom" secondItem="dAw-fz-gOO" secondAttribute="bottom" constant="10" id="1AZ-k5-sKu"/>
                                             <constraint firstAttribute="bottom" secondItem="4pc-sJ-YQP" secondAttribute="bottom" constant="10" id="Bpy-9e-O6p"/>
                                             <constraint firstAttribute="bottom" secondItem="v9K-6F-XYg" secondAttribute="bottom" constant="15" id="E5Y-nQ-PZf"/>
+                                            <constraint firstItem="4pc-sJ-YQP" firstAttribute="leading" secondItem="Grf-Hi-KZ6" secondAttribute="trailing" constant="10" id="I62-pJ-6aq"/>
                                             <constraint firstAttribute="height" constant="60" id="MF3-gT-ujB"/>
-                                            <constraint firstItem="NB8-T0-U1L" firstAttribute="leading" secondItem="lmE-Ky-agn" secondAttribute="leading" constant="10" id="NRo-oO-8cT"/>
-                                            <constraint firstItem="4pc-sJ-YQP" firstAttribute="leading" secondItem="dAw-fz-gOO" secondAttribute="trailing" constant="10" id="Q0j-xw-IkT"/>
-                                            <constraint firstAttribute="bottom" secondItem="NB8-T0-U1L" secondAttribute="bottom" constant="10" id="QK2-k9-lHu"/>
-                                            <constraint firstItem="dAw-fz-gOO" firstAttribute="leading" secondItem="NB8-T0-U1L" secondAttribute="trailing" constant="10" id="RyC-hE-fPI"/>
+                                            <constraint firstItem="or9-mn-yX9" firstAttribute="top" secondItem="lmE-Ky-agn" secondAttribute="top" constant="10" id="RSl-QX-FoV"/>
+                                            <constraint firstItem="or9-mn-yX9" firstAttribute="leading" secondItem="lmE-Ky-agn" secondAttribute="leading" id="XxJ-HA-eCu"/>
                                             <constraint firstItem="v9K-6F-XYg" firstAttribute="leading" secondItem="4pc-sJ-YQP" secondAttribute="trailing" constant="10" id="Z48-PE-170"/>
                                             <constraint firstItem="4pc-sJ-YQP" firstAttribute="top" secondItem="lmE-Ky-agn" secondAttribute="top" constant="10" id="bAm-GZ-MZl"/>
+                                            <constraint firstItem="Grf-Hi-KZ6" firstAttribute="top" secondItem="lmE-Ky-agn" secondAttribute="top" constant="10" id="daE-7z-NtP"/>
+                                            <constraint firstItem="Grf-Hi-KZ6" firstAttribute="leading" secondItem="lmE-Ky-agn" secondAttribute="leading" constant="10" id="gHq-Vh-ZSQ"/>
                                             <constraint firstAttribute="trailing" secondItem="v9K-6F-XYg" secondAttribute="trailing" constant="10" id="glD-jU-Tf6"/>
-                                            <constraint firstItem="LPo-QV-UuH" firstAttribute="leading" secondItem="4pc-sJ-YQP" secondAttribute="trailing" constant="10" id="vLH-yu-gxE"/>
                                             <constraint firstAttribute="bottom" secondItem="LPo-QV-UuH" secondAttribute="bottom" constant="10" id="yf1-qk-dVZ"/>
                                         </constraints>
                                     </view>
@@ -499,16 +541,19 @@
                     </view>
                     <connections>
                         <outlet property="bottomConstraint" destination="7iX-kM-gzd" id="e7D-sa-BZt"/>
+                        <outlet property="btnArrowRight" destination="or9-mn-yX9" id="Sua-RV-q4n"/>
                         <outlet property="btnLibrary" destination="LPo-QV-UuH" id="gOg-Pu-42x"/>
                         <outlet property="btnSend" destination="v9K-6F-XYg" id="Fi2-iP-S3m"/>
                         <outlet property="heightTxtConstraint" destination="MF3-gT-ujB" id="T6b-ZK-xT4"/>
                         <outlet property="imvAvata" destination="2Ca-2v-a69" id="8nb-nA-XKx"/>
                         <outlet property="lbActive" destination="GL4-7c-Fk6" id="zEj-0c-uWb"/>
                         <outlet property="lbUsername" destination="sB5-zL-aZ3" id="kzQ-m8-rEe"/>
+                        <outlet property="leadingVButtonMessageConstraint" destination="gHq-Vh-ZSQ" id="0B8-aN-lmA"/>
                         <outlet property="tbvListMessage" destination="CRu-1O-5rX" id="huK-61-foS"/>
                         <outlet property="txtTypeHere" destination="4pc-sJ-YQP" id="jaW-Yy-hze"/>
                         <outlet property="vActive" destination="PUY-Vp-sQ7" id="rrr-Gy-4lA"/>
                         <outlet property="vBodyScreen" destination="hkG-gU-dFG" id="E8R-iU-gaT"/>
+                        <outlet property="vButtonMessage" destination="Grf-Hi-KZ6" id="iyC-0Q-JV3"/>
                         <outlet property="vTopScreen" destination="gFc-9y-0MT" id="0co-3D-d7k"/>
                         <outlet property="vTypeHere" destination="lmE-Ky-agn" id="HFe-Mu-M0v"/>
                     </connections>
@@ -635,12 +680,14 @@
         <image name="arrow.left" catalog="system" width="128" height="98"/>
         <image name="avata1" width="50" height="50"/>
         <image name="camera.circle.fill" catalog="system" width="128" height="121"/>
+        <image name="chevron.right" catalog="system" width="96" height="128"/>
         <image name="eye.slash" catalog="system" width="128" height="86"/>
         <image name="home" width="30" height="30"/>
         <image name="ic-sent" width="225" height="224"/>
         <image name="intro" width="358" height="358"/>
         <image name="link.circle.fill" catalog="system" width="128" height="121"/>
         <image name="login" width="151" height="236"/>
+        <image name="mic.circle.fill" catalog="system" width="128" height="121"/>
         <image name="photo.on.rectangle.angled" catalog="system" width="128" height="100"/>
         <image name="plus" catalog="system" width="128" height="113"/>
         <systemColor name="linkColor">

@@ -15,7 +15,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         let slider = UISlider()
         slider.minimumValue = 0
         slider.maximumTrackTintColor = .gray
-        slider.minimumTrackTintColor = .green
+        slider.minimumTrackTintColor = Constants.Color.mainColor
 //        slider.backgroundColor = .white
         slider.addTarget(self, action: #selector(sliderDidChangeValue), for: .valueChanged)
         return slider
@@ -24,7 +24,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     private var btnPlay: UIButton = {
         let btn = UIButton()
         btn.setBackgroundImage(UIImage(systemName: "play.fill"), for: .normal)
-        btn.tintColor = .green
+        btn.tintColor = Constants.Color.mainColor
         btn.addTarget(self, action: #selector(btnPlayTapped), for: .touchUpInside)
         return btn
     }()
@@ -32,6 +32,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     private var lbTime: UILabel = {
         let lb = UILabel()
         lb.text = "00:00"
+        lb.textColor = Constants.Color.mainColor
         return lb
     }()
     
@@ -45,7 +46,6 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     var playerLayer: AVPlayerLayer?
     var player = AVPlayer()
     var item: DetailItem?
-    private var displayLink: CADisplayLink?
     private var timeObserver: Any?
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -87,8 +87,6 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             player.removeTimeObserver(timeObserver)
             self.timeObserver = nil
         }
-        displayLink?.invalidate()
-        displayLink = nil
         item = nil
         
     }

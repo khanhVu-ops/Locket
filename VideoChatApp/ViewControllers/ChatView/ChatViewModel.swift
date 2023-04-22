@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RxCocoa
 import FirebaseFirestore
+import FirebaseStorage
 import Photos
 import UIKit
 import QuickLook
@@ -30,6 +31,7 @@ class ChatViewModel {
     var newMessagesFetch = PublishRelay<[MessageModel]>()
     var isScrollToBottom = PublishRelay<Bool>()
     var tbvListMessage: UITableView?
+    var txtHeightDefault: CGFloat = 0
     var fileURLPreview: URL?
     func getData() {
         if let uid2 = uid2 {
@@ -102,7 +104,7 @@ class ChatViewModel {
         }
     }
     
-    func didTapSendMessage(type: MessageType, images: [String]? = nil, ratio: Double? = nil, videoURL: String? = nil, thumbVideo: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, completion: @escaping(Error?, DocumentReference?)->Void) {
+    func didTapSendMessage(type: MessageType, images: [String]? = nil, ratio: Double? = nil, videoURL: String? = nil, thumbVideo: String? = nil, audioURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, completion: @escaping(Error?, DocumentReference?)->Void) {
         var content: MessageModel?
         switch type {
         case .text:
@@ -126,6 +128,11 @@ class ChatViewModel {
                 return
             }
             content = MessageModel(type: .file, fileName: fileName, senderID: self.uid, created: Timestamp(date: Date()))
+        case .audio:
+            guard let audioURL = audioURL else {
+                return
+            }
+            content = MessageModel(type: .audio, audioURL: audioURL, duration: 0, progress: 0, senderID: self.uid, created: Timestamp(date: Date()))
         }
         
         if let roomRef = roomRef {
@@ -237,6 +244,15 @@ class ChatViewModel {
             FirebaseManager.shared.uploadFile(messRef: messRef, fileURL: fileURL) { err in
                 completion(err)
             }
+        }
+    }
+    
+    func sendAudio(audioURL: URL, completion: @escaping(Error?)->Void) {
+        self.didTapSendMessage(type: .audio, audioURL: "\(audioURL)") { error, messRef in
+            guard let messRef = messRef else {
+                return
+            }
+            FirebaseManager.shared.uploadAudio(url: audioURL, messRef: messRef, completion: completion)
         }
     }
     
@@ -368,11 +384,7 @@ class ChatViewModel {
             }
         case .video:
             return messageWidth * (messageSend.ratioImage ?? 1) + 45
-        case .text:
-            return UITableView.automaticDimension
-        case .file:
-            return UITableView.automaticDimension
-        case .none:
+        default:
             return UITableView.automaticDimension
         }
     }
@@ -408,7 +420,7 @@ class ChatViewModel {
         }
         
     }
-    // file
+    //MARK: File
     func previewFileFromURL(url: URL, completion: @escaping(URL?, Error?)->Void) {
         //download file
         guard let fileName = self.getFileNameFromURL(fileURL: url) else {

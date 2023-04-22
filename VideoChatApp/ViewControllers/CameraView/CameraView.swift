@@ -26,7 +26,7 @@ enum OutputType {
 
 protocol CameraViewDelegate: AnyObject {
     func btnCancelTapped()
-    func didShowAlertSetting(title: String, message: String)
+    func didShowAlertSetting()
     func didShowAlert(title: String, message: String)
     func didCapturedImage(imageCaptured: UIImage)
     func btnLibraryTapped()
@@ -202,7 +202,7 @@ class CameraView: UIView {
                 self.session.startRunning()
             case .notAuthorized:
                 DispatchQueue.main.async {
-                    self.delegate?.didShowAlertSetting(title: "App", message: "App doesn't have permission to use the camera, please change privacy settings")
+                    self.delegate?.didShowAlertSetting()
                 }
             case .configurationFailed:
                 DispatchQueue.main.async {
@@ -248,7 +248,7 @@ class CameraView: UIView {
             switch outputType {
             case .portrait:
                 guard let backCameraDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) else {
-                    self.delegate?.didShowAlertSetting(title: "App", message: "No Camera Portrait!")
+                    self.delegate?.didShowAlert(title: "App", message: "No Camera Portrait!")
                     return
                 }
                 defaultVideoDevice = backCameraDevice

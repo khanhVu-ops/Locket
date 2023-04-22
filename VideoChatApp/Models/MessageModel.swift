@@ -12,6 +12,7 @@ enum MessageType: String {
     case text = "text"
     case image = "image"
     case video = "video"
+    case audio = "audio"
     case file = "file"
 }
 class MessageModel {
@@ -22,6 +23,7 @@ class MessageModel {
     var thumbVideo: String?
     var videoURL: String?
     var duration: Double?
+    var audioURL: String?
     var fileName: String?
     var fileURL: String?
     var senderID: String?
@@ -29,7 +31,7 @@ class MessageModel {
     var created: Timestamp?
     
 
-    convenience init(type: MessageType, message: String? = nil, imageURL: [String]? = nil, ratioImage: Double? = nil, thumbVideo: String? = nil, videoURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, progress: Double? = nil, senderID: String, created: Timestamp) {
+    convenience init(type: MessageType, message: String? = nil, imageURL: [String]? = nil, ratioImage: Double? = nil, thumbVideo: String? = nil, videoURL: String? = nil, audioURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, progress: Double? = nil, senderID: String, created: Timestamp) {
         self.init()
         self.type = type
         self.message = message
@@ -37,6 +39,7 @@ class MessageModel {
         self.ratioImage = ratioImage
         self.thumbVideo = thumbVideo
         self.videoURL = videoURL
+        self.audioURL = audioURL
         self.duration = duration
         self.fileName = fileName
         self.fileURL = fileURL
@@ -55,6 +58,8 @@ class MessageModel {
                     self.type = .image
                 } else if wrapValue == "file" {
                     self.type = .file
+                } else if wrapValue == "audio" {
+                    self.type = .audio
                 } else {
                     self.type = .text
                 }
@@ -73,6 +78,9 @@ class MessageModel {
             }
             if key == "videoURL", let wrapValue = value as? String {
                 self.videoURL = wrapValue
+            }
+            if key == "audioURL", let wrapValue = value as? String {
+                self.audioURL = wrapValue
             }
             if key == "duration", let wrapValue = value as? Double {
                 self.duration = wrapValue
@@ -104,6 +112,7 @@ class MessageModel {
             "ratioImage": self.ratioImage ?? 1.0,
             "thumbVideo": self.thumbVideo ?? "",
             "videoURL": self.videoURL ?? "",
+            "audioURL": self.audioURL ?? "",
             "duration": self.duration ?? 0.0,
             "fileName": self.fileName ?? "",
             "fileURL": self.fileURL ?? "",

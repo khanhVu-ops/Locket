@@ -15,7 +15,6 @@ class ChatModel {
     var lastCreated: Timestamp?
     var lastSenderID: String?
     
-    
     convenience init(users: [String]?, roomName: String? = nil, roomURL: String? = nil, lastMessage: String? = nil, lastCreated: Timestamp? = nil, lastSenderID: String? = nil) {
         self.init()
         self.users = users

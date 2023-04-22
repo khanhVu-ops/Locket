@@ -66,8 +66,8 @@ extension FilterViewController: CameraViewDelegate {
         self.showAlert(title: title, message: message)
     }
     
-    func didShowAlertSetting(title: String, message: String) {
-        self.showAlertSetting(title: title, message: message)
+    func didShowAlertSetting() {
+        self.showAlertOpenSettingCamera()
     }
     
     func didCapturedImage(imageCaptured: UIImage) {
