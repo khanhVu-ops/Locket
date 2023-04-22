@@ -132,7 +132,7 @@ class ChatViewModel {
             guard let audioURL = audioURL else {
                 return
             }
-            content = MessageModel(type: .audio, audioURL: audioURL, duration: 0, progress: 0, senderID: self.uid, created: Timestamp(date: Date()))
+            content = MessageModel(type: .audio, audioURL: audioURL, duration: duration, senderID: self.uid, created: Timestamp(date: Date()))
         }
         
         if let roomRef = roomRef {
@@ -247,8 +247,8 @@ class ChatViewModel {
         }
     }
     
-    func sendAudio(audioURL: URL, completion: @escaping(Error?)->Void) {
-        self.didTapSendMessage(type: .audio, audioURL: "\(audioURL)") { error, messRef in
+    func sendAudio(audioURL: URL, duration: Double, completion: @escaping(Error?)->Void) {
+        self.didTapSendMessage(type: .audio, audioURL: "\(audioURL)", duration: duration) { error, messRef in
             guard let messRef = messRef else {
                 return
             }

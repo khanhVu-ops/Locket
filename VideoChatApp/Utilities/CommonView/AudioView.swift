@@ -24,6 +24,7 @@ class AudioView: UIView {
         ]
     var recordingSession: AVAudioSession?
     var audioURL: URL!
+    var duration = 0.0
     var updateTimer: Timer?
     let scrollView = UIScrollView()
     var waveformView = WaveformView()
@@ -142,29 +143,29 @@ class AudioView: UIView {
         self.btnStop.setImage(UIImage(systemName: "stop.fill"), for: .normal)
         audioRecorder?.stop()
         audioRecorder = nil
-//        recordingSession = nil
         stopUpdateTimer()
         self.waveformView.clear()
-        self.time = 0.0
+        self.duration = 0.0
         self.points = 0
         do {
             try recordingSession?.setActive(false, options: .notifyOthersOnDeactivation)
+            try recordingSession?.setCategory(.playback, mode: .default, options: [])
+            
         } catch {
             print(error)
         }
         print("stop recording")
     }
     
-    var time = 0.0
     func startUpdateTimer() {
         
         updateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { [weak self] (_) in
             guard let self = self else {
                 return
             }
-            self.time += 0.1
-            let minutes = Int(self.time / 60)
-            let seconds = Int((self.time.truncatingRemainder(dividingBy: 60)))
+            self.duration += 0.1
+            let minutes = Int(self.duration / 60)
+            let seconds = Int((self.duration.truncatingRemainder(dividingBy: 60)))
             self.lbTimer.text = String(format: "%02d:%02d", minutes, seconds)
             self.updateMeters()
         })

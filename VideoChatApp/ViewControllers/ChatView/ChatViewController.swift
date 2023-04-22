@@ -256,9 +256,10 @@ class ChatViewController: UIViewController {
     @IBAction func btnSendTapped(_ sender: Any) {
         if self.isRecoding {
             isRecoding = false
+            let duration = audioView.duration
             audioView.stopRecording()
             self.updateEventAnimate(vButtonMessage: false, btnSend: true, btnLibrary: false, btnArrowRight: true, audioView: true)
-            self.chatViewModel.sendAudio(audioURL: audioView.audioURL) { [weak self] error in
+            self.chatViewModel.sendAudio(audioURL: audioView.audioURL, duration: duration) { [weak self] error in
                 guard let error = error else {
                     return
                 }

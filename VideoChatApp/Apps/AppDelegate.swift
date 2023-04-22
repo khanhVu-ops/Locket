@@ -9,6 +9,7 @@ import UIKit
 import IQKeyboardManagerSwift
 import FirebaseCore
 import FirebaseFirestore
+import AVFoundation
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
@@ -19,7 +20,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         IQKeyboardManager.shared.enable = true
         IQKeyboardManager.shared.enableAutoToolbar = false
         FirebaseApp.configure()
- 
+        do {
+            try AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [])
+        }
+        catch {
+            print("Setting category to AVAudioSessionCategoryPlayback failed.")
+        }
         // Override point for customization after application launch.
         return true
     }

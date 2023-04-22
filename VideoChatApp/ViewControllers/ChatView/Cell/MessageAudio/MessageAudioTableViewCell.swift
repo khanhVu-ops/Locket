@@ -15,7 +15,7 @@ class MessageAudioTableViewCell: UITableViewCell {
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var lbDuration: UILabel!
     @IBOutlet weak var lbTime: UILabel!
-    
+
     let player = AVPlayer()
     private var timeObserver: Any?
     var item: MessageModel?
@@ -60,6 +60,7 @@ class MessageAudioTableViewCell: UITableViewCell {
             self.progressView.progressTintColor = .white
             self.lbDuration.textColor = .white
         }
+        self.lbDuration.text = convertDurationToTime(duration: item.duration ?? 0.0)
         self.lbTime.text = convertToString(timestamp: item.created!)
         guard let audioURL = URL(string: item.audioURL ?? "") else {
             return
@@ -83,26 +84,21 @@ class MessageAudioTableViewCell: UITableViewCell {
     
     func addObserverPeriodicTime() {
         let interval = CMTime(value: 1, timescale: 1)
+        var duration = 0.0
+
         timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
-            if let item = self.item {
-                if item.duration! > 0 {
-                    let currentTime = time.seconds
-                    if currentTime == item.duration {
-                        self.pauseVideo()
-                        self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
-                    } else {
-                        self.progressView.progress = Float(currentTime / item.duration!)
-                        let minutes = Int(currentTime / 60)
-                        let seconds = Int(currentTime.truncatingRemainder(dividingBy: 60))
-                        self.lbDuration.text = String(format: "%02d:%02d", minutes, seconds)
-                    }
-
+            if duration > 0 {
+                let currentTime = time.seconds
+                self.progressView.progress = Float(currentTime / duration)
+                if currentTime == duration {
+                    self.pauseVideo()
                 } else {
-                    item.duration = self.player.currentItem?.duration.seconds ?? 10.0
+                    self.lbDuration.text = self.convertDurationToTime(duration: duration - currentTime)
                 }
+                
             } else {
-                print("NO tiems")
+                duration = self.player.currentItem?.duration.seconds ?? 0.0
             }
         }
     }
@@ -124,9 +120,12 @@ class MessageAudioTableViewCell: UITableViewCell {
         }
     }
     @IBAction func btnPlayAudioTapped(_ sender: Any) {
-        if player.rate > 0 {
+        if player.rate == 1 {
             pauseVideo()
         } else {
+            if progressView.progress == 1 {
+                self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
+            }
             playVideo()
         }
     }
