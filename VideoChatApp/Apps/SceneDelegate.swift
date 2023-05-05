@@ -20,6 +20,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         } else {
             rootVC = st.instantiateViewController(withIdentifier: "IntroViewController") as! IntroViewController
         }
+        
         let nav = UINavigationController(rootViewController: rootVC)
         nav.navigationBar.isHidden = true
         window.rootViewController = nav
@@ -28,12 +29,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
-        FirebaseManager.shared.updateUserActive(isActive: false) { error in
-            guard let error = error else {
-                return
-            }
-            print(error.localizedDescription)
-        }
+//        FirebaseManager.shared.updateUserActive(isActive: false) { error in
+//            guard let error = error else {
+//                return
+//            }
+//            print(error.localizedDescription)
+//        }
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.
         // Release any resources associated with this scene that can be re-created the next time the scene connects.
@@ -41,11 +42,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidBecomeActive(_ scene: UIScene) {
+        print("active")
+        if let scene = UIApplication.shared.connectedScenes.first,
+           let windowScene = scene as? UIWindowScene,
+           let window = windowScene.windows.first,
+           let navigation = window.rootViewController as? UINavigationController {
+                  
+            if navigation.topViewController is ChatViewController {
+                FirebaseManager.shared.updateStatusChating(isChating: true)
+            }
+        }
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
+        print("resign")
+        FirebaseManager.shared.updateStatusChating(isChating: false)
         // Called when the scene will move from an active state to an inactive state.
         // This may occur due to temporary interruptions (ex. an incoming phone call).
     }
@@ -56,6 +69,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
+        print("background")
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.

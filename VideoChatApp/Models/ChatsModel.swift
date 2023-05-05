@@ -30,28 +30,22 @@ class ChatModel {
         
         for (key, value) in json {
             if key == "users", let wrapValue = value as? [String] {
-                let jsonValue = wrapValue
-                self.users = jsonValue
+                self.users = wrapValue
             }
             if key == "roomName", let wrapValue = value as? String {
-                let jsonValue = wrapValue
-                self.roomName = jsonValue
+                self.roomName = wrapValue
             }
             if key == "roomURL", let wrapValue = value as? String {
-                let jsonValue = wrapValue
-                self.roomURL = jsonValue
+                self.roomURL = wrapValue
             }
             if key == "lastMessage", let wrapValue = value as? String {
-                let jsonValue = wrapValue
-                self.lastMessage = jsonValue
+                self.lastMessage = wrapValue
             }
             if key == "lastCreated", let wrapValue = value as? Timestamp {
-                let jsonValue = wrapValue
-                self.lastCreated = jsonValue
+                self.lastCreated = wrapValue
             }
             if key == "lastSenderID", let wrapValue = value as? String {
-                let jsonValue = wrapValue
-                self.lastSenderID = jsonValue
+                self.lastSenderID = wrapValue
             }
         }
     }

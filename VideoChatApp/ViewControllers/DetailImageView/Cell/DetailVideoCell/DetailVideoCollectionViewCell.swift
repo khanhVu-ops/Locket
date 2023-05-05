@@ -23,7 +23,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     
     private var btnPlay: UIButton = {
         let btn = UIButton()
-        btn.setBackgroundImage(UIImage(systemName: "play.fill"), for: .normal)
+        btn.setImage(nil, for: .normal)
         btn.tintColor = Constants.Color.mainColor
         btn.addTarget(self, action: #selector(btnPlayTapped), for: .touchUpInside)
         return btn
@@ -31,7 +31,6 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     
     private var lbTime: UILabel = {
         let lb = UILabel()
-        lb.text = "00:00"
         lb.textColor = Constants.Color.mainColor
         return lb
     }()
@@ -42,6 +41,15 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         stv.alignment = .center
         stv.spacing = 10
         return stv
+    }()
+    
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        indicator.style = .medium
+        indicator.color = Constants.Color.mainColor
+        indicator.isHidden = true
+        indicator.stopAnimating()
+        return indicator
     }()
     var playerLayer: AVPlayerLayer?
     var player = AVPlayer()
@@ -66,8 +74,13 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         self.btnPlay.snp.makeConstraints { make in
             make.width.height.equalTo(30)
         }
+        self.addSubview(activityIndicator)
+        activityIndicator.snp.makeConstraints { make in
+            make.width.height.equalTo(10)
+            make.centerY.equalTo(self.stvStatus.snp.centerY)
+            make.leading.equalTo(self.stvStatus.snp.leading).offset(5)
+        }
         setUpPreViewLayer()
-
     }
     
     private func setUpPreViewLayer() {
@@ -99,7 +112,8 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             return
         }
         self.item = item
-        viewModel.loadingBehavior.accept(true)
+        self.lbTime.text = self.convertDurationToTime(duration: item.duration)
+        self.startIndicator()
         DispatchQueue.global(qos: .background).async {
             guard let videoURL = URL(string: item.url) else {
                 return
@@ -112,8 +126,6 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
                 self.playerLayer?.frame = CGRect(x: 20, y: 0, width: self.bounds.width-40, height: self.bounds.height)
                 self.addObserverPeriodicTime()
                 self.configVideo(isPlaying: item.isPlaying, currentTime: item.currentTime)
-                viewModel.loadingBehavior.accept(false)
-
             }
         }
     }
@@ -121,7 +133,6 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     func configVideo(isPlaying: Bool, currentTime: Double) {
         // Chuyển đổi giá trị của slider thành thời gian phát của video
         let time = CMTime(seconds: currentTime, preferredTimescale: 1)
-        
         // Chuyển đổi thời gian phát thành khoảng thời gian mà player cần bắt đầu phát từ đó
         player.seek(to: time)
     }
@@ -130,6 +141,9 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         let interval = CMTime(value: 1, timescale: 1)
         timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
+            if self.activityIndicator.isAnimating {
+                self.stopIndicator()
+            }
             if let item = self.item {
                 if item.duration > 0 {
                     self.slider.maximumValue = Float(item.duration)
@@ -140,11 +154,8 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
                         self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
                     } else {
                         self.slider.value = Float(currentTime)
-                        let minutes = Int(currentTime / 60)
-                        let seconds = Int(currentTime.truncatingRemainder(dividingBy: 60))
-                        self.lbTime.text = String(format: "%02d:%02d", minutes, seconds)
+                        self.lbTime.text = self.convertDurationToTime(duration: item.duration - currentTime)
                     }
-
                 } else {
                     item.duration = self.player.currentItem?.duration.seconds ?? 10.0
                 }
@@ -172,12 +183,27 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         player.pause()
         self.setPlayImage(isPlay: false)
     }
+    
     private func setPlayImage(isPlay: Bool) {
         if isPlay {
-            self.btnPlay.setBackgroundImage(UIImage(systemName: "stop.fill"), for: .normal)
+            if !activityIndicator.isAnimating {
+                self.btnPlay.setImage(UIImage(systemName: "stop.fill"), for: .normal)
+            }
         } else {
-            self.btnPlay.setBackgroundImage(UIImage(systemName: "play.fill"), for: .normal)
+            self.btnPlay.setImage(UIImage(systemName: "play.fill"), for: .normal)
         }
+    }
+    
+    private func startIndicator() {
+        self.activityIndicator.isHidden = false
+        self.btnPlay.setImage(nil, for: .normal)
+        self.activityIndicator.startAnimating()
+    }
+    
+    private func stopIndicator() {
+        self.activityIndicator.isHidden = true
+        self.btnPlay.setImage(UIImage(systemName: "stop.fill"), for: .normal)
+        self.activityIndicator.stopAnimating()
     }
     
     @objc func sliderDidChangeValue() {
@@ -186,7 +212,6 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         
         // Chuyển đổi thời gian phát thành khoảng thời gian mà player cần bắt đầu phát từ đó
         player.seek(to: time)
-
     }
     
     @objc func btnPlayTapped() {

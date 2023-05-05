@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>853816198672-8ouuankovuhtj7q7js1cnqvuuurqjq99.apps.googleusercontent.com</string>
+	<string>853816198672-300t9ugvkomq358ck9legpvree93nb7h.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.853816198672-8ouuankovuhtj7q7js1cnqvuuurqjq99</string>
+	<string>com.googleusercontent.apps.853816198672-300t9ugvkomq358ck9legpvree93nb7h</string>
 	<key>API_KEY</key>
 	<string>AIzaSyCyFG2tnuk4pVe0i2bS-xGdYUrAur8j2rE</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.KhanhVu.VideoChatApp</string>
+	<string>medda.rtc.dev</string>
 	<key>PROJECT_ID</key>
 	<string>chatapp-3a479</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:853816198672:ios:658f6b9d687bc90f322c95</string>
+	<string>1:853816198672:ios:24bb209046ea0218322c95</string>
 </dict>
 </plist>

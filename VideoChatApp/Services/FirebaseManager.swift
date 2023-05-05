@@ -16,14 +16,16 @@ protocol FirestoreManagerProtocol {
     func getUsersLogin(completion: @escaping ([UserModel]?, Error?) -> Void)
     func creatNewChat(newRoom: ChatModel, content: MessageModel, completion: @escaping (DocumentReference?, DocumentReference?, Error?) -> Void)
     func addNewMessage(content: MessageModel,docRef: DocumentReference, completion: @escaping(Error?, DocumentReference?)->Void)
-    func updateImageMessage(messRef: DocumentReference, images: [String], videoURL: String, thumbVideo: String, completion: @escaping(Error?) -> Void)
-    func updateFileMessage(messRef: DocumentReference, fileURL: String, completion: @escaping(Error?)->Void)
-    func updateAvatar(url: String, completion: @escaping (Error?)->Void)
-    func updateAudioMessage(messRef: DocumentReference, audioURL: String, completion: @escaping(Error?)->Void)
     func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void)
     func getMessagesWithLastDoc(docRef: DocumentReference, lastDocument: QueryDocumentSnapshot?, limitQuery: Int, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getMessages(docRef: DocumentReference, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getDocumentReferenceWithUserID(userId2: String, completion: @escaping(DocumentReference?, Error?)->Void)
+    func updateImageMessage(messRef: DocumentReference, images: [String], videoURL: String, thumbVideo: String, completion: @escaping(Error?) -> Void)
+    func updateFileMessage(messRef: DocumentReference, fileURL: String, completion: @escaping(Error?)->Void)
+    func updateAvatar(url: String, completion: @escaping (Error?)->Void)
+    func updateAudioMessage(messRef: DocumentReference, audioURL: String, completion: @escaping(Error?)->Void)
+    func updateFcmToken(fcmToken: String)
+    func updateStatusChating(isChating: Bool)
     func uploadImageToStorage(with image: UIImage, completion: @escaping(URL?, Error?) -> Void)
     func uploadVideo(url: URL, thumb: UIImage, messRef: DocumentReference, completion: @escaping(Error?) -> Void)
     func uploadAudio(url: URL, messRef: DocumentReference, completion: @escaping(Error?) -> Void)
@@ -47,7 +49,7 @@ class FirestoreManager: FirestoreManagerProtocol {
     func createUser(username: String, password: String, completion: @escaping (Error?) -> Void) {
         let ref = db.collection(usersCollection).document()
         let id = ref.documentID
-        let newUser = UserModel(id: id, username: username, password: password, avataURL: "", isActive: true).convertToDictionary()
+        let newUser = UserModel(id: id, username: username, password: password, avataURL: "", isActive: true, fcmToken: "").convertToDictionary()
         ref.setData(newUser) {
             err in
             guard err == nil else {
@@ -131,40 +133,6 @@ class FirestoreManager: FirestoreManagerProtocol {
         })
     }
     
-    func updateImageMessage(messRef: DocumentReference, images: [String], videoURL: String, thumbVideo: String, completion: @escaping(Error?) -> Void) {
-        messRef.updateData([
-            "imageURL": images,
-            "videoURL": videoURL,
-            "thumbVideo": thumbVideo,
-        ]) { error in
-            completion(error)
-        }
-    }
-    
-    func updateFileMessage(messRef: DocumentReference, fileURL: String, completion: @escaping(Error?)->Void) {
-        messRef.updateData([
-            "fileURL": fileURL,
-        ]) { error in
-            completion(error)
-        }
-    }
-    
-    func updateAvatar(url: String, completion: @escaping (Error?)->Void) {
-        let userID = UserDefaultManager.shared.getID()
-        let ref = db.collection(usersCollection).document(userID)
-        ref.updateData(["avataURL": url]) { error in
-            completion(error)
-        }
-    }
-    
-    func updateAudioMessage(messRef: DocumentReference, audioURL: String, completion: @escaping(Error?)->Void) {
-        messRef.updateData([
-            "audioURL": audioURL,
-        ]) { error in
-            completion(error)
-        }
-    }
-
     func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void) {
         let userID = UserDefaultManager.shared.getID()
         let ref = db.collection(chatsCollection).whereField("users", arrayContains: userID).order(by: "lastCreated", descending: true)
@@ -237,6 +205,52 @@ class FirestoreManager: FirestoreManagerProtocol {
         })
     }
     
+    //MARK: update
+    func updateImageMessage(messRef: DocumentReference, images: [String], videoURL: String, thumbVideo: String, completion: @escaping(Error?) -> Void) {
+        messRef.updateData([
+            "imageURL": images,
+            "videoURL": videoURL,
+            "thumbVideo": thumbVideo,
+        ]) { error in
+            completion(error)
+        }
+    }
+    
+    func updateFileMessage(messRef: DocumentReference, fileURL: String, completion: @escaping(Error?)->Void) {
+        messRef.updateData([
+            "fileURL": fileURL,
+        ]) { error in
+            completion(error)
+        }
+    }
+    
+    func updateAvatar(url: String, completion: @escaping (Error?)->Void) {
+        let userID = UserDefaultManager.shared.getID()
+        let ref = db.collection(usersCollection).document(userID)
+        ref.updateData(["avataURL": url]) { error in
+            completion(error)
+        }
+    }
+    
+    func updateAudioMessage(messRef: DocumentReference, audioURL: String, completion: @escaping(Error?)->Void) {
+        messRef.updateData([
+            "audioURL": audioURL,
+        ]) { error in
+            completion(error)
+        }
+    }
+    
+    func updateFcmToken(fcmToken: String) {
+        let uid = UserDefaultManager.shared.getID()
+        db.collection(self.usersCollection).document(uid).updateData(["fcmToken": fcmToken])
+    }
+    
+    func updateStatusChating(isChating: Bool) {
+        let uid = UserDefaultManager.shared.getID()
+        db.collection(self.usersCollection).document(uid).updateData(["isChating": isChating])
+    }
+
+    //MARK: Upload
     func uploadImageToStorage(with image: UIImage, completion: @escaping(URL?, Error?) -> Void) {
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
@@ -390,6 +404,7 @@ class FirestoreManager: FirestoreManagerProtocol {
                 completion(error)
                 return
             }
+            self.updateFcmToken(fcmToken: "")
             UserDefaultManager.shared.updateIDWhenLogOut()
             completion(nil)
         })

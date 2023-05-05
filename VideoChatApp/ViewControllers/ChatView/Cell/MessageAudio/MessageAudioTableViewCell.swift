@@ -7,6 +7,7 @@
 
 import UIKit
 import AVFoundation
+import SnapKit
 class MessageAudioTableViewCell: UITableViewCell {
 
     @IBOutlet weak var stv: UIStackView!
@@ -20,7 +21,14 @@ class MessageAudioTableViewCell: UITableViewCell {
     private var timeObserver: Any?
     var item: MessageModel?
     var bombSoundEffect: AVAudioPlayer?
-
+    private lazy var activityIndicator: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        indicator.style = .large
+        indicator.color = .gray
+        indicator.isHidden = true
+        indicator.stopAnimating()
+        return indicator
+    }()
     override func awakeFromNib() {
         super.awakeFromNib()
         self.setUpView()
@@ -43,6 +51,10 @@ class MessageAudioTableViewCell: UITableViewCell {
         self.vContent.addBorder(borderWidth: 1.5, borderColor: Constants.Color.mainColor)
         self.lbTime.backgroundColor = UIColor(hexString: "#F1F1F1")
         self.lbTime.addConnerRadius(radius: 8)
+        self.btnPlay.addSubview(activityIndicator)
+        activityIndicator.snp.makeConstraints { make in
+            make.width.height.centerX.centerY.equalToSuperview()
+        }
     }
     
     func configure(item: MessageModel) {
@@ -79,13 +91,11 @@ class MessageAudioTableViewCell: UITableViewCell {
                 self.addObserverPeriodicTime()
             }
         }
-        
     }
     
     func addObserverPeriodicTime() {
         let interval = CMTime(value: 1, timescale: 1)
         var duration = 0.0
-
         timeObserver = player.addPeriodicTimeObserver(forInterval: interval, queue: .main) { [weak self] time in
             guard let self = self else { return }
             if duration > 0 {
@@ -100,6 +110,17 @@ class MessageAudioTableViewCell: UITableViewCell {
             } else {
                 duration = self.player.currentItem?.duration.seconds ?? 0.0
             }
+        }
+    }
+
+    @IBAction func btnPlayAudioTapped(_ sender: Any) {
+        if player.rate == 1 {
+            pauseVideo()
+        } else {
+            if progressView.progress == 1 {
+                self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
+            }
+            playVideo()
         }
     }
     
@@ -119,14 +140,16 @@ class MessageAudioTableViewCell: UITableViewCell {
             self.btnPlay.setImage(UIImage(systemName: "play.fill"), for: .normal)
         }
     }
-    @IBAction func btnPlayAudioTapped(_ sender: Any) {
-        if player.rate == 1 {
-            pauseVideo()
-        } else {
-            if progressView.progress == 1 {
-                self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
-            }
-            playVideo()
-        }
+    
+    private func startIndicator() {
+        self.activityIndicator.isHidden = false
+        self.btnPlay.setImage(nil, for: .normal)
+        self.activityIndicator.startAnimating()
+    }
+
+    private func stopIndicator() {
+        self.activityIndicator.isHidden = true
+        self.btnPlay.setImage(UIImage(systemName: "stop.fill"), for: .normal)
+        self.activityIndicator.stopAnimating()
     }
 }

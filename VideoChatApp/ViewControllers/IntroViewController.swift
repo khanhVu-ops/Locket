@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Alamofire
 
 class IntroViewController: UIViewController {
 
@@ -20,8 +21,14 @@ class IntroViewController: UIViewController {
         self.btnGetStarted.addConnerRadius(radius: 15)
         self.btnGetStarted.backgroundColor = Constants.Color.mainColor
     }
-
+    
+    func createNotification() {
+        
+    }
+   
     @IBAction func btnGetStartedTapped(_ sender: Any) {
+        let token = UserDefaultManager.shared.getToken()
+        createNotification()
         let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LoginViewController")
         self.navigationController?.pushViewController(loginVC, animated: true)
     }

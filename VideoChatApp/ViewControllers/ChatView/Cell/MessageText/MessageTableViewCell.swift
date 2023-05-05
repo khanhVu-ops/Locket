@@ -6,12 +6,12 @@
 //
 
 import UIKit
-
+import LinkPresentation
 class MessageTableViewCell: UITableViewCell {
 
     @IBOutlet weak var vMessage: UIView!
     @IBOutlet weak var lbTime: UILabel!
-    @IBOutlet weak var lbMessage: UILabel!
+    @IBOutlet weak var tvMessage: UITextView!
     @IBOutlet weak var stvMessage: UIStackView!
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,10 +24,16 @@ class MessageTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
+    
+    override func prepareForReuse() {
+        self.tvMessage.text = ""
+    }
+    
     func setUpView() {
+        
         self.vMessage.addConnerRadius(radius: 20)
         self.vMessage.addBorder(borderWidth: 1, borderColor: Constants.Color.mainColor)
-        
+        self.tvMessage.dataDetectorTypes = [.link, .phoneNumber]
         self.lbTime.backgroundColor = UIColor(hexString: "#F1F1F1")
         self.lbTime.addConnerRadius(radius: 8)
     }
@@ -36,15 +42,22 @@ class MessageTableViewCell: UITableViewCell {
         if item.senderID != UserDefaultManager.shared.getID() {
             self.stvMessage.alignment = .leading
             self.vMessage.backgroundColor = .white
-            self.lbMessage.textColor = .black
+            self.tvMessage.textColor = .black
+            self.tvMessage.tintColor = .black
         } else {
             self.stvMessage.alignment = .trailing
             self.vMessage.backgroundColor = Constants.Color.mainColor
-            self.lbMessage.textColor = .white
+            self.tvMessage.textColor = .white
+            self.tvMessage.tintColor = .white
         }
-        self.lbMessage.text = item.message
+        self.tvMessage.text = item.message
+        let size = tvMessage.sizeThatFits(CGSize(width: tvMessage.frame.width, height: CGFloat.greatestFiniteMagnitude))
         self.lbTime.text = self.convertToString(timestamp: item.created!)
+        tvMessage.frame.size.height = size.height
         
+        let linkAttributes: [NSAttributedString.Key: Any] = [
+            .underlineStyle: NSUnderlineStyle.single.rawValue // Add an underline to the link
+        ]
+        tvMessage.linkTextAttributes = linkAttributes
     }
-    
 }

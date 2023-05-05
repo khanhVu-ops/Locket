@@ -200,6 +200,8 @@ class DetailImageViewController: UIViewController {
             make.top.equalTo(self.imvCheckMark.snp.bottom).offset(5)
             make.width.equalTo(100)
         }
+        let gestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handleSwipe(_:)))
+        view.addGestureRecognizer(gestureRecognizer)
     }
     
     func bindDataToViewModel() {
@@ -302,6 +304,23 @@ class DetailImageViewController: UIViewController {
         
     }
     
+    @objc func handleSwipe(_ gestureRecognizer: UIPanGestureRecognizer) {
+        let translation = gestureRecognizer.translation(in: view)
+
+        if gestureRecognizer.state == .changed && translation.y > 0 {
+            view.frame.origin.y = translation.y
+        } else if gestureRecognizer.state == .ended {
+            let velocity = gestureRecognizer.velocity(in: view)
+
+            if velocity.y >= 1000 {
+                dismiss(animated: true, completion: nil)
+            } else {
+                UIView.animate(withDuration: 0.3, animations: {
+                    self.view.frame.origin.y = 0
+                })
+            }
+        }
+    }
 }
 
 extension DetailImageViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {

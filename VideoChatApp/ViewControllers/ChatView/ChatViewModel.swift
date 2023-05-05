@@ -106,38 +106,49 @@ class ChatViewModel {
     
     func didTapSendMessage(type: MessageType, images: [String]? = nil, ratio: Double? = nil, videoURL: String? = nil, thumbVideo: String? = nil, audioURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, completion: @escaping(Error?, DocumentReference?)->Void) {
         var content: MessageModel?
+        var bodyNotification = ""
         switch type {
         case .text:
             guard self.txtTypeHere.value != "" else {
                 completion(nil, nil)
                 return
             }
-            content = MessageModel(type: .text, message: self.txtTypeHere.value.trimmingCharacters(in: .whitespacesAndNewlines), senderID: self.uid, created: Timestamp(date: Date()))
+            let textMessage = self.txtTypeHere.value.trimmingCharacters(in: .whitespacesAndNewlines)
+            content = MessageModel(type: .text, message: textMessage, senderID: self.uid, created: Timestamp(date: Date()))
+            bodyNotification = textMessage
+            
         case .image:
             guard let images = images, let ratio = ratio else {
                 return
             }
             content = MessageModel(type: .image, imageURL: images, ratioImage: ratio, senderID: self.uid, created: Timestamp(date: Date()))
+            bodyNotification = "Send you \(images.count) picture."
         case .video:
             guard let videoURL = videoURL, let duration = duration else {
                 return
             }
             content = MessageModel(type: .video, ratioImage: ratio, thumbVideo: thumbVideo, videoURL: videoURL, duration: duration, senderID: self.uid, created: Timestamp(date: Date()))
+            bodyNotification = "Send you a video."
         case .file:
             guard let fileName = fileName else {
                 return
             }
             content = MessageModel(type: .file, fileName: fileName, senderID: self.uid, created: Timestamp(date: Date()))
+            bodyNotification = "Send you a file."
         case .audio:
             guard let audioURL = audioURL else {
                 return
             }
             content = MessageModel(type: .audio, audioURL: audioURL, duration: duration, senderID: self.uid, created: Timestamp(date: Date()))
+            bodyNotification = "Send you a audio."
         }
         
         if let roomRef = roomRef {
             self.addNewMessage(content: content!, roomRef: roomRef) { err, messRef in
                 completion(err, messRef)
+                if self.user2?.isChating == false {
+                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user2?.username, body: bodyNotification)
+                }
             }
         } else {
             guard let user2 = self.user2 else {
@@ -147,6 +158,9 @@ class ChatViewModel {
             let roomData = ChatModel(users: [self.uid, user2.id!], roomName: user2.username, roomURL: user2.avataURL)
             self.createNewRoom(newRoom: roomData, content: content!) { roomRef, messRef, error in
                 completion(error, messRef)
+                if user2.isChating == false {
+                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user2?.username, body: bodyNotification)
+                }
             }
         }
     }
@@ -393,7 +407,7 @@ class ChatViewModel {
         if self.listMessages.value.count > 0 {
             DispatchQueue.main.async { [weak self] in
                 let indexPath = IndexPath(row: (self?.listMessages.value.count)!-1, section: 0)
-                tableView?.scrollToRow(at: indexPath, at: .bottom, animated: false)
+                tableView?.scrollToRow(at: indexPath, at: .bottom, animated: true)
             }
         }
     }
@@ -412,13 +426,12 @@ class ChatViewModel {
             tableView.contentOffset = newOffset
         }
     }
-    
+    var view = UIView()
     func reloadData(tableView: UITableView) {
         DispatchQueue.main.async { [weak self] in
             tableView.reloadData()
             self?.scrollToBottom(tableView: tableView)
         }
-        
     }
     //MARK: File
     func previewFileFromURL(url: URL, completion: @escaping(URL?, Error?)->Void) {
@@ -461,5 +474,9 @@ class ChatViewModel {
             return unescapedFileURL.lastPathComponent
         }
         return nil
+    }
+    
+    func setAppInScreenChat(isScreenChat: Bool) {
+        FirebaseManager.shared.updateStatusChating(isChating: isScreenChat)
     }
 }

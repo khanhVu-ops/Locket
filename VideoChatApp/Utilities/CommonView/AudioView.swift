@@ -148,9 +148,7 @@ class AudioView: UIView {
         self.duration = 0.0
         self.points = 0
         do {
-            try recordingSession?.setActive(false, options: .notifyOthersOnDeactivation)
             try recordingSession?.setCategory(.playback, mode: .default, options: [])
-            
         } catch {
             print(error)
         }
@@ -158,7 +156,6 @@ class AudioView: UIView {
     }
     
     func startUpdateTimer() {
-        
         updateTimer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true, block: { [weak self] (_) in
             guard let self = self else {
                 return

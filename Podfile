@@ -9,10 +9,11 @@ target 'VideoChatApp' do
 pod 'IQKeyboardManagerSwift'
 pod 'FirebaseFirestore'
 pod 'FirebaseStorage'
+pod 'FirebaseMessaging'
 pod 'RxSwift', '6.5.0'
 pod 'RxCocoa', '6.5.0'
 pod 'SDWebImage'
 pod 'Toast-Swift'
 pod 'SnapKit'
-
+pod 'Alamofire'
 end

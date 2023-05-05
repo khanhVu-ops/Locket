@@ -54,17 +54,20 @@ class ChatViewController: UIViewController {
         super.viewWillAppear(animated)
         IQKeyboardManager.shared.enable = false
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        self.chatViewModel.setAppInScreenChat(isScreenChat: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         IQKeyboardManager.shared.enable = true
         NotificationCenter.default.removeObserver(self)
+        self.chatViewModel.setAppInScreenChat(isScreenChat: false)
     }
     
     func setUpView() {
         self.chatViewModel.originalConstraintValue = bottomConstraint.constant
         self.chatViewModel.tbvListMessage = tbvListMessage
+        self.chatViewModel.view = self.view
         self.vTopScreen.addConnerRadius(radius: 15)
         self.vTopScreen.addShadow(color: .black, opacity: 0.2, radius: 5, offset: CGSize(width: 1, height: 1))
         self.vActive.addConnerRadius(radius: self.vActive.frame.width/2)
@@ -220,7 +223,6 @@ class ChatViewController: UIViewController {
                 }
             })
             .disposed(by: disposeBag)
-        
         
         // bind lbUsername
         self.chatViewModel.txtUsername

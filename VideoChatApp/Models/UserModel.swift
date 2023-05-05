@@ -15,39 +15,45 @@ class UserModel {
     var password: String?
     var avataURL: String?
     var isActive: Bool?
+    var fcmToken: String?
+    var isChating: Bool?
     
-    convenience init(id: String, username: String, password: String, avataURL: String, isActive: Bool) {
+    convenience init(id: String, username: String, password: String, avataURL: String, isActive: Bool, fcmToken: String, isChating: Bool? = nil) {
         self.init()
         self.id = id
         self.username = username
         self.password = password
         self.isActive = isActive
         self.avataURL = avataURL
+        self.fcmToken = fcmToken
+        self.isChating = isChating
     }
     
     convenience init(json: [String : Any]) {
         self.init()
         for (key, value) in json {
             if key == "id", let wrapValue = value as? String {
-                let jsonValue = wrapValue
-                self.id = jsonValue
+                self.id = wrapValue
             }
             if key == "username", let wrapValue = value as? String {
-                let jsonValue = wrapValue
-                self.username = jsonValue
+                self.username = wrapValue
             }
             if key == "password", let wrapValue = value as? String {
-                let jsonValue = wrapValue
-                self.password = jsonValue
+                self.password = wrapValue
             }
             if key == "avataURL", let wrapValue = value as? String {
-                let jsonValue = wrapValue
-                self.avataURL = jsonValue
+                self.avataURL = wrapValue
+            }
+            
+            if key == "fcmToken", let wrapValue = value as? String {
+                self.fcmToken = wrapValue
             }
             
             if key == "isActive", let wrapValue = value as? Bool {
-                let jsonValue = wrapValue
-                self.isActive = jsonValue
+                self.isActive = wrapValue
+            }
+            if key == "isChating", let wrapValue = value as? Bool {
+                self.isChating = wrapValue
             }
         }
     }
@@ -58,7 +64,9 @@ class UserModel {
             "username": username ?? "",
             "password": password ?? "",
             "avataURL": "",
-            "isActive": true
+            "fcmToken": fcmToken ?? "",
+            "isActive": true,
+            "isChating": false
         ] as [String : Any]
     }
 }
