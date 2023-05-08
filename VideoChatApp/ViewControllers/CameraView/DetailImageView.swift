@@ -10,7 +10,7 @@ import SnapKit
 
 protocol DetailImageViewProtocol: NSObject {
     func btnCancelImageTapped()
-    func btnDownloadTapped()
+    func btnDownloadTapped(image: UIImage)
     func btnSendImageTapped(image: UIImage)
 }
 class DetailImageView: UIView {
@@ -18,6 +18,7 @@ class DetailImageView: UIView {
     private lazy var imvDetail: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFit
+        imv.backgroundColor = UIColor(hexString: "#242121")
         return imv
     }()
     
@@ -65,6 +66,10 @@ class DetailImageView: UIView {
         self.setUpView()
     }
     
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        self.setUpView()
+    }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -104,12 +109,21 @@ class DetailImageView: UIView {
         self.imvDetail.image = image
     }
     
+    func configBtnSend(isHidden: Bool, btnTitle: String? = "Send") {
+        self.btnSendImage.setTitle(btnTitle, for: .normal)
+        self.btnSendImage.isHidden = true
+    }
+    
     @objc func btnCancelImageTapped() {
         delegate?.btnCancelImageTapped()
     }
     
     @objc func btnDownloadTapped() {
-        delegate?.btnDownloadTapped()
+        guard let image = imvDetail.image else {
+            print("Can't not fetch Image to Save!")
+            return
+        }
+        delegate?.btnDownloadTapped(image: image)
     }
     
     @objc func btnSendImageTapped() {

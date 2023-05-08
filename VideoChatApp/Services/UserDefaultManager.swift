@@ -13,20 +13,28 @@ class UserDefaultManager {
     let userDefault = UserDefaults.standard
     let keyIdActive = "idActive"
     let keyNotificationToken = "tokenNotification"
+    let keyUser = "user"
     func updateIDWhenLogin(id: String) {
         self.setID(id: id)
+        FirebaseManager.shared.getUserWithID(id: id) { user, error in
+            guard let user = user, error == nil else {
+                return
+            }
+            self.setUser(user: user)
+        }
     }
     
     func updateIDWhenLogOut() {
-        self.setID(id: "")
+        self.setID(id: nil)
+        self.setUser(user: UserModel())
     }
     
-    func setID(id: String) {
+    func setID(id: String?) {
         userDefault.setValue(id, forKey: self.keyIdActive)
     }
     
-    func getID()-> String {
-        return userDefault.string(forKey: self.keyIdActive) ?? ""
+    func getID()-> String? {
+        return userDefault.string(forKey: self.keyIdActive)
     }
     
     func setNotificationToken(token: String) {
@@ -37,12 +45,24 @@ class UserDefaultManager {
         return userDefault.string(forKey: self.keyNotificationToken) ?? ""
     }
     
-    func setToken(token: Data) {
-        userDefault.setValue(token, forKey: "token")
+    func setUser(user: UserModel) {
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(user) {
+            userDefault.set(encoded, forKey: self.keyUser)
+        }
+
     }
     
-    func getToken() -> Data? {
-        return userDefault.data(forKey: "token")
+    func getUser() -> UserModel? {
+        guard let savedUser = UserDefaults.standard.object(forKey: self.keyUser) as? Data else {
+            print("Can't get user data from Userdefaults")
+            return nil
+        }
+        let decoder = JSONDecoder()
+        guard let user = try? decoder.decode(UserModel.self, from: savedUser) else {
+            return nil
+        }
+        return user
     }
     
 }

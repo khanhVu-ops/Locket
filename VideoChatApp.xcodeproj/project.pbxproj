@@ -73,6 +73,7 @@
 		33E1FA6629FC3C2700DDA614 /* NotificationMessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33E1FA6529FC3C2700DDA614 /* NotificationMessageModel.swift */; };
 		33E8288729D8212200259447 /* DetailVideoCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33E8288529D8212200259447 /* DetailVideoCollectionViewCell.swift */; };
 		33E8288829D8212200259447 /* DetailVideoCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 33E8288629D8212200259447 /* DetailVideoCollectionViewCell.xib */; };
+		33F3D18B2A089B6A0037CF6A /* PopupSavedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F3D18A2A089B6A0037CF6A /* PopupSavedView.swift */; };
 		F3068D253D04C3E39A2EEF27 /* Pods_VideoChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE276C1B375774EA4390EA98 /* Pods_VideoChatApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -147,6 +148,7 @@
 		33E1FA6529FC3C2700DDA614 /* NotificationMessageModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationMessageModel.swift; sourceTree = "<group>"; };
 		33E8288529D8212200259447 /* DetailVideoCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailVideoCollectionViewCell.swift; sourceTree = "<group>"; };
 		33E8288629D8212200259447 /* DetailVideoCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailVideoCollectionViewCell.xib; sourceTree = "<group>"; };
+		33F3D18A2A089B6A0037CF6A /* PopupSavedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopupSavedView.swift; sourceTree = "<group>"; };
 		62FF8305E2210ECFEA311FC6 /* Pods-VideoChatApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoChatApp.release.xcconfig"; path = "Target Support Files/Pods-VideoChatApp/Pods-VideoChatApp.release.xcconfig"; sourceTree = "<group>"; };
 		DE276C1B375774EA4390EA98 /* Pods_VideoChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VideoChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -383,6 +385,7 @@
 				3315357329D5472500100006 /* IndicatorView.swift */,
 				33CB845D29ED3B0A0044C5D0 /* WaveformView.swift */,
 				33CD817129EE31A000A155A8 /* AudioView.swift */,
+				33F3D18A2A089B6A0037CF6A /* PopupSavedView.swift */,
 			);
 			path = CommonView;
 			sourceTree = "<group>";
@@ -662,6 +665,7 @@
 				3315358629D5472500100006 /* MessageTableViewCell.swift in Sources */,
 				33CD817229EE31A000A155A8 /* AudioView.swift in Sources */,
 				33E1FA6629FC3C2700DDA614 /* NotificationMessageModel.swift in Sources */,
+				33F3D18B2A089B6A0037CF6A /* PopupSavedView.swift in Sources */,
 				338C679629E3C060002474B9 /* CameraView.swift in Sources */,
 				3315358F29D5472500100006 /* TabBarController.swift in Sources */,
 				338C679B29E3C094002474B9 /* FilterViewController.swift in Sources */,

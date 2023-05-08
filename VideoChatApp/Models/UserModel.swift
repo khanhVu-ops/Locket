@@ -9,7 +9,7 @@ import Foundation
 
 import Foundation
 
-class UserModel {
+class UserModel: Codable {
     var id: String?
     var username: String?
     var password: String?

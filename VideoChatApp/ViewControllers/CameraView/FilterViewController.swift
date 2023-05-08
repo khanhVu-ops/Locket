@@ -9,7 +9,8 @@ import UIKit
 import SnapKit
 import AVFoundation
 import Vision
-
+import Photos
+import Toast_Swift
 protocol CameraProtocol: NSObject {
     func didSendImageCaptured(image: UIImage)
 }
@@ -19,7 +20,12 @@ class FilterViewController: UIViewController {
     private var detailView: DetailImageView!
     weak var delegate: CameraProtocol?
     private var imagePicker = UIImagePickerController()
-
+    private lazy var vPopupSaved: PopupSavedView = {
+        let v = PopupSavedView()
+        v.isHidden = true
+        return v
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -44,7 +50,8 @@ class FilterViewController: UIViewController {
         self.detailView = DetailImageView()
         self.detailView.delegate = self
         self.detailView.isHidden = true
-        [cameraView, detailView].forEach { sub in
+        self.detailView.configBtnSend(isHidden: false, btnTitle: "Update")
+        [cameraView, detailView, vPopupSaved].forEach { sub in
             self.view.addSubview(sub)
         }
         cameraView.snp.makeConstraints { make in
@@ -58,6 +65,10 @@ class FilterViewController: UIViewController {
             make.leading.equalTo(self.view.snp.leading)
             make.trailing.equalTo(self.view.snp.trailing)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
+        }
+        vPopupSaved.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+            make.width.height.equalTo(self.vPopupSaved.popupWidth)
         }
     }
 }
@@ -102,10 +113,24 @@ extension FilterViewController: DetailImageViewProtocol {
         self.cameraView.isHidden = false
     }
     
-    func btnDownloadTapped() {
-        print("down")
+    func btnDownloadTapped(image: UIImage) {
+        self.showActivityIndicator()
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAsset(from: image)
+        }) { saved, error in
+            guard error == nil  else {
+                self.view.makeToast("Error saving image to library: \(error!.localizedDescription)")
+                return
+            }
+            DispatchQueue.main.async {
+                self.hideActivityIndicator()
+                self.vPopupSaved.isHidden = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.vPopupSaved.isHidden = true
+                }
+            }
+        }
     }
-
 }
 extension FilterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -117,7 +142,6 @@ extension FilterViewController: UIImagePickerControllerDelegate, UINavigationCon
         self.detailView.configImage(image: image)
         self.detailView.isHidden = false
         self.cameraView.isHidden = true
-//        self.imvAvata.image = image
 
         picker.dismiss(animated: true, completion: nil)
     }

@@ -14,7 +14,7 @@ import Photos
 import UIKit
 import QuickLook
 class ChatViewModel {
-    
+    let txtChatPlaceHolder = "Type here ..."
     var listMessages = BehaviorRelay<[MessageModel]>(value: [])
     var uid = UserDefaultManager.shared.getID()
     var txtTypeHere = BehaviorRelay<String>(value: "")
@@ -29,10 +29,10 @@ class ChatViewModel {
     var imageSentRelay = PublishRelay<UIImage>()
     var lastDocument: QueryDocumentSnapshot?
     var newMessagesFetch = PublishRelay<[MessageModel]>()
-    var isScrollToBottom = PublishRelay<Bool>()
     var tbvListMessage: UITableView?
     var txtHeightDefault: CGFloat = 0
     var fileURLPreview: URL?
+    let user = UserDefaultManager.shared.getUser()
     func getData() {
         if let uid2 = uid2 {
             self.getInfoUsers2WithUID(uid2: uid2)
@@ -41,8 +41,9 @@ class ChatViewModel {
                     return
                 }
                 self?.roomRef = doc
+                self?.setAppInScreenChat(isScreenChat: true)
                 self?.getMessages(completion: { error in
-                    print(error!.localizedDescription)
+                    print(error?.localizedDescription)
                 })
                 
             }
@@ -74,6 +75,7 @@ class ChatViewModel {
         FirebaseManager.shared.getMessages(docRef: roomRef) {[weak self] messages, lastDoc, error in
             guard let messages = messages, error == nil else {
                 print(error!.localizedDescription)
+                completion(error)
                 return
             }
             self?.lastDocument = lastDoc
@@ -82,9 +84,11 @@ class ChatViewModel {
                 return
             }
             self?.reloadData(tableView: tbvListMessage)
+            completion(nil)
         }
     }
     
+    // fetch more 20 messages
     func loadingMessage(completion: @escaping(Error?) -> Void) {
         guard let roomRef = roomRef, let lastDocument = lastDocument else {
             return
@@ -105,6 +109,9 @@ class ChatViewModel {
     }
     
     func didTapSendMessage(type: MessageType, images: [String]? = nil, ratio: Double? = nil, videoURL: String? = nil, thumbVideo: String? = nil, audioURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, completion: @escaping(Error?, DocumentReference?)->Void) {
+        guard let uid = uid else {
+            return
+        }
         var content: MessageModel?
         var bodyNotification = ""
         switch type {
@@ -114,53 +121,66 @@ class ChatViewModel {
                 return
             }
             let textMessage = self.txtTypeHere.value.trimmingCharacters(in: .whitespacesAndNewlines)
-            content = MessageModel(type: .text, message: textMessage, senderID: self.uid, created: Timestamp(date: Date()))
+            content = MessageModel(type: .text, message: textMessage, senderID: uid, created: Timestamp(date: Date()))
             bodyNotification = textMessage
             
         case .image:
             guard let images = images, let ratio = ratio else {
                 return
             }
-            content = MessageModel(type: .image, imageURL: images, ratioImage: ratio, senderID: self.uid, created: Timestamp(date: Date()))
+            content = MessageModel(type: .image, imageURL: images, ratioImage: ratio, senderID: uid, created: Timestamp(date: Date()))
             bodyNotification = "Send you \(images.count) picture."
         case .video:
             guard let videoURL = videoURL, let duration = duration else {
                 return
             }
-            content = MessageModel(type: .video, ratioImage: ratio, thumbVideo: thumbVideo, videoURL: videoURL, duration: duration, senderID: self.uid, created: Timestamp(date: Date()))
+            content = MessageModel(type: .video, ratioImage: ratio, thumbVideo: thumbVideo, videoURL: videoURL, duration: duration, senderID: uid, created: Timestamp(date: Date()))
             bodyNotification = "Send you a video."
         case .file:
             guard let fileName = fileName else {
                 return
             }
-            content = MessageModel(type: .file, fileName: fileName, senderID: self.uid, created: Timestamp(date: Date()))
+            content = MessageModel(type: .file, fileName: fileName, senderID: uid, created: Timestamp(date: Date()))
             bodyNotification = "Send you a file."
         case .audio:
             guard let audioURL = audioURL else {
                 return
             }
-            content = MessageModel(type: .audio, audioURL: audioURL, duration: duration, senderID: self.uid, created: Timestamp(date: Date()))
+            content = MessageModel(type: .audio, audioURL: audioURL, duration: duration, senderID: uid, created: Timestamp(date: Date()))
             bodyNotification = "Send you a audio."
         }
         
         if let roomRef = roomRef {
             self.addNewMessage(content: content!, roomRef: roomRef) { err, messRef in
-                completion(err, messRef)
-                if self.user2?.isChating == false {
-                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user2?.username, body: bodyNotification)
+                guard let messRef = messRef, err == nil else {
+                    completion(err, nil)
+                    return
                 }
+                if self.user2?.isChating == false {
+                    FirebaseManager.shared.updateUnreadMessage(id: self.uid2!, clearUnread: false, roomRef: roomRef)
+                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification)
+                }
+                completion(err, messRef)
             }
         } else {
             guard let user2 = self.user2 else {
                 completion(nil, nil)
                 return
             }
-            let roomData = ChatModel(users: [self.uid, user2.id!], roomName: user2.username, roomURL: user2.avataURL)
+            let roomData = ChatModel(users: [uid, user2.id!], roomName: "Room Name", roomURL: user2.avataURL, nickNames: [self.user!.username!, self.user2!.username!], unreadCount: [0, 0])
             self.createNewRoom(newRoom: roomData, content: content!) { roomRef, messRef, error in
-                completion(error, messRef)
-                if user2.isChating == false {
-                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user2?.username, body: bodyNotification)
+                
+                guard let roomRef = roomRef, let messRef = messRef, error == nil else {
+                    completion(error, nil)
+                    return
                 }
+                
+                if user2.isChating == false {
+                    FirebaseManager.shared.updateUnreadMessage(id: self.uid2!, clearUnread: false, roomRef: roomRef)
+                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification)
+                    
+                }
+                completion(nil, messRef)
             }
         }
     }
@@ -173,9 +193,9 @@ class ChatViewModel {
             }
             self?.roomRef = roomRef
             self?.getMessages(completion: { err in
+                print("zo")
                 completion(roomRef, messRef, err)
             })
-            
         })
     }
     
@@ -478,5 +498,10 @@ class ChatViewModel {
     
     func setAppInScreenChat(isScreenChat: Bool) {
         FirebaseManager.shared.updateStatusChating(isChating: isScreenChat)
+        guard let roomRef = roomRef , let uid = self.uid else {
+            return
+        }
+        
+        FirebaseManager.shared.updateUnreadMessage(id: uid, clearUnread: true, roomRef: roomRef)
     }
 }

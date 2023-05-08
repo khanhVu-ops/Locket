@@ -12,6 +12,7 @@ import FirebaseStorage
 
 protocol FirestoreManagerProtocol {
     func createUser(username: String, password: String, completion: @escaping (Error?) -> Void)
+    func getUserWithID(id: String, completion: @escaping (UserModel?, Error?) -> Void)
     func getUsers(completion: @escaping ([UserModel]?, Error?) -> Void)
     func getUsersLogin(completion: @escaping ([UserModel]?, Error?) -> Void)
     func creatNewChat(newRoom: ChatModel, content: MessageModel, completion: @escaping (DocumentReference?, DocumentReference?, Error?) -> Void)
@@ -20,12 +21,17 @@ protocol FirestoreManagerProtocol {
     func getMessagesWithLastDoc(docRef: DocumentReference, lastDocument: QueryDocumentSnapshot?, limitQuery: Int, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getMessages(docRef: DocumentReference, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getDocumentReferenceWithUserID(userId2: String, completion: @escaping(DocumentReference?, Error?)->Void)
+    
+    //update
     func updateImageMessage(messRef: DocumentReference, images: [String], videoURL: String, thumbVideo: String, completion: @escaping(Error?) -> Void)
     func updateFileMessage(messRef: DocumentReference, fileURL: String, completion: @escaping(Error?)->Void)
     func updateAvatar(url: String, completion: @escaping (Error?)->Void)
     func updateAudioMessage(messRef: DocumentReference, audioURL: String, completion: @escaping(Error?)->Void)
     func updateFcmToken(fcmToken: String)
     func updateStatusChating(isChating: Bool)
+    func updateUnreadMessage(id: String, clearUnread: Bool, roomRef: DocumentReference)
+    
+    //upload
     func uploadImageToStorage(with image: UIImage, completion: @escaping(URL?, Error?) -> Void)
     func uploadVideo(url: URL, thumb: UIImage, messRef: DocumentReference, completion: @escaping(Error?) -> Void)
     func uploadAudio(url: URL, messRef: DocumentReference, completion: @escaping(Error?) -> Void)
@@ -63,12 +69,12 @@ class FirestoreManager: FirestoreManagerProtocol {
     
     func getUsersLogin(completion: @escaping ([UserModel]?, Error?) -> Void) {
         db.collection(usersCollection).getDocuments{ (querySnapshot, err) in
-            guard err == nil else {
+            guard let querySnapshot = querySnapshot, err == nil else {
                 completion(nil, err)
                 return
             }
             var users: [UserModel] = []
-            for document in querySnapshot!.documents {
+            for document in querySnapshot.documents {
                 let user = UserModel(json: document.data())
                 users.append(user)
             }
@@ -78,16 +84,27 @@ class FirestoreManager: FirestoreManagerProtocol {
     
     func getUsers(completion: @escaping ([UserModel]?, Error?) -> Void) {
         db.collection(usersCollection).addSnapshotListener { (querySnapshot, err) in
-            guard err == nil else {
+            guard let querySnapshot = querySnapshot, err == nil else {
                 completion(nil, err)
                 return
             }
             var users: [UserModel] = []
-            for document in querySnapshot!.documents {
+            for document in querySnapshot.documents {
                 let user = UserModel(json: document.data())
                 users.append(user)
             }
             completion(users, nil)
+        }
+    }
+    
+    func getUserWithID(id: String, completion: @escaping (UserModel?, Error?) -> Void) {
+        db.collection(usersCollection).document(id).getDocument { snapshot, error in
+            guard let snapshot = snapshot, error == nil else {
+                completion(nil, error)
+                return
+            }
+            let user = UserModel(json: snapshot.data()!)
+            completion(user, nil)
         }
     }
     
@@ -110,7 +127,9 @@ class FirestoreManager: FirestoreManagerProtocol {
     }
     
     func addNewMessage(content: MessageModel,docRef: DocumentReference, completion: @escaping(Error?, DocumentReference?)->Void) {
-        let uid = UserDefaultManager.shared.getID()
+        guard let uid = UserDefaultManager.shared.getID() else {
+            return
+        }
         let data = content.convertToDictionary()
         let doc = docRef.collection(threadCollection).document()
         doc.setData(data, completion: { (error) in
@@ -134,7 +153,9 @@ class FirestoreManager: FirestoreManagerProtocol {
     }
     
     func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void) {
-        let userID = UserDefaultManager.shared.getID()
+        guard let userID = UserDefaultManager.shared.getID() else {
+            return
+        }
         let ref = db.collection(chatsCollection).whereField("users", arrayContains: userID).order(by: "lastCreated", descending: true)
         ref.addSnapshotListener { snapshot, error in
             guard let snapshot = snapshot, error == nil else {
@@ -153,7 +174,9 @@ class FirestoreManager: FirestoreManagerProtocol {
     }
     
     func getDocumentReferenceWithUserID(userId2: String, completion: @escaping(DocumentReference?, Error?)->Void) {
-        let uid = UserDefaultManager.shared.getID()
+        guard let uid = UserDefaultManager.shared.getID() else {
+            return
+        }
         db.collection(chatsCollection).whereField("users", arrayContains: uid).getDocuments(completion: { snapshot, error in
             guard let snapshot = snapshot, error == nil else {
                 completion(nil, error)
@@ -225,7 +248,9 @@ class FirestoreManager: FirestoreManagerProtocol {
     }
     
     func updateAvatar(url: String, completion: @escaping (Error?)->Void) {
-        let userID = UserDefaultManager.shared.getID()
+        guard let userID = UserDefaultManager.shared.getID() else {
+            return
+        }
         let ref = db.collection(usersCollection).document(userID)
         ref.updateData(["avataURL": url]) { error in
             completion(error)
@@ -241,20 +266,42 @@ class FirestoreManager: FirestoreManagerProtocol {
     }
     
     func updateFcmToken(fcmToken: String) {
-        let uid = UserDefaultManager.shared.getID()
+        guard let uid = UserDefaultManager.shared.getID() else {
+            return
+        }
         db.collection(self.usersCollection).document(uid).updateData(["fcmToken": fcmToken])
     }
     
     func updateStatusChating(isChating: Bool) {
-        let uid = UserDefaultManager.shared.getID()
+        guard let uid = UserDefaultManager.shared.getID() else {
+            return
+        }
         db.collection(self.usersCollection).document(uid).updateData(["isChating": isChating])
+    }
+    
+    func updateUnreadMessage(id: String, clearUnread: Bool, roomRef: DocumentReference) {
+        roomRef.getDocument { snapshot, error in
+            guard let snapshot = snapshot else {
+                return
+            }
+            let chatRoom = ChatModel(json: snapshot.data()!)
+            for (index, value) in chatRoom.users!.enumerated() {
+                if value == id {
+                    clearUnread ? (chatRoom.unreadCount![index] = 0) : (chatRoom.unreadCount![index] += 1)
+                    break
+                }
+            }
+            roomRef.updateData(chatRoom.convertToDictionary())
+        }
     }
 
     //MARK: Upload
     func uploadImageToStorage(with image: UIImage, completion: @escaping(URL?, Error?) -> Void) {
         let metadata = StorageMetadata()
         metadata.contentType = "image/jpeg"
-        let uid = UserDefaultManager.shared.getID()
+        guard let uid = UserDefaultManager.shared.getID() else {
+            return
+        }
         let fileName = [uid, String(Date().timeIntervalSince1970)].joined()
         let data = image.jpegData(compressionQuality: 0.0)
         let storeRef = storage.child(uid).child(fileName)
@@ -382,7 +429,9 @@ class FirestoreManager: FirestoreManagerProtocol {
     }
     
     func updateUserActive(isActive: Bool, completion: @escaping(Error?)->Void) {
-        let uid = UserDefaultManager.shared.getID()
+        guard let uid = UserDefaultManager.shared.getID() else {
+            return
+        }
         print("HI")
         let ref = db.collection(usersCollection).document(uid)
         ref.updateData([

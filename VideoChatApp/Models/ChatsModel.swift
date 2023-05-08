@@ -11,15 +11,19 @@ class ChatModel {
     var users: [String]?
     var roomName: String?
     var roomURL: String?
+    var nickNames: [String]?
+    var unreadCount: [Int]?
     var lastMessage: String?
     var lastCreated: Timestamp?
     var lastSenderID: String?
     
-    convenience init(users: [String]?, roomName: String? = nil, roomURL: String? = nil, lastMessage: String? = nil, lastCreated: Timestamp? = nil, lastSenderID: String? = nil) {
+    convenience init(users: [String]?, roomName: String? = nil, roomURL: String? = nil, nickNames: [String]? = nil, unreadCount: [Int]? = nil, lastMessage: String? = nil, lastCreated: Timestamp? = nil, lastSenderID: String? = nil) {
         self.init()
         self.users = users
         self.roomName = roomName
         self.roomURL = roomURL
+        self.nickNames = nickNames
+        self.unreadCount = unreadCount
         self.lastMessage = lastMessage
         self.lastCreated = lastCreated
         self.lastSenderID = lastSenderID
@@ -38,6 +42,12 @@ class ChatModel {
             if key == "roomURL", let wrapValue = value as? String {
                 self.roomURL = wrapValue
             }
+            if key == "nickNames", let wrapValue = value as? [String] {
+                self.nickNames = wrapValue
+            }
+            if key == "unreadCount", let wrapValue = value as? [Int] {
+                self.unreadCount = wrapValue
+            }
             if key == "lastMessage", let wrapValue = value as? String {
                 self.lastMessage = wrapValue
             }
@@ -55,6 +65,8 @@ class ChatModel {
             "users": self.users ?? [],
             "roomName": self.roomName ?? "",
             "roomURL": self.roomURL ?? "",
+            "nickNames": self.nickNames ?? [],
+            "unreadCount": self.unreadCount ?? [],
             "lastMessage": self.lastMessage ?? "",
             "lastCreated": self.lastCreated ?? "",
             "lastSenderID": self.lastSenderID ?? ""

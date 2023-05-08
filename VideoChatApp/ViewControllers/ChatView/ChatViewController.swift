@@ -54,7 +54,6 @@ class ChatViewController: UIViewController {
         super.viewWillAppear(animated)
         IQKeyboardManager.shared.enable = false
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChangeFrame), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        self.chatViewModel.setAppInScreenChat(isScreenChat: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -80,7 +79,7 @@ class ChatViewController: UIViewController {
         self.tbvListMessage.register(UINib(nibName: "MessageFileTableViewCell", bundle: nil), forCellReuseIdentifier: "MessageFileTableViewCell")
         self.tbvListMessage.register(UINib(nibName: "MessageAudioTableViewCell", bundle: nil), forCellReuseIdentifier: "MessageAudioTableViewCell")
 
-        self.txtTypeHere.text = "Type here"
+        self.txtTypeHere.text = self.chatViewModel.txtChatPlaceHolder
         self.txtTypeHere.textColor = UIColor.lightGray
         self.txtTypeHere.backgroundColor = UIColor(hexString: "#F8F8F8")
         
@@ -194,7 +193,9 @@ class ChatViewController: UIViewController {
         self.txtTypeHere.rx
             .didBeginEditing
             .subscribe(onNext: { [weak self] in
-                self?.txtTypeHere.text = nil
+                if self?.txtTypeHere.text == self?.chatViewModel.txtChatPlaceHolder ?? "" {
+                    self?.txtTypeHere.text = ""
+                }
                 self?.txtTypeHere.textColor = UIColor.black
                 self?.btnLibrary.isHidden = true
                 self?.btnSend.isHidden = false
@@ -211,8 +212,10 @@ class ChatViewController: UIViewController {
         self.txtTypeHere.rx
             .didEndEditing
             .subscribe(onNext: { [weak self] in
-                self?.txtTypeHere.text = "Type here ..."
-                self?.txtTypeHere.textColor = UIColor.lightGray
+                if self?.txtTypeHere.text == "" {
+                    (self?.txtTypeHere.text = self?.chatViewModel.txtChatPlaceHolder ?? "")
+                    self?.txtTypeHere.textColor = UIColor.lightGray
+                }
                 self?.btnSend.isHidden = true
                 self?.btnLibrary.isHidden = false
                 self?.heightTxtConstraint.constant = (self?.chatViewModel.txtHeightDefault)!

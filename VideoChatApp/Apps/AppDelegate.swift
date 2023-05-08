@@ -98,8 +98,8 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         if let scene = UIApplication.shared.connectedScenes.first,
            let windowScene = scene as? UIWindowScene,
            let window = windowScene.windows.first,
-           let navigation = window.rootViewController as? UINavigationController {
-            
+           let navigation = window.rootViewController as? UINavigationController,
+           navigation.topViewController != ChatViewController() {
             if screenName == "ChatViewController" {
                 let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
                 chatVC.chatViewModel.uid2 = uid
@@ -113,7 +113,12 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension AppDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Xử lý thông báo đẩy khi ứng dụng đang chạy")
-        
+        let badgeCount = UIApplication.shared.applicationIconBadgeNumber
+        if badgeCount > 0 {
+            UIApplication.shared.applicationIconBadgeNumber = badgeCount + 1
+        } else {
+            UIApplication.shared.applicationIconBadgeNumber = 1
+        }
         // Create a local notification to display the message
 
         completionHandler(.newData)

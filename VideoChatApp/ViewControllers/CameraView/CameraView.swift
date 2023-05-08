@@ -18,6 +18,7 @@ import AVFoundation
 import CoreMotion
 import Vision
 import Photos
+import Toast_Swift
 enum OutputType {
     case video
     case photo
@@ -261,8 +262,14 @@ class CameraView: UIView {
                     defaultVideoDevice = frontCameraDevice
                 }
             }
+            guard let defaultVideoDevice = defaultVideoDevice else {
+                DispatchQueue.main.async {
+                    self.makeToast("Can't not detect camera from this device!")
+                }
+                return
+            }
 
-            let videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice!)
+            let videoDeviceInput = try AVCaptureDeviceInput(device: defaultVideoDevice)
             if self.session.canAddInput(videoDeviceInput) {
                 self.session.addInput(videoDeviceInput)
                 self.videoDeviceInput = videoDeviceInput
@@ -610,6 +617,7 @@ extension CameraView {
     func fetchFirstAssets(completion: @escaping (UIImage?)->Void)  {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
+        let imageSize = self.btnLibrary.frame.size
         DispatchQueue.global(qos: .background).async {
             guard let result = PHAsset.fetchAssets(with: options).firstObject else {
                 completion(nil)
@@ -625,7 +633,8 @@ extension CameraView {
                 thumbnailOptions.resizeMode = .exact
                 thumbnailOptions.isNetworkAccessAllowed = false
                 thumbnailOptions.isSynchronous = true
-                imageManager.requestImage(for: result, targetSize: self.btnLibrary.frame.size, contentMode: .aspectFill, options: thumbnailOptions) { (image, info) in
+                
+                imageManager.requestImage(for: result, targetSize: imageSize, contentMode: .aspectFill, options: thumbnailOptions) { (image, info) in
                     guard let image = image else {
                         completion(nil)
                         return

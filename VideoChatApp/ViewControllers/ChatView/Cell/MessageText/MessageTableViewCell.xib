@@ -25,7 +25,7 @@
                                 <rect key="frame" x="81.5" y="0.0" width="206.5" height="248"/>
                                 <subviews>
                                     <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" editable="NO" text="aa" translatesAutoresizingMaskIntoConstraints="NO" id="gqA-iZ-ipJ">
-                                        <rect key="frame" x="15" y="5" width="176.5" height="35.5"/>
+                                        <rect key="frame" x="15" y="5" width="176.5" height="238"/>
                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <color key="textColor" systemColor="labelColor"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="16"/>
@@ -37,6 +37,7 @@
                                     <constraint firstItem="gqA-iZ-ipJ" firstAttribute="leading" secondItem="qbL-9s-cfG" secondAttribute="leading" constant="15" id="NCF-n4-nex"/>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="40" id="NSg-xP-pB8"/>
                                     <constraint firstAttribute="trailing" secondItem="gqA-iZ-ipJ" secondAttribute="trailing" constant="15" id="cqy-vm-i4e"/>
+                                    <constraint firstAttribute="bottom" secondItem="gqA-iZ-ipJ" secondAttribute="bottom" constant="5" id="gTC-IS-bLk"/>
                                     <constraint firstItem="gqA-iZ-ipJ" firstAttribute="top" secondItem="qbL-9s-cfG" secondAttribute="top" constant="5" id="nqb-jQ-hVf"/>
                                 </constraints>
                             </view>

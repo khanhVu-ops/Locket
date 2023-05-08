@@ -44,7 +44,17 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Perfect, see you later Perfect, see you later" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="bwI-oL-lD9">
-                                <rect key="frame" x="75" y="39" width="204" height="16"/>
+                                <rect key="frame" x="75" y="39" width="209" height="16"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Qrs-OU-iJL">
+                                <rect key="frame" x="294" y="39.5" width="15" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" secondItem="Qrs-OU-iJL" secondAttribute="height" multiplier="1:1" id="D69-XL-T30"/>
+                                    <constraint firstAttribute="width" constant="15" id="Oj2-ZF-lfK"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
@@ -57,9 +67,11 @@
                             <constraint firstItem="WRF-K7-2hM" firstAttribute="top" secondItem="Mwv-uh-gVN" secondAttribute="top" constant="10" id="ZTp-se-wbx"/>
                             <constraint firstItem="fCo-1b-84i" firstAttribute="leading" secondItem="WRF-K7-2hM" secondAttribute="trailing" constant="10" id="byT-Rz-HmJ"/>
                             <constraint firstItem="zSc-OI-pXH" firstAttribute="leading" secondItem="fCo-1b-84i" secondAttribute="trailing" constant="10" id="djd-bU-8ZY"/>
+                            <constraint firstItem="Qrs-OU-iJL" firstAttribute="centerY" secondItem="bwI-oL-lD9" secondAttribute="centerY" id="eKt-hc-E8J"/>
                             <constraint firstItem="WRF-K7-2hM" firstAttribute="leading" secondItem="Mwv-uh-gVN" secondAttribute="leading" constant="15" id="gNU-g8-x07"/>
+                            <constraint firstAttribute="trailing" secondItem="Qrs-OU-iJL" secondAttribute="trailing" constant="10" id="k8m-N2-gfz"/>
                             <constraint firstItem="bwI-oL-lD9" firstAttribute="bottom" secondItem="WRF-K7-2hM" secondAttribute="bottom" constant="-5" id="ljE-YT-EVC"/>
-                            <constraint firstAttribute="trailing" secondItem="bwI-oL-lD9" secondAttribute="trailing" constant="40" id="lza-nu-0KH"/>
+                            <constraint firstItem="Qrs-OU-iJL" firstAttribute="leading" secondItem="bwI-oL-lD9" secondAttribute="trailing" constant="10" id="n7O-Yf-r0a"/>
                             <constraint firstAttribute="trailing" secondItem="zSc-OI-pXH" secondAttribute="trailing" constant="10" id="ndA-y4-5h4"/>
                             <constraint firstItem="zSc-OI-pXH" firstAttribute="top" secondItem="Mwv-uh-gVN" secondAttribute="top" constant="10" id="yFd-ho-uHc"/>
                             <constraint firstAttribute="bottom" secondItem="WRF-K7-2hM" secondAttribute="bottom" constant="10" id="yNg-bj-ufc"/>
@@ -76,6 +88,7 @@
             <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
             <connections>
                 <outlet property="imvAvata" destination="WRF-K7-2hM" id="IUb-xy-msW"/>
+                <outlet property="lbBadgeMessage" destination="Qrs-OU-iJL" id="DwK-et-N6V"/>
                 <outlet property="lbNewMessage" destination="bwI-oL-lD9" id="6Wg-mA-R2n"/>
                 <outlet property="lbTime" destination="zSc-OI-pXH" id="uQ4-0S-WVC"/>
                 <outlet property="lbUsername" destination="fCo-1b-84i" id="xRm-Fp-Nmi"/>

@@ -40,4 +40,9 @@ extension UIView {
         let seconds = Int(Int(duration) - minutes * 60)
         return String(format: "%02d:%02d", minutes, seconds)
     }
+    
+    func addImpactFeedBack() {
+        let impact = UIImpactFeedbackGenerator(style: .light)
+        impact.impactOccurred()
+    }
 }
