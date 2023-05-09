@@ -17,8 +17,9 @@ class UserModel: Codable {
     var isActive: Bool?
     var fcmToken: String?
     var isChating: Bool?
+    var totalBadge: Int?
     
-    convenience init(id: String, username: String, password: String, avataURL: String, isActive: Bool, fcmToken: String, isChating: Bool? = nil) {
+    convenience init(id: String, username: String, password: String, avataURL: String, isActive: Bool, fcmToken: String, isChating: Bool? = nil, totalBadge: Int? = 0) {
         self.init()
         self.id = id
         self.username = username
@@ -27,6 +28,7 @@ class UserModel: Codable {
         self.avataURL = avataURL
         self.fcmToken = fcmToken
         self.isChating = isChating
+        self.totalBadge = totalBadge
     }
     
     convenience init(json: [String : Any]) {
@@ -55,6 +57,9 @@ class UserModel: Codable {
             if key == "isChating", let wrapValue = value as? Bool {
                 self.isChating = wrapValue
             }
+            if key == "totalBadge", let wrapValue = value as? Int {
+                self.totalBadge = wrapValue
+            }
         }
     }
     
@@ -66,7 +71,8 @@ class UserModel: Codable {
             "avataURL": "",
             "fcmToken": fcmToken ?? "",
             "isActive": true,
-            "isChating": false
+            "isChating": false,
+            "totalBadge": totalBadge ?? 0
         ] as [String : Any]
     }
 }

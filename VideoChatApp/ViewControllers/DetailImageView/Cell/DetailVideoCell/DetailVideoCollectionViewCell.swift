@@ -112,7 +112,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             return
         }
         self.item = item
-        self.lbTime.text = self.convertDurationToTime(duration: item.duration)
+        self.lbTime.text = Utilitis.shared.convertDurationToTime(duration: item.duration)
         self.startIndicator()
         DispatchQueue.global(qos: .background).async {
             guard let videoURL = URL(string: item.url) else {
@@ -154,7 +154,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
                         self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
                     } else {
                         self.slider.value = Float(currentTime)
-                        self.lbTime.text = self.convertDurationToTime(duration: item.duration - currentTime)
+                        self.lbTime.text = Utilitis.shared.convertDurationToTime(duration: item.duration - currentTime)
                     }
                 } else {
                     item.duration = self.player.currentItem?.duration.seconds ?? 10.0

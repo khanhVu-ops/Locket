@@ -51,7 +51,7 @@ class MessageImageTableViewCell: UITableViewCell {
         } else {
             self.stvImage.alignment = .trailing
         }
-        self.lbTime.text = self.convertToString(timestamp: item.created!)
+        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
         
     }
     

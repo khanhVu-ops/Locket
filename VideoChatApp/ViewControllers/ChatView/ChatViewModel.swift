@@ -16,6 +16,7 @@ import QuickLook
 class ChatViewModel {
     let txtChatPlaceHolder = "Type here ..."
     var listMessages = BehaviorRelay<[MessageModel]>(value: [])
+    var listSectionsMessages = BehaviorRelay<[SectionModel]>(value: [])
     var uid = UserDefaultManager.shared.getID()
     var txtTypeHere = BehaviorRelay<String>(value: "")
     var roomRef: DocumentReference?
@@ -80,12 +81,34 @@ class ChatViewModel {
             }
             self?.lastDocument = lastDoc
             self?.listMessages.accept(messages)
+            self?.handleSortMessagesByDate(messages: messages)
             guard let tbvListMessage = self?.tbvListMessage else {
                 return
             }
             self?.reloadData(tableView: tbvListMessage)
             completion(nil)
         }
+    }
+    
+    private func handleSortMessagesByDate(messages: [MessageModel]) {
+        var uniqueDates: [Date] = []
+        for message in messages {
+            let date = message.created!.dateValue()
+            if !uniqueDates.contains(where: { Calendar.current.isDate($0, inSameDayAs: date) }) {
+                uniqueDates.append(date)
+            }
+        }
+        var resultMessages = [[MessageModel]]()
+        for date in uniqueDates {
+            let dateTimestamps = messages.filter { Calendar.current.isDate($0.created!.dateValue(), inSameDayAs: date) }
+            resultMessages.append(dateTimestamps)
+        }
+        var sections = [SectionModel]()
+        for (index, value) in uniqueDates.enumerated() {
+            let section = SectionModel(header: value.convertDateToHeaderString(), items: resultMessages[index])
+            sections.append(section)
+        }
+        self.listSectionsMessages.accept(sections)
     }
     
     // fetch more 20 messages
@@ -103,6 +126,7 @@ class ChatViewModel {
             newMess.append(contentsOf: currentMess)
             self?.newMessagesFetch.accept(messages)
             self?.listMessages.accept(newMess)
+            self?.handleSortMessagesByDate(messages: newMess)
             self?.lastDocument = lastDoc
             completion(nil)
         }
@@ -158,7 +182,7 @@ class ChatViewModel {
                 }
                 if self.user2?.isChating == false {
                     FirebaseManager.shared.updateUnreadMessage(id: self.uid2!, clearUnread: false, roomRef: roomRef)
-                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification)
+                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification, badge: (self.user2?.totalBadge ?? 0) + 1)
                 }
                 completion(err, messRef)
             }
@@ -177,7 +201,7 @@ class ChatViewModel {
                 
                 if user2.isChating == false {
                     FirebaseManager.shared.updateUnreadMessage(id: self.uid2!, clearUnread: false, roomRef: roomRef)
-                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification)
+                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification, badge: (self.user2?.totalBadge ?? 0) + 1)
                     
                 }
                 completion(nil, messRef)
@@ -426,7 +450,8 @@ class ChatViewModel {
     func scrollToBottom(tableView: UITableView?){
         if self.listMessages.value.count > 0 {
             DispatchQueue.main.async { [weak self] in
-                let indexPath = IndexPath(row: (self?.listMessages.value.count)!-1, section: 0)
+                let lastSections = self?.listSectionsMessages.value.last
+                let indexPath = IndexPath(row: (lastSections?.items.count)! - 1, section: (self?.listSectionsMessages.value.count)! - 1)
                 tableView?.scrollToRow(at: indexPath, at: .bottom, animated: true)
             }
         }

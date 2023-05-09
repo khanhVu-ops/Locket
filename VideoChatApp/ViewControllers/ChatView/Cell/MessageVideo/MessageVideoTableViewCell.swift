@@ -51,7 +51,7 @@ class MessageVideoTableViewCell: UITableViewCell {
             self.imvThumbnail.image = UIImage(named: "library")
             print("Invalid URL")
         }
-        self.lbTime.text = self.convertToString(timestamp: item.created!)
+        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
         self.progressView.progress = Float((item.progress ?? 0.0)/100.0)
         if progressView.progress == 1 {
             self.progressView.isHidden = true

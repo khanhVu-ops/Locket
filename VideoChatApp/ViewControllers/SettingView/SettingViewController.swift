@@ -43,7 +43,7 @@ class SettingViewController: UIViewController {
             self.view.addSubview(sub)
         }
         self.detailView.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
+            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
             make.leading.equalTo(self.view.safeAreaLayoutGuide.snp.leading)
             make.trailing.equalTo(self.view.safeAreaLayoutGuide.snp.trailing)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
@@ -129,6 +129,7 @@ class SettingViewController: UIViewController {
         }
         self.detailView.configImage(image: image)
         self.detailView.isHidden = false
+        self.view.backgroundColor = UIColor(hexString: "#242121")
     }
 }
 
@@ -150,6 +151,7 @@ extension SettingViewController: DetailImageViewProtocol {
     
     func btnCancelImageTapped() {
         self.detailView.isHidden = true
+        self.view.backgroundColor = .white
     }
     
     func btnDownloadTapped(image: UIImage) {

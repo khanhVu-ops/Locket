@@ -281,18 +281,31 @@ class FirestoreManager: FirestoreManagerProtocol {
     
     func updateUnreadMessage(id: String, clearUnread: Bool, roomRef: DocumentReference) {
         roomRef.getDocument { snapshot, error in
-            guard let snapshot = snapshot else {
+            guard let data = snapshot?.data(), error == nil else {
                 return
             }
-            let chatRoom = ChatModel(json: snapshot.data()!)
+            let chatRoom = ChatModel(json: data)
             for (index, value) in chatRoom.users!.enumerated() {
                 if value == id {
-                    clearUnread ? (chatRoom.unreadCount![index] = 0) : (chatRoom.unreadCount![index] += 1)
+                    if clearUnread {
+                        self.updateTotalBadge(id: id, valueUpdate: 0 - chatRoom.unreadCount![index])
+                        chatRoom.unreadCount![index] = 0
+                    } else {
+                        chatRoom.unreadCount![index] += 1
+                        self.updateTotalBadge(id: id, valueUpdate: 1)
+                    }
                     break
                 }
             }
             roomRef.updateData(chatRoom.convertToDictionary())
         }
+    }
+    
+    func updateTotalBadge(id: String, valueUpdate: Int) {
+        print(valueUpdate)
+        db.collection(usersCollection).document(id).updateData([
+            "totalBadge": FieldValue.increment(Int64(valueUpdate))
+        ])
     }
 
     //MARK: Upload
@@ -455,6 +468,7 @@ class FirestoreManager: FirestoreManagerProtocol {
             }
             self.updateFcmToken(fcmToken: "")
             UserDefaultManager.shared.updateIDWhenLogOut()
+            Utilitis.shared.setBadgeIcon(number: 0)
             completion(nil)
         })
     }

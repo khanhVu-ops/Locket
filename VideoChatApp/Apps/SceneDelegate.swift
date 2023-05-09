@@ -59,6 +59,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         print("resign")
         FirebaseManager.shared.updateStatusChating(isChating: false)
+        
+        guard let id = UserDefaultManager.shared.getID() else {
+            return
+        }
+        FirebaseManager.shared.getUserWithID(id: id) { user, error in
+            guard let user = user, error == nil else {
+                return
+            }
+            Utilitis.shared.setBadgeIcon(number: user.totalBadge ?? 0)
+        }
         // Called when the scene will move from an active state to an inactive state.
         // This may occur due to temporary interruptions (ex. an incoming phone call).
     }

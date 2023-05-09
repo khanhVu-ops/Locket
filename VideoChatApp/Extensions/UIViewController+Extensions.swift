@@ -131,7 +131,8 @@ extension UIViewController {
             }
         }
     }
-    
-    
-    
+    func addImpactFeedBack() {
+        let impact = UIImpactFeedbackGenerator(style: .light)
+        impact.impactOccurred()
+    }
 }

@@ -76,9 +76,8 @@ class DetailImageViewController: UIViewController {
         let cltv = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         cltv.showsHorizontalScrollIndicator = false
         cltv.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "Cell")
-        cltv.layer.masksToBounds = true
+        cltv.layer.masksToBounds = false
         cltv.isPagingEnabled = true
-        
         return cltv
     }()
     
@@ -146,7 +145,7 @@ class DetailImageViewController: UIViewController {
     }
     
     func configureView() {
-        [stvTop, cltvListImage, myPageControl, btnPrevious, btnNext, vPopUpSaved].forEach { subView in
+        [stvTop, myPageControl, cltvListImage, btnPrevious, btnNext, vPopUpSaved].forEach { subView in
             self.view.addSubview(subView)
         }
         self.view.backgroundColor = .white

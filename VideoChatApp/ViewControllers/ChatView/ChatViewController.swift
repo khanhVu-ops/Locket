@@ -9,6 +9,7 @@ import UIKit
 import IQKeyboardManagerSwift
 import RxSwift
 import RxCocoa
+import RxDataSources
 import MobileCoreServices
 import QuickLook
 import SnapKit
@@ -128,38 +129,38 @@ class ChatViewController: UIViewController {
     }
 
     func bindingToViewModel() {
-        //bind tbvMessages
-        self.chatViewModel.listMessages
-            .bind(to: self.tbvListMessage.rx.items) { [weak self] tableView, index, element -> UITableViewCell in
-                
-                switch element.type {
-                case .image:
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageImageTableViewCell", for: IndexPath(row: index, section: 0)) as! MessageImageTableViewCell
-                    cell.configure(item: element)
-                    cell.chatVC = self
-                    return cell
-                case .video:
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageVideoTableViewCell", for: IndexPath(row: index, section: 0)) as! MessageVideoTableViewCell
-                    cell.delegate = self
-                    cell.configure(item: element)
-                    return cell
-                case .audio:
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageAudioTableViewCell", for: IndexPath(row: index, section: 0)) as! MessageAudioTableViewCell
-                    cell.configure(item: element)
-                    return cell
-                case .file:
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageFileTableViewCell", for: IndexPath(row: index, section: 0)) as! MessageFileTableViewCell
-                    cell.delegate = self
-                    cell.configure(item: element)
-                    return cell
-                default:
-                    let cell = tableView.dequeueReusableCell(withIdentifier: "MessageTableViewCell", for: IndexPath(row: index, section: 0)) as! MessageTableViewCell
-                    cell.configure(item: element)
-                    return cell
-                }
+        //TableView
+        let dataSource = RxTableViewSectionedReloadDataSource<SectionModel> { _, tableView, indexPath, item in
+            switch item.type {
+            case .image:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "MessageImageTableViewCell", for: indexPath) as! MessageImageTableViewCell
+                cell.configure(item: item)
+                cell.chatVC = self
+                return cell
+            case .video:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "MessageVideoTableViewCell", for: indexPath) as! MessageVideoTableViewCell
+                cell.delegate = self
+                cell.configure(item: item)
+                return cell
+            case .audio:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "MessageAudioTableViewCell", for: indexPath) as! MessageAudioTableViewCell
+                cell.configure(item: item)
+                return cell
+            case .file:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "MessageFileTableViewCell", for: indexPath) as! MessageFileTableViewCell
+                cell.delegate = self
+                cell.configure(item: item)
+                return cell
+            default:
+                let cell = tableView.dequeueReusableCell(withIdentifier: "MessageTableViewCell", for: indexPath) as! MessageTableViewCell
+                cell.configure(item: item)
+                return cell
             }
-            .disposed(by: disposeBag)
+        }
         
+        self.chatViewModel.listSectionsMessages.bind(to: self.tbvListMessage.rx.items(dataSource: dataSource))
+            .disposed(by: disposeBag)
+
         self.tbvListMessage.rx
             .setDelegate(self)
             .disposed(by: disposeBag)
@@ -255,6 +256,7 @@ class ChatViewController: UIViewController {
     }
     
     @IBAction func btnBackTapped(_ sender: Any) {
+        self.addImpactFeedBack()
         self.navigationController?.popViewController(animated: true)
     }
     
@@ -333,6 +335,16 @@ class ChatViewController: UIViewController {
 extension ChatViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         self.chatViewModel.calculateHeightMessage(messageWidth: self.tbvListMessage.frame.width * 0.6, index: indexPath.item)
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        let vHeader = CustomHeaderView(frame: CGRect(x: 0, y: 0, width: self.tbvListMessage.frame.width, height: 30))
+        vHeader.setTitle(title: self.chatViewModel.listSectionsMessages.value[section].header)
+        return vHeader
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        return 30
     }
 }
 

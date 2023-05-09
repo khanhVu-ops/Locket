@@ -52,7 +52,7 @@ class MessageTableViewCell: UITableViewCell {
         }
         self.tvMessage.text = item.message
         let size = tvMessage.sizeThatFits(CGSize(width: tvMessage.frame.width, height: CGFloat.greatestFiniteMagnitude))
-        self.lbTime.text = self.convertToString(timestamp: item.created!)
+        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
         tvMessage.frame.size.height = size.height
         
         let linkAttributes: [NSAttributedString.Key: Any] = [

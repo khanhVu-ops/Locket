@@ -72,8 +72,8 @@ class MessageAudioTableViewCell: UITableViewCell {
             self.progressView.progressTintColor = .white
             self.lbDuration.textColor = .white
         }
-        self.lbDuration.text = convertDurationToTime(duration: item.duration ?? 0.0)
-        self.lbTime.text = convertToString(timestamp: item.created!)
+        self.lbDuration.text = Utilitis.shared.convertDurationToTime(duration: item.duration ?? 0.0)
+        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
         guard let audioURL = URL(string: item.audioURL ?? "") else {
             return
         }
@@ -104,7 +104,7 @@ class MessageAudioTableViewCell: UITableViewCell {
                 if currentTime == duration {
                     self.pauseVideo()
                 } else {
-                    self.lbDuration.text = self.convertDurationToTime(duration: duration - currentTime)
+                    self.lbDuration.text = Utilitis.shared.convertDurationToTime(duration: duration - currentTime)
                 }
                 
             } else {

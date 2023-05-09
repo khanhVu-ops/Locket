@@ -81,7 +81,6 @@ class DetailImageView: UIView {
         self.vContent.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.leading.trailing.equalToSuperview().inset(5)
-            make.height.equalTo(self.vContent.snp.width).multipliedBy(Double(1920.0/1080.0))
         }
         self.imvDetail.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
@@ -101,7 +100,7 @@ class DetailImageView: UIView {
             make.trailing.equalToSuperview().offset(-15)
             make.height.equalTo(40)
             make.width.equalTo(50)
-            make.bottom.lessThanOrEqualToSuperview()
+            make.bottom.equalToSuperview().offset(-10)
         }
     }
     
@@ -111,7 +110,7 @@ class DetailImageView: UIView {
     
     func configBtnSend(isHidden: Bool, btnTitle: String? = "Send") {
         self.btnSendImage.setTitle(btnTitle, for: .normal)
-        self.btnSendImage.isHidden = true
+        self.btnSendImage.isHidden = isHidden
     }
     
     @objc func btnCancelImageTapped() {

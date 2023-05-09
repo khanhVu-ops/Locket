@@ -33,6 +33,17 @@ class TabBarController: UITabBarController {
                 return
             }
         }
+        guard let id = UserDefaultManager.shared.getID() else {
+            return
+        }
+        FirebaseManager.shared.getUserWithID(id: id) { user, error in
+            guard let user = user, error == nil else {
+                return
+            }
+            Utilitis.shared.setBadgeIcon(number: user.totalBadge ?? 0)
+            UserDefaultManager.shared.setUser(user: user)
+        }
+        
         let homeVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "HomeViewController") as! HomeViewController
         homeVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 0)
         let settingVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingViewController") as! SettingViewController

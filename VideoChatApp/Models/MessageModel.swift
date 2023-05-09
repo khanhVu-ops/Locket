@@ -7,6 +7,7 @@
 
 import Foundation
 import FirebaseFirestore
+import Differentiator
 
 enum MessageType: String {
     case text = "text"
@@ -15,6 +16,20 @@ enum MessageType: String {
     case audio = "audio"
     case file = "file"
 }
+
+struct SectionModel {
+    var header: String
+    var items: [Item]
+}
+
+extension SectionModel: SectionModelType {
+    typealias Item = MessageModel
+    init(original: SectionModel, items: [MessageModel]) {
+        self = original
+        self.items = items
+    }
+}
+
 class MessageModel {
     var type: MessageType?
     var message: String?

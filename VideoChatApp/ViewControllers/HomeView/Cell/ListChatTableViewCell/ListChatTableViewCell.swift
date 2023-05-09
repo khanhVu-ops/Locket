@@ -66,7 +66,7 @@ class ListChatTableViewCell: UITableViewCell {
         }
         self.lbNewMessage.text = txt
         self.lbUsername.text = item.roomName
-        self.lbTime.text = self.convertToString(timestamp: item.lastCreated ?? Timestamp(date: Date()))
+        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.lastCreated ?? Timestamp(date: Date()))
         self.changeBoldText(item: item)
     }
     

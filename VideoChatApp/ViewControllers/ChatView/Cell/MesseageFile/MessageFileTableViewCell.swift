@@ -56,7 +56,7 @@ class MessageFileTableViewCell: UITableViewCell {
             return
         }
         self.lbName.text = fileName
-        self.lbTime.text = convertToString(timestamp: item.created!)
+        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
         self.progressView.progress = Float((item.progress ?? 0.0)/100.0)
         if progressView.progress == 1 {
             self.progressView.isHidden = true

@@ -52,6 +52,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         print("tẻminate")
         FirebaseManager.shared.updateStatusChating(isChating: false)
+        
+        guard let id = UserDefaultManager.shared.getID() else {
+            return
+        }
+        FirebaseManager.shared.getUserWithID(id: id) { user, error in
+            guard let user = user, error == nil else {
+                return
+            }
+            Utilitis.shared.setBadgeIcon(number: user.totalBadge ?? 0)
+        }
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -113,12 +123,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
 extension AppDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Xử lý thông báo đẩy khi ứng dụng đang chạy")
-        let badgeCount = UIApplication.shared.applicationIconBadgeNumber
-        if badgeCount > 0 {
-            UIApplication.shared.applicationIconBadgeNumber = badgeCount + 1
-        } else {
-            UIApplication.shared.applicationIconBadgeNumber = 1
-        }
         // Create a local notification to display the message
 
         completionHandler(.newData)

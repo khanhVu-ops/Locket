@@ -26,23 +26,15 @@ extension UIView {
         layer.cornerRadius = radius
         layer.masksToBounds = true
     }
-    func convertToString(timestamp: Timestamp, formatter: String? = "hh:mm") -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = formatter
-        let date = Date(timeIntervalSince1970: TimeInterval(timestamp.seconds))
-//        let date = timestamp // replace with your own Firestore Date object
-        let dateString = dateFormatter.string(from: date)
-        return dateString
-    }
     
-    func convertDurationToTime(duration: Double) -> String {
-        let minutes = Int(duration / 60)
-        let seconds = Int(Int(duration) - minutes * 60)
-        return String(format: "%02d:%02d", minutes, seconds)
-    }
-    
-    func addImpactFeedBack() {
-        let impact = UIImpactFeedbackGenerator(style: .light)
-        impact.impactOccurred()
-    }
+//    func roundCorners(radius: CGFloat) {
+//        let rect = CGRect(origin: .zero, size: self.size)
+//        UIGraphicsBeginImageContextWithOptions(self.size, false, 1.0)
+//        let path = UIBezierPath(roundedRect: rect, cornerRadius: radius)
+//        path.addClip()
+//        self.draw(in: rect)
+//        let roundedImage = UIGraphicsGetImageFromCurrentImageContext()
+//        UIGraphicsEndImageContext()
+//        return roundedImage!
+//    }
 }
