@@ -22,7 +22,8 @@ class HomeViewModel {
             guard let chats = chats, let docRef = docRef, error == nil else {
                 return
             }
-            
+            let rooms = [ChatModel()] + chats
+            self?.listChatRooms.accept(rooms)
             FirebaseManager.shared.getUsers {[weak self] users, error in
                 guard let users = users, error == nil else {
                     return

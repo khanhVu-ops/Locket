@@ -15,7 +15,7 @@ import UIKit
 import QuickLook
 class ChatViewModel {
     let txtChatPlaceHolder = "Type here ..."
-    var listMessages = BehaviorRelay<[MessageModel]>(value: [])
+    var listMessages = [MessageModel]()
     var listSectionsMessages = BehaviorRelay<[SectionModel]>(value: [])
     var uid = UserDefaultManager.shared.getID()
     var txtTypeHere = BehaviorRelay<String>(value: "")
@@ -80,7 +80,7 @@ class ChatViewModel {
                 return
             }
             self?.lastDocument = lastDoc
-            self?.listMessages.accept(messages)
+            self?.listMessages = messages
             self?.handleSortMessagesByDate(messages: messages)
             guard let tbvListMessage = self?.tbvListMessage else {
                 return
@@ -112,7 +112,7 @@ class ChatViewModel {
     }
     
     // fetch more 20 messages
-    func loadingMessage(completion: @escaping(Error?) -> Void) {
+    func fetchMoreMessages(completion: @escaping(Error?) -> Void) {
         guard let roomRef = roomRef, let lastDocument = lastDocument else {
             return
         }
@@ -121,11 +121,10 @@ class ChatViewModel {
                 completion(error)
                 return
             }
-            let currentMess = self?.listMessages.value ?? []
             var newMess = messages
-            newMess.append(contentsOf: currentMess)
+            newMess.append(contentsOf: self!.listMessages)
             self?.newMessagesFetch.accept(messages)
-            self?.listMessages.accept(newMess)
+            self?.listMessages = newMess
             self?.handleSortMessagesByDate(messages: newMess)
             self?.lastDocument = lastDoc
             completion(nil)
@@ -397,7 +396,7 @@ class ChatViewModel {
     }
     
     func getListDetailItem() -> [DetailItem] {
-        let listMess = self.listMessages.value
+        let listMess = self.listMessages
         var listDetail = [DetailItem]()
         for mess in listMess {
             if mess.type == .image {
@@ -414,8 +413,11 @@ class ChatViewModel {
         return listDetail
     }
     
-    func calculateHeightMessage(messageWidth: CGFloat, index: Int) -> CGFloat {
-        let messageSend = self.listMessages.value[index]
+    func calculateHeightMessage(messageWidth: CGFloat, section: Int, index: Int) -> CGFloat {
+
+        let listItem = self.listSectionsMessages.value[section]
+
+        let messageSend = listItem.items[index]
         switch messageSend.type {
         case.image :
             guard let count = messageSend.imageURL?.count else {
@@ -441,14 +443,16 @@ class ChatViewModel {
                 return  messageWidth * (messageSend.ratioImage ?? 1) + 45
             }
         case .video:
+            print("rtio:", messageSend.ratioImage)
             return messageWidth * (messageSend.ratioImage ?? 1) + 45
+            
         default:
             return UITableView.automaticDimension
         }
     }
 
     func scrollToBottom(tableView: UITableView?){
-        if self.listMessages.value.count > 0 {
+        if self.listMessages.count > 0 {
             DispatchQueue.main.async { [weak self] in
                 let lastSections = self?.listSectionsMessages.value.last
                 let indexPath = IndexPath(row: (lastSections?.items.count)! - 1, section: (self?.listSectionsMessages.value.count)! - 1)

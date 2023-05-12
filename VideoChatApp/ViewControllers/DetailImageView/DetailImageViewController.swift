@@ -209,13 +209,18 @@ class DetailImageViewController: UIViewController {
         
         self.detailImageViewModel.listImages
             .bind(to: self.cltvListImage.rx.items) { [weak self] collectionView, index, element -> UICollectionViewCell in
+                guard let strongSelf = self else {
+                    return UICollectionViewCell()
+                }
                 switch element.type {
                 case .image:
                     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DetailImageCollectionViewCell", for: IndexPath(row: index, section: 0)) as! DetailImageCollectionViewCell
-                    cell.loadImage(url: element.url)
+                    let frameScroll = CGRect(x: 0, y: -(strongSelf.cltvListImage.frame.origin.y), width: strongSelf.view.frame.width, height: strongSelf.view.frame.height)
+                    cell.loadImage(url: element.url ,frameScroll: frameScroll, cellSize: self?.cltvListImage.frame.size ?? .zero)
                     return cell
                 case.video:
                     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DetailVideoCollectionViewCell", for: IndexPath(row: index, section: 0)) as! DetailVideoCollectionViewCell
+                    
                     cell.configure(item: element, viewModel: self?.detailImageViewModel)
                     return cell
                 }

@@ -99,7 +99,7 @@ class DetailImageView: UIView {
             make.top.equalTo(self.vContent.snp.bottom).offset(10)
             make.trailing.equalToSuperview().offset(-15)
             make.height.equalTo(40)
-            make.width.equalTo(50)
+            make.width.equalTo(80)
             make.bottom.equalToSuperview().offset(-10)
         }
     }

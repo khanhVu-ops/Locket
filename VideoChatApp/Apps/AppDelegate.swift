@@ -111,9 +111,13 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
            let navigation = window.rootViewController as? UINavigationController,
            navigation.topViewController != ChatViewController() {
             if screenName == "ChatViewController" {
-                let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
-                chatVC.chatViewModel.uid2 = uid
-                navigation.pushViewController(chatVC, animated: true)
+                navigation.popToRootViewController(animated: false)
+                if let tabbar = navigation.topViewController as? UITabBarController {
+                    tabbar.selectedIndex = 0
+                    let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
+                    chatVC.chatViewModel.uid2 = uid
+                    navigation.pushViewController(chatVC, animated: true)
+                }
             }
             // Do something with the window here
         }

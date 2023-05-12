@@ -17,7 +17,7 @@ struct Constants {
     }
     struct Image {
         static let defaultAvata = UIImage(named: "person_default")
-        static let imageDefault = UIImage(named: "image_default")
+        static let imageDefault = UIImage(named: "library")
     }
     struct DBCollectionName {
         static let users = "users"

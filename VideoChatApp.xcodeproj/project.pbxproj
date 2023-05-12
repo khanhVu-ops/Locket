@@ -63,6 +63,7 @@
 		3399E1D629D6714100DF8021 /* ImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3399E1D429D6714100DF8021 /* ImageCollectionViewCell.xib */; };
 		3399E1D929D6922000DF8021 /* DetailImageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3399E1D729D6922000DF8021 /* DetailImageCollectionViewCell.swift */; };
 		3399E1DA29D6922000DF8021 /* DetailImageCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3399E1D829D6922000DF8021 /* DetailImageCollectionViewCell.xib */; };
+		33A6D6262A0CAB8A0033801D /* ImageScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33A6D6252A0CAB8A0033801D /* ImageScrollView.swift */; };
 		33C64D4529F6372A00441FCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 33C64D4429F6372A00441FCC /* GoogleService-Info.plist */; };
 		33CB845E29ED3B0A0044C5D0 /* WaveformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CB845D29ED3B0A0044C5D0 /* WaveformView.swift */; };
 		33CD817229EE31A000A155A8 /* AudioView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33CD817129EE31A000A155A8 /* AudioView.swift */; };
@@ -139,6 +140,7 @@
 		3399E1D429D6714100DF8021 /* ImageCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageCollectionViewCell.xib; sourceTree = "<group>"; };
 		3399E1D729D6922000DF8021 /* DetailImageCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailImageCollectionViewCell.swift; sourceTree = "<group>"; };
 		3399E1D829D6922000DF8021 /* DetailImageCollectionViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DetailImageCollectionViewCell.xib; sourceTree = "<group>"; };
+		33A6D6252A0CAB8A0033801D /* ImageScrollView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageScrollView.swift; sourceTree = "<group>"; };
 		33C64D4329F6368800441FCC /* VideoChatApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = VideoChatApp.entitlements; sourceTree = "<group>"; };
 		33C64D4429F6372A00441FCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		33CB845D29ED3B0A0044C5D0 /* WaveformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WaveformView.swift; sourceTree = "<group>"; };
@@ -358,8 +360,8 @@
 			isa = PBXGroup;
 			children = (
 				334DA79C29E2C85F0067F235 /* Cell */,
-				3315356A29D5472500100006 /* HomeViewModel.swift */,
 				3315356B29D5472500100006 /* HomeViewController.swift */,
+				3315356A29D5472500100006 /* HomeViewModel.swift */,
 			);
 			path = HomeView;
 			sourceTree = "<group>";
@@ -390,6 +392,7 @@
 				33CB845D29ED3B0A0044C5D0 /* WaveformView.swift */,
 				33CD817129EE31A000A155A8 /* AudioView.swift */,
 				33F3D18A2A089B6A0037CF6A /* PopupSavedView.swift */,
+				33A6D6252A0CAB8A0033801D /* ImageScrollView.swift */,
 			);
 			path = CommonView;
 			sourceTree = "<group>";
@@ -679,6 +682,7 @@
 				3315358C29D5472500100006 /* HomeViewController.swift in Sources */,
 				3315358629D5472500100006 /* MessageTableViewCell.swift in Sources */,
 				33CD817229EE31A000A155A8 /* AudioView.swift in Sources */,
+				33A6D6262A0CAB8A0033801D /* ImageScrollView.swift in Sources */,
 				33E1FA6629FC3C2700DDA614 /* NotificationMessageModel.swift in Sources */,
 				33F3D18B2A089B6A0037CF6A /* PopupSavedView.swift in Sources */,
 				338C679629E3C060002474B9 /* CameraView.swift in Sources */,

@@ -320,7 +320,7 @@ class ChatViewController: UIViewController {
     
     @objc func refreshTable() {
         print("REFRESH")
-        self.chatViewModel.loadingMessage {[weak self] error in
+        self.chatViewModel.fetchMoreMessages {[weak self] error in
             guard let error = error else {
                 self?.tbvListMessage.refreshControl?.endRefreshing()
                 return
@@ -334,7 +334,7 @@ class ChatViewController: UIViewController {
 
 extension ChatViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        self.chatViewModel.calculateHeightMessage(messageWidth: self.tbvListMessage.frame.width * 0.6, index: indexPath.item)
+        return self.chatViewModel.calculateHeightMessage(messageWidth: self.tbvListMessage.frame.width * 0.6, section: indexPath.section, index: indexPath.item)
     }
     
     func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
