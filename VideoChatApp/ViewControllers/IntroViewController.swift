@@ -8,7 +8,7 @@
 import UIKit
 import Alamofire
 
-class IntroViewController: UIViewController {
+class IntroViewController: BaseViewController {
 
     @IBOutlet weak var btnGetStarted: UIButton!
     override func viewDidLoad() {
@@ -23,8 +23,9 @@ class IntroViewController: UIViewController {
     }
     
     @IBAction func btnGetStartedTapped(_ sender: Any) {
-        let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LoginViewController")
-        self.navigationController?.pushViewController(loginVC, animated: true)
+//        let registerVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
+        let registerVC = RegisterViewController()
+        self.push(registerVC)
     }
     
 }

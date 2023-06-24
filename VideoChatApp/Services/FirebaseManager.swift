@@ -48,23 +48,23 @@ class FirestoreManager: FirestoreManagerProtocol {
     let db = Firestore.firestore()
     let storage = Storage.storage().reference()
     
-    let usersCollection = Constants.DBCollectionName.users
-    let chatsCollection = Constants.DBCollectionName.chats
-    let threadCollection = Constants.DBCollectionName.thread
+    let usersCollection = "users"
+    let chatsCollection = "chats"
+    let threadCollection = "thread"
     
     func createUser(username: String, password: String, completion: @escaping (Error?) -> Void) {
         let ref = db.collection(usersCollection).document()
         let id = ref.documentID
-        let newUser = UserModel(id: id, username: username, password: password, avataURL: "", isActive: true, fcmToken: "").convertToDictionary()
-        ref.setData(newUser) {
-            err in
-            guard err == nil else {
-                completion(err)
-                return
-            }
-            UserDefaultManager.shared.updateIDWhenLogin(id: id)
-            completion(nil)
-        }
+//        let newUser = UserModel(id: id, username: username, phoneNumber: , avataURL: "", isActive: true, fcmToken: "").convertToDictionary()
+//        ref.setData(newUser) {
+//            err in
+//            guard err == nil else {
+//                completion(err)
+//                return
+//            }
+//            UserDefaultManager.shared.updateIDWhenLogin(id: id)
+//            completion(nil)
+//        }
     }
     
     func getUsersLogin(completion: @escaping ([UserModel]?, Error?) -> Void) {
@@ -77,7 +77,9 @@ class FirestoreManager: FirestoreManagerProtocol {
             for document in querySnapshot.documents {
                 let user = UserModel(json: document.data())
                 users.append(user)
+                print(document.reference.path)
             }
+            
             completion(users, nil)
         }
     }
@@ -92,6 +94,7 @@ class FirestoreManager: FirestoreManagerProtocol {
             for document in querySnapshot.documents {
                 let user = UserModel(json: document.data())
                 users.append(user)
+                print(document.reference.path)
             }
             completion(users, nil)
         }
@@ -288,10 +291,10 @@ class FirestoreManager: FirestoreManagerProtocol {
             for (index, value) in chatRoom.users!.enumerated() {
                 if value == id {
                     if clearUnread {
-                        self.updateTotalBadge(id: id, valueUpdate: 0 - chatRoom.unreadCount![index])
-                        chatRoom.unreadCount![index] = 0
+                        self.updateTotalBadge(id: id, valueUpdate: 0 - chatRoom.unreadArray![index])
+                        chatRoom.unreadArray![index] = 0
                     } else {
-                        chatRoom.unreadCount![index] += 1
+                        chatRoom.unreadArray![index] += 1
                         self.updateTotalBadge(id: id, valueUpdate: 1)
                     }
                     break
@@ -405,7 +408,7 @@ class FirestoreManager: FirestoreManagerProtocol {
         }
     }
     
-    func uploadFile(messRef:DocumentReference, fileURL: URL, completion: @escaping(Error?)-> Void) {
+    func uploadFile(messRef: DocumentReference, fileURL: URL, completion: @escaping(Error?)-> Void) {
          guard let fileData = try? Data(contentsOf: fileURL) else {
              print("Failed to convert file to data")
              completion(NSError(domain: "com.example.error", code: 0, userInfo: [NSLocalizedDescriptionKey: "Don't get data from URL"]))

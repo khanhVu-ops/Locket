@@ -7,6 +7,8 @@
 
 import UIKit
 import FirebaseFirestore
+import RxSwift
+import RxCocoa
 class ListChatTableViewCell: UITableViewCell {
 
     @IBOutlet weak var vBorder: UIView!
@@ -14,8 +16,10 @@ class ListChatTableViewCell: UITableViewCell {
     @IBOutlet weak var lbNewMessage: UILabel!
     @IBOutlet weak var lbUsername: UILabel!
     @IBOutlet weak var imvAvata: UIImageView!
-    @IBOutlet weak var lbBadgeMessage: UILabel!
+    @IBOutlet weak var vStatusActive: UIView!
+    @IBOutlet weak var imvIconNewMessage: UIImageView!
     private let colorMessage = UIColor(hexString: "#5C5C5C")
+    let disposeBag = DisposeBag()
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -35,64 +39,67 @@ class ListChatTableViewCell: UITableViewCell {
     func setUpView() {
         self.vBorder.addConnerRadius(radius: 15)
         self.vBorder.addBorder(borderWidth: 2, borderColor: Constants.Color.mainColor)
-        
         self.imvAvata.addConnerRadius(radius: self.imvAvata.frame.width/2)
-        
         self.lbNewMessage.textColor = self.colorMessage
         self.lbTime.textColor = self.colorMessage
-        self.lbBadgeMessage.textColor = .white
-        self.lbBadgeMessage.backgroundColor = .red
-        self.lbBadgeMessage.font = UIFont.boldSystemFont(ofSize: 13)
-        self.lbBadgeMessage.addConnerRadius(radius: self.lbBadgeMessage.frame.width/2)
-        self.lbBadgeMessage.isHidden = true
+        self.imvIconNewMessage.isHidden = true
+        self.vStatusActive.circleClip()
+        self.vStatusActive.addBorder(borderWidth: 1, borderColor: .white)
     }
     
-    func configure(item: ChatModel) {
-        if let url = URL(string: item.roomURL ?? "") {
-            self.imvAvata.sd_setImage(with: url, placeholderImage: UIImage(systemName: "person.fill"))
-        } else {
-            self.imvAvata.image = Constants.Image.defaultAvata
-        }
-        var txt = ""
-        if item.lastSenderID == UserDefaultManager.shared.getID() {
-            txt = "You: "
-        } else {
-            txt = item.roomName!.components(separatedBy: " ")[0] + ": "
-        }
-        if item.lastMessage == "" {
-            txt += "sent image."
-        } else {
-            txt += item.lastMessage!
-        }
-        self.lbNewMessage.text = txt
-        self.lbUsername.text = item.roomName
-        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.lastCreated ?? Timestamp(date: Date()))
-        self.changeBoldText(item: item)
-    }
-    
-    private func changeBoldText(item: ChatModel) {
-        guard let unreadCount = item.unreadCount, let usersID = item.users else {
+    func configure(viewModel: HomeViewModel, item: ChatModel) {
+        guard let uid = UserDefaultManager.shared.getID() else {
             return
         }
-        var unreadNunber = 0
-        for (index, value) in usersID.enumerated() {
-            if value == UserDefaultManager.shared.getID() {
-                unreadNunber = unreadCount[index]
-                break
-            }
+        var txt = ""
+        txt = item.lastSenderID == uid ? "You: " : ""
+        switch item.lastMessageType {
+        case .text:
+            txt += item.lastMessage ?? "sent text" + "."
+        case .image:
+            txt += "sent image."
+        case .audio:
+            txt += "sent audio."
+        case .video:
+            txt += "sent video."
+        case .file:
+            txt += "sent file."
+        case .none:
+            break
         }
-        if unreadNunber > 0 {
-            lbUsername.font = UIFont.boldSystemFont(ofSize: 20)
-            lbNewMessage.font = UIFont.boldSystemFont(ofSize: 15)
-            lbNewMessage.textColor = .black
-            self.lbBadgeMessage.isHidden = false
-            self.lbBadgeMessage.text = "\(unreadNunber)"
-        } else {
-            lbUsername.font = UIFont.systemFont(ofSize: 17, weight: .medium)
-            lbNewMessage.font = UIFont.systemFont(ofSize: 13)
-            lbNewMessage.textColor = self.colorMessage
-            self.lbBadgeMessage.isHidden = true
-        }
+        self.lbNewMessage.text = txt
+        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.lastCreated ?? Timestamp(date: Date()))
+        self.updatText(unreadNumber: getUnreadNumber(item: item, uid: uid))
+        
+        viewModel.getUserByUID(uid: item.uid2)
+            .subscribe(onNext: { [weak self] user in
+                self?.lbUsername.text = user.username
+                self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
+                self?.vStatusActive.backgroundColor = user.isActive! ? .green : .gray
+            })
+            .disposed(by: disposeBag)
     }
     
+
+    
+    func updatText(unreadNumber: Int) {
+        lbUsername.font = unreadNumber > 0 ? UIFont.boldSystemFont(ofSize: 20) : UIFont.systemFont(ofSize: 17, weight: .medium)
+        lbNewMessage.font = unreadNumber > 0 ? UIFont.boldSystemFont(ofSize: 15) : UIFont.systemFont(ofSize: 13)
+        lbNewMessage.textColor = unreadNumber > 0 ? .black : self.colorMessage
+        self.imvIconNewMessage.isHidden = !(unreadNumber > 0)
+    }
+    
+    func getUnreadNumber(item: ChatModel, uid: String) -> Int {
+        guard let users = item.users,
+              let unreadArray = item.unreadArray else {
+            return 0
+        }
+        var unread = 0
+        for (index, value) in users.enumerated() {
+            if value == uid {
+                unread = unreadArray[index]
+            }
+        }
+        return unread
+    }
 }

@@ -16,7 +16,9 @@ class MessageAudioTableViewCell: UITableViewCell {
     @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var lbDuration: UILabel!
     @IBOutlet weak var lbTime: UILabel!
-
+    @IBOutlet weak var imvAvata: UIImageView!
+    @IBOutlet weak var lbStatus: UILabel!
+    
     let player = AVPlayer()
     private var timeObserver: Any?
     var item: MessageModel?

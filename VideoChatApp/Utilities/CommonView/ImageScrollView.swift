@@ -9,7 +9,7 @@ import UIKit
 
 class ImageScrollView: UIScrollView, UIScrollViewDelegate {
 
-    var imageZoomView: UIImageView!
+    var imageZoomView =  UIImageView()
     var cellSize: CGSize!
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -29,10 +29,10 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
     }
     
     func set(image: UIImage) {
-        imageZoomView?.removeFromSuperview()
+        imageZoomView.removeFromSuperview()
         imageZoomView = UIImageView(image: image)
         imageZoomView.addConnerRadius(radius: 20)
-        self.addSubview(imageZoomView!)
+        self.addSubview(imageZoomView)
         self.configurateFor(imageSize: image.size)
     }
     

@@ -46,23 +46,22 @@ class UserDefaultManager {
     }
     
     func setUser(user: UserModel) {
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(user) {
-            userDefault.set(encoded, forKey: self.keyUser)
-        }
-
+//        let encoder = JSONEncoder()
+//        if let encoded = try? encoder.encode(user) {
+//            userDefault.set(encoded, forKey: self.keyUser)
+//        }
     }
     
     func getUser() -> UserModel? {
-        guard let savedUser = UserDefaults.standard.object(forKey: self.keyUser) as? Data else {
-            print("Can't get user data from Userdefaults")
-            return nil
-        }
-        let decoder = JSONDecoder()
-        guard let user = try? decoder.decode(UserModel.self, from: savedUser) else {
-            return nil
-        }
-        return user
+//        guard let savedUser = UserDefaults.standard.object(forKey: self.keyUser) as? Data else {
+//            print("Can't get user data from Userdefaults")
+//            return nil
+//        }
+//        let decoder = JSONDecoder()
+//        guard let user = try? decoder.decode(UserModel.self, from: savedUser) else {
+//            return nil
+//        }
+        return nil
     }
     
 }

@@ -10,12 +10,11 @@ import RxSwift
 import RxCocoa
 import SnapKit
 import Photos
-class SettingViewController: UIViewController {
+class SettingViewController: BaseViewController {
     @IBOutlet weak var imvAvata: UIImageView!
     @IBOutlet weak var btnChangeAvata: UIButton!
     @IBOutlet weak var btnPlus: UIButton!
     @IBOutlet weak var lbUsername: UILabel!
-    let disposeBag = DisposeBag()
     let settingViewModel = SettingViewModel()
 
     private lazy var detailView: DetailImageView = {
@@ -87,10 +86,7 @@ class SettingViewController: UIViewController {
                 self.showAlert(title: "Error!", message: error!.localizedDescription)
                 return
             }
-            let loginVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "LoginViewController") as! LoginViewController
-            loginVC.ishiddenBtnBack = true
-            self.navigationController?.viewControllers = [loginVC]
-            
+            self.goToSetRootIntroVC()
         }
     }
 

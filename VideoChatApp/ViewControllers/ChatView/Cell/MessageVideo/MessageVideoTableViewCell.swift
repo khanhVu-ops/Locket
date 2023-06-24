@@ -9,12 +9,13 @@ import UIKit
 
 class MessageVideoTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var progressView: UIProgressView!
     @IBOutlet weak var vContent: UIView!
     @IBOutlet weak var lbDuration: UILabel!
     @IBOutlet weak var imvThumbnail: UIImageView!
     @IBOutlet weak var lbTime: UILabel!
+    @IBOutlet weak var lbStatus: UILabel!
     @IBOutlet weak var stv: UIStackView!
+    @IBOutlet weak var imvAvata: UIImageView!
     
     weak var delegate: DetailImageProtocol?
     var videoURL: String?
@@ -52,12 +53,6 @@ class MessageVideoTableViewCell: UITableViewCell {
             print("Invalid URL")
         }
         self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
-        self.progressView.progress = Float((item.progress ?? 0.0)/100.0)
-        if progressView.progress == 1 {
-            self.progressView.isHidden = true
-        } else {
-            self.progressView.isHidden = false
-        }
         if let duration = item.duration {
             let minutes = Int(duration / 60)
             let seconds = Int(duration.truncatingRemainder(dividingBy: 60))

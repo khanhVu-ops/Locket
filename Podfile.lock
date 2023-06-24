@@ -604,7 +604,17 @@ PODS:
     - BoringSSL-GRPC/Interface (= 0.0.24)
   - BoringSSL-GRPC/Interface (0.0.24)
   - Differentiator (5.0.0)
+  - Firebase/Auth (10.7.0):
+    - Firebase/CoreOnly
+    - FirebaseAuth (~> 10.7.0)
+  - Firebase/CoreOnly (10.7.0):
+    - FirebaseCore (= 10.7.0)
   - FirebaseAppCheckInterop (10.7.0)
+  - FirebaseAuth (10.7.0):
+    - FirebaseCore (~> 10.0)
+    - GoogleUtilities/AppDelegateSwizzler (~> 7.8)
+    - GoogleUtilities/Environment (~> 7.8)
+    - GTMSessionFetcher/Core (< 4.0, >= 2.1)
   - FirebaseAuthInterop (10.7.0)
   - FirebaseCore (10.7.0):
     - FirebaseCoreInternal (~> 10.0)
@@ -733,6 +743,7 @@ PODS:
     - nanopb/encode (= 2.30909.0)
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
+  - ProgressHUD (13.6.2)
   - PromisesObjC (2.2.0)
   - RxCocoa (6.5.0):
     - RxRelay (= 6.5.0)
@@ -748,19 +759,23 @@ PODS:
     - SDWebImage/Core (= 5.15.5)
   - SDWebImage/Core (5.15.5)
   - SnapKit (5.6.0)
+  - SwiftGen (6.6.2)
   - Toast-Swift (5.0.1)
 
 DEPENDENCIES:
   - Alamofire
+  - Firebase/Auth
   - FirebaseFirestore
   - FirebaseMessaging
   - FirebaseStorage
   - IQKeyboardManagerSwift
+  - ProgressHUD
   - RxCocoa (= 6.5.0)
   - RxDataSources (~> 5.0)
   - RxSwift (= 6.5.0)
   - SDWebImage
   - SnapKit
+  - SwiftGen
   - Toast-Swift
 
 SPEC REPOS:
@@ -769,7 +784,9 @@ SPEC REPOS:
     - Alamofire
     - BoringSSL-GRPC
     - Differentiator
+    - Firebase
     - FirebaseAppCheckInterop
+    - FirebaseAuth
     - FirebaseAuthInterop
     - FirebaseCore
     - FirebaseCoreExtension
@@ -787,6 +804,7 @@ SPEC REPOS:
     - leveldb-library
     - Libuv-gRPC
     - nanopb
+    - ProgressHUD
     - PromisesObjC
     - RxCocoa
     - RxDataSources
@@ -794,6 +812,7 @@ SPEC REPOS:
     - RxSwift
     - SDWebImage
     - SnapKit
+    - SwiftGen
     - Toast-Swift
 
 SPEC CHECKSUMS:
@@ -801,7 +820,9 @@ SPEC CHECKSUMS:
   Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
   Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
+  Firebase: 0219acf760880eeec8ce479895bd7767466d9f81
   FirebaseAppCheckInterop: 8e907eea79958960a8bd2058e067f31e03a7914b
+  FirebaseAuth: dd64c01631df724b09f33e584625775c52f7d71f
   FirebaseAuthInterop: 46201190fe90ef1f581513eb0f9fa3d7820e7d6d
   FirebaseCore: e317665b9d744727a97e623edbbed009320afdd7
   FirebaseCoreExtension: f17247ba8c61e4d3c8d136b5e2de3cb4ac6a85b6
@@ -819,6 +840,7 @@ SPEC CHECKSUMS:
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
+  ProgressHUD: 355915c8f033e626788fa9b0d99d06e8691595ab
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
   RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
@@ -826,8 +848,9 @@ SPEC CHECKSUMS:
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
   SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
   SnapKit: e01d52ebb8ddbc333eefe2132acf85c8227d9c25
+  SwiftGen: 1366a7f71aeef49954ca5a63ba4bef6b0f24138c
   Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
 
-PODFILE CHECKSUM: a4158c5c4df7726efd28be37aa8f61abc727abab
+PODFILE CHECKSUM: f9040cb7e6ae64fce5bcd097d125976cf8589dce
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.12.1

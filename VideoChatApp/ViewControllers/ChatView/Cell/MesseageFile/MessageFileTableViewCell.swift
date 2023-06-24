@@ -13,11 +13,12 @@ protocol MessageFileProtocol: NSObject {
 
 class MessageFileTableViewCell: UITableViewCell {
 
-    @IBOutlet weak var progressView: UIProgressView!
+    @IBOutlet weak var imvAvata: UIImageView!
     @IBOutlet weak var stv: UIStackView!
     @IBOutlet weak var vContent: UIView!
     @IBOutlet weak var lbName: UILabel!
     @IBOutlet weak var lbTime: UILabel!
+    @IBOutlet weak var lbStatus: UILabel!
     @IBOutlet weak var btnOpenFile: UIButton!
     
     var fileURL: URL?
@@ -57,12 +58,6 @@ class MessageFileTableViewCell: UITableViewCell {
         }
         self.lbName.text = fileName
         self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
-        self.progressView.progress = Float((item.progress ?? 0.0)/100.0)
-        if progressView.progress == 1 {
-            self.progressView.isHidden = true
-        } else {
-            self.progressView.isHidden = false
-        }
         guard let fileURL = URL(string: item.fileURL ?? "") else {
             self.vContent.backgroundColor = .lightGray.withAlphaComponent(0.5)
             self.btnOpenFile.isEnabled = false

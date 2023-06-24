@@ -12,6 +12,7 @@ import FirebaseFirestore
 import FirebaseMessaging
 import AVFoundation
 import UserNotifications
+import FirebaseAuth
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
@@ -19,8 +20,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.window = UIApplication.shared.keyWindow?.window
-        IQKeyboardManager.shared.enable = true
-        IQKeyboardManager.shared.enableAutoToolbar = false
+//        IQKeyboardManager.shared.enable = true
+//        IQKeyboardManager.shared.enableAutoToolbar = false
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
@@ -115,7 +116,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 if let tabbar = navigation.topViewController as? UITabBarController {
                     tabbar.selectedIndex = 0
                     let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
-                    chatVC.chatViewModel.uid2 = uid
+                    chatVC.viewModel.uid2 = uid
                     navigation.pushViewController(chatVC, animated: true)
                 }
             }
@@ -128,13 +129,18 @@ extension AppDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         print("Xử lý thông báo đẩy khi ứng dụng đang chạy")
         // Create a local notification to display the message
-
+        if Auth.auth().canHandleNotification(userInfo) {
+                completionHandler(.noData)
+                return
+        }
+            // This notification is not auth related, developer should handle it.
         completionHandler(.newData)
     }
     
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         print("deviceToken", deviceToken)
         Messaging.messaging().apnsToken = deviceToken
+        Auth.auth().setAPNSToken(deviceToken, type: .sandbox)
         updateFirestorePushTokenIfNeeded()
     }
     

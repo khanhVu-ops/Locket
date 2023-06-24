@@ -38,18 +38,18 @@ class LoginViewModel {
         for user in users {
             if user.username! == username {
                 self.loadingBehavior.accept(false)
-                if user.password! == password {
-                    UserDefaultManager.shared.updateIDWhenLogin(id: user.id!)
-                    FirebaseManager.shared.updateUserActive(isActive: true) { err in
-                        guard err == nil else {
-                            completion(.getUserError)
-                            return
-                        }
-                    }
-                    completion(nil)
-                } else {
-                    completion(.passwordFailed)
-                }
+//                if user.password! == password {
+//                    UserDefaultManager.shared.updateIDWhenLogin(id: user.id!)
+//                    FirebaseManager.shared.updateUserActive(isActive: true) { err in
+//                        guard err == nil else {
+//                            completion(.getUserError)
+//                            return
+//                        }
+//                    }
+//                    completion(nil)
+//                } else {
+//                    completion(.passwordFailed)
+//                }
                 return
             }
         }

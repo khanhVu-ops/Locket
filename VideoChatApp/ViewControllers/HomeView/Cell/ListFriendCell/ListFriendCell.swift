@@ -45,11 +45,11 @@ class ListFriendCell: UITableViewCell {
 extension ListFriendCell: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: 100, height: 120)
+        return CGSize(width: 80, height: self.cltvListUser.frame.height)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
-        chatVC.chatViewModel.uid2 = self.viewModel?.listUsers.value[indexPath.item].id
+        let chatVC = ChatViewController()
+        chatVC.viewModel.uid2 = self.viewModel?.listUsers.value[indexPath.item].id
         self.homeVC?.navigationController?.pushViewController(chatVC, animated: true)
     }
 }

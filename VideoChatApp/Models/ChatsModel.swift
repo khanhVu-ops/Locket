@@ -7,46 +7,70 @@
 
 import Foundation
 import FirebaseFirestore
-class ChatModel {
+
+class ChatModel: NSObject, JsonInitObject {
     var users: [String]?
-    var roomName: String?
-    var roomURL: String?
-    var nickNames: [String]?
-    var unreadCount: [Int]?
+    var conversationID: String?
+    var conversationName: String?
+    var conversationAvata: String?
+    var unreadArray: [Int]?
+    var lastMessageType: MessageType?
     var lastMessage: String?
     var lastCreated: Timestamp?
     var lastSenderID: String?
-    
-    convenience init(users: [String]?, roomName: String? = nil, roomURL: String? = nil, nickNames: [String]? = nil, unreadCount: [Int]? = nil, lastMessage: String? = nil, lastCreated: Timestamp? = nil, lastSenderID: String? = nil) {
+    var uid2: String = ""
+
+    convenience init(users: [String]?, conversationID: String? = nil, conversationName: String? = nil, conversationAvata: String? = nil, unreadArray: [Int]? = nil, lastMessageType: MessageType? = .text, lastMessage: String? = nil, lastCreated: Timestamp? = nil, lastSenderID: String? = nil) {
         self.init()
         self.users = users
-        self.roomName = roomName
-        self.roomURL = roomURL
-        self.nickNames = nickNames
-        self.unreadCount = unreadCount
+        self.conversationID = conversationID
+        self.conversationName = conversationName
+        self.conversationAvata = conversationAvata
+        self.unreadArray = unreadArray
+        self.lastMessageType = lastMessageType
         self.lastMessage = lastMessage
         self.lastCreated = lastCreated
         self.lastSenderID = lastSenderID
     }
     
-    convenience init(json: [String : Any]) {
+    required convenience init(json: [String : Any]) {
         self.init()
-        
         for (key, value) in json {
             if key == "users", let wrapValue = value as? [String] {
                 self.users = wrapValue
+                for id in wrapValue {
+                    if id != UserDefaultManager.shared.getID() {
+                        uid2 = id
+                    }
+                }
             }
-            if key == "roomName", let wrapValue = value as? String {
-                self.roomName = wrapValue
+            if key == "conversationID", let wrapValue = value as? String {
+                self.conversationID = wrapValue
             }
-            if key == "roomURL", let wrapValue = value as? String {
-                self.roomURL = wrapValue
+            if key == "conversationName", let wrapValue = value as? String {
+                self.conversationName = wrapValue
             }
-            if key == "nickNames", let wrapValue = value as? [String] {
-                self.nickNames = wrapValue
+            if key == "conversationAvata", let wrapValue = value as? String {
+                self.conversationAvata = wrapValue
             }
-            if key == "unreadCount", let wrapValue = value as? [Int] {
-                self.unreadCount = wrapValue
+            if key == "unreadArray", let wrapValue = value as? [Int] {
+                self.unreadArray = wrapValue
+            }
+            if key == "lastMessageType", let wrapValue = value as? Int {
+                switch wrapValue {
+                case 1:
+                    self.lastMessageType = .text
+                case 2:
+                    self.lastMessageType = .image
+                case 3:
+                    self.lastMessageType = .video
+                case 4:
+                    self.lastMessageType = .audio
+                case 5:
+                    self.lastMessageType = .file
+                default:
+                    break
+                }
             }
             if key == "lastMessage", let wrapValue = value as? String {
                 self.lastMessage = wrapValue
@@ -63,20 +87,14 @@ class ChatModel {
     func convertToDictionary() -> [String: Any] {
         return [
             "users": self.users ?? [],
-            "roomName": self.roomName ?? "",
-            "roomURL": self.roomURL ?? "",
-            "nickNames": self.nickNames ?? [],
-            "unreadCount": self.unreadCount ?? [],
+            "conversationName": self.conversationName ?? "",
+            "conversationID": self.conversationID ?? "",
+            "conversationAvata": self.conversationAvata ?? "",
+            "unreadArray": self.unreadArray ?? [],
+            "lastMessageType": self.lastMessageType ?? .text,
             "lastMessage": self.lastMessage ?? "",
             "lastCreated": self.lastCreated ?? "",
             "lastSenderID": self.lastSenderID ?? ""
         ] as [String : Any]
     }
-    
-    func updateNameAndRoomURL(name: String?, roomURL: String?) {
-        self.roomName = name
-        self.roomURL = roomURL
-    }
-    
-    
 }

@@ -12,27 +12,27 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="ListUserCollectionViewCell" customModule="VideoChatApp" customModuleProvider="target">
-            <rect key="frame" x="0.0" y="0.0" width="100" height="139"/>
+            <rect key="frame" x="0.0" y="0.0" width="80" height="129"/>
             <autoresizingMask key="autoresizingMask"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
-                <rect key="frame" x="0.0" y="0.0" width="100" height="139"/>
+                <rect key="frame" x="0.0" y="0.0" width="80" height="129"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="avata1" translatesAutoresizingMaskIntoConstraints="NO" id="02s-Gl-HCa">
-                        <rect key="frame" x="10" y="10" width="80" height="80"/>
+                        <rect key="frame" x="10" y="0.0" width="60" height="60"/>
                         <constraints>
-                            <constraint firstAttribute="width" constant="80" id="rKB-Mz-eRT"/>
+                            <constraint firstAttribute="width" constant="60" id="rKB-Mz-eRT"/>
                             <constraint firstAttribute="width" secondItem="02s-Gl-HCa" secondAttribute="height" multiplier="1:1" id="yya-v4-Ce7"/>
                         </constraints>
                     </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1FH-C4-hTg">
-                        <rect key="frame" x="10" y="95" width="80" height="34"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1FH-C4-hTg">
+                        <rect key="frame" x="10" y="65" width="60" height="16"/>
+                        <fontDescription key="fontDescription" type="system" weight="medium" pointSize="13"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="QqK-gh-rul">
-                        <rect key="frame" x="65" y="75" width="15" height="15"/>
+                        <rect key="frame" x="55" y="45" width="15" height="15"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstAttribute="width" secondItem="QqK-gh-rul" secondAttribute="height" multiplier="1:1" id="n9b-gH-Sox"/>
@@ -44,22 +44,22 @@
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="QqK-gh-rul" firstAttribute="bottom" secondItem="02s-Gl-HCa" secondAttribute="bottom" id="745-IJ-zHQ"/>
-                <constraint firstItem="QqK-gh-rul" firstAttribute="trailing" secondItem="02s-Gl-HCa" secondAttribute="trailing" constant="-10" id="9w3-A6-LLA"/>
-                <constraint firstAttribute="bottom" secondItem="1FH-C4-hTg" secondAttribute="bottom" constant="10" id="Uuh-kH-Mly"/>
+                <constraint firstItem="QqK-gh-rul" firstAttribute="trailing" secondItem="02s-Gl-HCa" secondAttribute="trailing" id="9w3-A6-LLA"/>
+                <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="1FH-C4-hTg" secondAttribute="bottom" id="Uuh-kH-Mly"/>
                 <constraint firstAttribute="trailing" secondItem="02s-Gl-HCa" secondAttribute="trailing" constant="10" id="a2h-2m-9px"/>
                 <constraint firstAttribute="trailing" secondItem="1FH-C4-hTg" secondAttribute="trailing" constant="10" id="hOG-SM-lzY"/>
                 <constraint firstItem="1FH-C4-hTg" firstAttribute="top" secondItem="02s-Gl-HCa" secondAttribute="bottom" constant="5" id="lc6-Mi-1di"/>
                 <constraint firstItem="1FH-C4-hTg" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="10" id="sXJ-8Q-ybb"/>
                 <constraint firstItem="02s-Gl-HCa" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="10" id="tDv-6x-RhT"/>
-                <constraint firstItem="02s-Gl-HCa" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="vqN-0O-HXW"/>
+                <constraint firstItem="02s-Gl-HCa" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="vqN-0O-HXW"/>
             </constraints>
-            <size key="customSize" width="100" height="139"/>
+            <size key="customSize" width="80" height="129"/>
             <connections>
                 <outlet property="imvAvata" destination="02s-Gl-HCa" id="xkD-7y-9dF"/>
                 <outlet property="lbUsername" destination="1FH-C4-hTg" id="K0n-E5-tdo"/>
                 <outlet property="vActive" destination="QqK-gh-rul" id="yvo-0k-TtX"/>
             </connections>
-            <point key="canvasLocation" x="81.159420289855078" y="21.763392857142858"/>
+            <point key="canvasLocation" x="66.666666666666671" y="18.415178571428569"/>
         </collectionViewCell>
     </objects>
     <resources>

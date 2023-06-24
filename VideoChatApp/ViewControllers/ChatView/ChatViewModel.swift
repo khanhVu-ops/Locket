@@ -13,7 +13,7 @@ import FirebaseStorage
 import Photos
 import UIKit
 import QuickLook
-class ChatViewModel {
+class ChatViewModel: BaseViewModel {
     let txtChatPlaceHolder = "Type here ..."
     var listMessages = [MessageModel]()
     var listSectionsMessages = BehaviorRelay<[SectionModel]>(value: [])
@@ -26,14 +26,21 @@ class ChatViewModel {
     var roomURL = BehaviorRelay<String>(value: "")
     var isActive = BehaviorRelay<Bool>(value: false)
     var uid2: String?
-    var originalConstraintValue: CGFloat = 0
     var imageSentRelay = PublishRelay<UIImage>()
     var lastDocument: QueryDocumentSnapshot?
     var newMessagesFetch = PublishRelay<[MessageModel]>()
     var tbvListMessage: UITableView?
-    var txtHeightDefault: CGFloat = 0
     var fileURLPreview: URL?
-    let user = UserDefaultManager.shared.getUser()
+    // textview
+    var currentHeightTv: CGFloat = 0
+    var defaultHeightTv: CGFloat = 0
+    var maxheightTv: CGFloat = 120
+    
+    
+    func getListMessage() {
+        
+    }
+    
     func getData() {
         if let uid2 = uid2 {
             self.getInfoUsers2WithUID(uid2: uid2)
@@ -181,7 +188,7 @@ class ChatViewModel {
                 }
                 if self.user2?.isChating == false {
                     FirebaseManager.shared.updateUnreadMessage(id: self.uid2!, clearUnread: false, roomRef: roomRef)
-                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification, badge: (self.user2?.totalBadge ?? 0) + 1)
+//                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification, badge: (self.user2?.totalBadge ?? 0) + 1)
                 }
                 completion(err, messRef)
             }
@@ -190,7 +197,7 @@ class ChatViewModel {
                 completion(nil, nil)
                 return
             }
-            let roomData = ChatModel(users: [uid, user2.id!], roomName: "Room Name", roomURL: user2.avataURL, nickNames: [self.user!.username!, self.user2!.username!], unreadCount: [0, 0])
+            let roomData = ChatModel(users: [uid, user2.id!], unreadArray: [0, 0])
             self.createNewRoom(newRoom: roomData, content: content!) { roomRef, messRef, error in
                 
                 guard let roomRef = roomRef, let messRef = messRef, error == nil else {
@@ -200,7 +207,7 @@ class ChatViewModel {
                 
                 if user2.isChating == false {
                     FirebaseManager.shared.updateUnreadMessage(id: self.uid2!, clearUnread: false, roomRef: roomRef)
-                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification, badge: (self.user2?.totalBadge ?? 0) + 1)
+//                    APIService.shared.pushNotificationMessage(fcmToken: self.user2?.fcmToken, uid: self.uid, title: self.user!.username, body: bodyNotification, badge: (self.user2?.totalBadge ?? 0) + 1)
                     
                 }
                 completion(nil, messRef)
@@ -354,7 +361,7 @@ class ChatViewModel {
                     
                 } else {
                     print("Can't get url")
-                    listImages.append(Constants.Image.imageDefault!)
+                    listImages.append(Constants.Image.imageDefault)
                 }
             }
         }
@@ -429,14 +436,14 @@ class ChatViewModel {
                 var numberColumn: CGFloat
                 if count == 2  || count == 4 {
                     div = CGFloat(count)/2
-                    spaceColumn = CGFloat(Constants.spaceImageMessage)
+                    spaceColumn = CGFloat(2)
                     numberColumn = 2
                 } else {
                     div = ceil(Double(count)/3)
-                    spaceColumn = CGFloat(Constants.spaceImageMessage) * 2
+                    spaceColumn = CGFloat(2) * 2
                     numberColumn = 3
                 }
-                let spaceRow = CGFloat(Constants.spaceImageMessage * (Int(div) - 1))
+                let spaceRow = CGFloat(2 * (Int(div) - 1))
                 let widthImage = (messageWidth - spaceColumn)/numberColumn
                 return widthImage * div + spaceRow + 45
             } else {

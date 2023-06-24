@@ -13,7 +13,9 @@ class MessageImageTableViewCell: UITableViewCell {
 
     @IBOutlet weak var cltvListImage: UICollectionView!
     @IBOutlet weak var lbTime: UILabel!
+    @IBOutlet weak var lbStatus: UILabel!
     @IBOutlet weak var stvImage: UIStackView!
+    @IBOutlet weak var imvAvata: UIImageView!
     
     var listImage = BehaviorRelay<[String]>(value: [])
     let disposeBag = DisposeBag()
@@ -72,10 +74,10 @@ class MessageImageTableViewCell: UITableViewCell {
             var spaceCol: CGFloat
             var numberItemOfRow: CGFloat
             if count == 2 || count == 4 {
-                spaceCol = CGFloat(Constants.spaceImageMessage)
+                spaceCol = CGFloat(2)
                 numberItemOfRow = 2
             } else {
-                spaceCol = CGFloat(Constants.spaceImageMessage) * 2
+                spaceCol = CGFloat(2) * 2
                 numberItemOfRow = 3
             }
             let widthItem = (self.cltvListImage.frame.width - spaceCol)/numberItemOfRow
@@ -92,7 +94,7 @@ extension MessageImageTableViewCell: UICollectionViewDelegate, UICollectionViewD
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return CGFloat(Constants.spaceImageMessage)
+        return CGFloat(2)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {

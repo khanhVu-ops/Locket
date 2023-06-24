@@ -17,4 +17,7 @@ pod 'SDWebImage'
 pod 'Toast-Swift'
 pod 'SnapKit'
 pod 'Alamofire'
+pod 'SwiftGen'
+pod 'ProgressHUD'
+pod 'Firebase/Auth'
 end

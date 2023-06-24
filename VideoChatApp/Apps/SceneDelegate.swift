@@ -16,7 +16,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let st = UIStoryboard(name: "Main", bundle: nil)
         var rootVC = UIViewController()
         if UserDefaultManager.shared.getID() != nil {
-            rootVC = st.instantiateViewController(withIdentifier: "TabBarController") as! TabBarController
+            rootVC = TabBarController()
         } else {
             rootVC = st.instantiateViewController(withIdentifier: "IntroViewController") as! IntroViewController
         }

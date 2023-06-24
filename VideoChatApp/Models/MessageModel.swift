@@ -9,12 +9,12 @@ import Foundation
 import FirebaseFirestore
 import Differentiator
 
-enum MessageType: String {
-    case text = "text"
-    case image = "image"
-    case video = "video"
-    case audio = "audio"
-    case file = "file"
+enum MessageType: Int {
+    case text = 1
+    case image = 2
+    case video = 3
+    case audio = 4
+    case file = 5
 }
 
 struct SectionModel {
@@ -30,8 +30,9 @@ extension SectionModel: SectionModelType {
     }
 }
 
-class MessageModel {
+class MessageModel: NSObject, JsonInitObject {
     var type: MessageType?
+    var messageID: String?
     var message: String?
     var imageURL: [String]?
     var ratioImage: Double?
@@ -46,9 +47,10 @@ class MessageModel {
     var created: Timestamp?
     
 
-    convenience init(type: MessageType, message: String? = nil, imageURL: [String]? = nil, ratioImage: Double? = nil, thumbVideo: String? = nil, videoURL: String? = nil, audioURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, progress: Double? = nil, senderID: String, created: Timestamp) {
+    convenience init(type: MessageType, messageID: String? = nil, message: String? = nil, imageURL: [String]? = nil, ratioImage: Double? = nil, thumbVideo: String? = nil, videoURL: String? = nil, audioURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, progress: Double? = nil, senderID: String, created: Timestamp) {
         self.init()
         self.type = type
+        self.messageID = messageID
         self.message = message
         self.imageURL = imageURL
         self.ratioImage = ratioImage
@@ -63,21 +65,24 @@ class MessageModel {
         self.created = created
     }
     
-    convenience init(json: [String: Any]) {
+    required convenience init(json: [String: Any]) {
         self.init()
         for (key, value) in json {
-            if key == "type", let wrapValue = value as? String {
-                if wrapValue == "video" {
-                    self.type = .video
-                } else if wrapValue == "image" {
+            if key == "type", let wrapValue = value as? Int {
+                if wrapValue == 2 {
                     self.type = .image
-                } else if wrapValue == "file" {
-                    self.type = .file
-                } else if wrapValue == "audio" {
+                } else if wrapValue == 3 {
+                    self.type = .video
+                } else if wrapValue == 4 {
                     self.type = .audio
+                } else if wrapValue == 5 {
+                    self.type = .file
                 } else {
                     self.type = .text
                 }
+            }
+            if key == "messageID", let wrapValue = value as? String {
+                self.messageID = wrapValue
             }
             if key == "message", let wrapValue = value as? String {
                 self.message = wrapValue
@@ -121,7 +126,8 @@ class MessageModel {
     
     func convertToDictionary() -> [String: Any] {
         return [
-            "type": self.type?.rawValue ?? "",
+            "type": self.type?.rawValue ?? 1,
+            "messageID": self.messageID ?? "",
             "message": self.message ?? "",
             "imageURL": self.imageURL ?? [],
             "ratioImage": self.ratioImage ?? 1.0,
