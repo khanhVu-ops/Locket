@@ -59,7 +59,7 @@ final class AuthFirebaseService: BaseFirebaseService {
         }
     }
     
-    func registerUser(uid: String, phoneNumber: String, username: String) -> Observable<Bool> {
+    func registerUser(uid: String, phoneNumber: String, username: String) -> Observable<String> {
         let path = fireStore.document("users/\(uid)")
         let newUser = UserModel(id: uid, phoneNumber: phoneNumber, username: username, avataURL: "", isActive: true, fcmToken: []).convertToDictionary()
         UserDefaultManager.shared.setID(id: uid)

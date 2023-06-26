@@ -49,7 +49,7 @@ extension ListFriendCell: UICollectionViewDelegate, UICollectionViewDelegateFlow
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let chatVC = ChatViewController()
-        chatVC.viewModel.uid2 = self.viewModel?.listUsers.value[indexPath.item].id
+        chatVC.viewModel.uid2 = self.viewModel?.listUsers.value[indexPath.item].id ?? ""
         self.homeVC?.navigationController?.pushViewController(chatVC, animated: true)
     }
 }

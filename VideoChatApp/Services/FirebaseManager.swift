@@ -15,9 +15,9 @@ protocol FirestoreManagerProtocol {
     func getUserWithID(id: String, completion: @escaping (UserModel?, Error?) -> Void)
     func getUsers(completion: @escaping ([UserModel]?, Error?) -> Void)
     func getUsersLogin(completion: @escaping ([UserModel]?, Error?) -> Void)
-    func creatNewChat(newRoom: ChatModel, content: MessageModel, completion: @escaping (DocumentReference?, DocumentReference?, Error?) -> Void)
+    func creatNewChat(newRoom: ConverationModel, content: MessageModel, completion: @escaping (DocumentReference?, DocumentReference?, Error?) -> Void)
     func addNewMessage(content: MessageModel,docRef: DocumentReference, completion: @escaping(Error?, DocumentReference?)->Void)
-    func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void)
+    func getListChats(completion: @escaping([ConverationModel]?, [DocumentReference]?, Error?) -> Void)
     func getMessagesWithLastDoc(docRef: DocumentReference, lastDocument: QueryDocumentSnapshot?, limitQuery: Int, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getMessages(docRef: DocumentReference, completion: @escaping([MessageModel]?, QueryDocumentSnapshot?, Error?)->Void)
     func getDocumentReferenceWithUserID(userId2: String, completion: @escaping(DocumentReference?, Error?)->Void)
@@ -111,7 +111,7 @@ class FirestoreManager: FirestoreManagerProtocol {
         }
     }
     
-    func creatNewChat(newRoom: ChatModel, content: MessageModel, completion: @escaping (DocumentReference?, DocumentReference?, Error?) -> Void) {
+    func creatNewChat(newRoom: ConverationModel, content: MessageModel, completion: @escaping (DocumentReference?, DocumentReference?, Error?) -> Void) {
         let data = newRoom.convertToDictionary()
         let docRef = Firestore.firestore().collection(chatsCollection).document()
         docRef.setData(data) { (error) in
@@ -155,7 +155,7 @@ class FirestoreManager: FirestoreManagerProtocol {
         })
     }
     
-    func getListChats(completion: @escaping([ChatModel]?, [DocumentReference]?, Error?) -> Void) {
+    func getListChats(completion: @escaping([ConverationModel]?, [DocumentReference]?, Error?) -> Void) {
         guard let userID = UserDefaultManager.shared.getID() else {
             return
         }
@@ -165,10 +165,10 @@ class FirestoreManager: FirestoreManagerProtocol {
                 completion(nil,nil, error)
                 return
             }
-            var listChats: [ChatModel] = []
+            var listChats: [ConverationModel] = []
             var listDocs: [DocumentReference] = []
             for document in snapshot.documents {
-                let roomChat = ChatModel(json: document.data())
+                let roomChat = ConverationModel(json: document.data())
                 listChats.append(roomChat)
                 listDocs.append(document.reference)
             }
@@ -186,7 +186,7 @@ class FirestoreManager: FirestoreManagerProtocol {
                 return
             }
             for document in snapshot.documents {
-                let room = ChatModel(json: document.data())
+                let room = ConverationModel(json: document.data())
                 if room.users?.contains(where: {$0 == userId2}) == true {
                     completion(document.reference, nil)
                 }
@@ -287,7 +287,7 @@ class FirestoreManager: FirestoreManagerProtocol {
             guard let data = snapshot?.data(), error == nil else {
                 return
             }
-            let chatRoom = ChatModel(json: data)
+            let chatRoom = ConverationModel(json: data)
             for (index, value) in chatRoom.users!.enumerated() {
                 if value == id {
                     if clearUnread {

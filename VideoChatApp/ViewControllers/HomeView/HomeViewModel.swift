@@ -10,7 +10,7 @@ import RxSwift
 import RxCocoa
 import FirebaseFirestore
 class HomeViewModel: BaseViewModel {
-    var listChats = BehaviorRelay<[ChatModel]>(value: [])
+    var listChats = BehaviorRelay<[ConverationModel]>(value: [])
     var listUsers = BehaviorRelay<[UserModel]>(value: [])
     var listDocRefChats = BehaviorRelay<[DocumentReference]>(value: [])
     var listSearchs = BehaviorRelay<[UserModel]>(value: [])
@@ -21,7 +21,7 @@ class HomeViewModel: BaseViewModel {
         return dataUpdate.asObservable()
     }
     
-    func getListChats() -> Observable<[ChatModel]> {
+    func getListChats() -> Observable<[ConverationModel]> {
         return FirebaseService.shared.getListChats()
             .trackError(errorTracker)
             .asObservable()

@@ -74,11 +74,11 @@ class BaseFirebaseService {
     }
 
     func setData(path: DocumentReference, data: [String: Any],
-                 success: @escaping (Bool) -> Void,
+                 success: @escaping (String) -> Void,
                  failure: @escaping (_ message: String) -> Void) {
         path.setData(data) { error in
             if error == nil {
-                success(true)
+                success(path.documentID)
             } else {
                 failure(error!.localizedDescription)
             }
@@ -185,10 +185,10 @@ extension BaseFirebaseService {
         }
     }
     
-    func rxSetData(path: DocumentReference, data: [String : Any]) -> Observable<Bool> {
-        Observable<Bool>.create { observable -> Disposable in
-            self.setData(path: path, data: data) { isSuccess in
-                observable.onNext(isSuccess)
+    func rxSetData(path: DocumentReference, data: [String : Any]) -> Observable<String> {
+        Observable<String>.create { observable -> Disposable in
+            self.setData(path: path, data: data) { documentID in
+                observable.onNext(documentID)
             } failure: { message in
                 observable.onError(AppError(code: .firebase, message: message))
             }

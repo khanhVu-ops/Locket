@@ -16,9 +16,9 @@ class EditInfoViewModel: BaseViewModel {
     var firstName = BehaviorRelay<String>(value: "")
     var lastName = BehaviorRelay<String>(value: "")
 
-    func registerUser() -> Driver<Bool> {
+    func registerUser() -> Driver<String> {
         let username = (firstName.value.trimSpaceAndNewLine() + " " + lastName.value.trimSpaceAndNewLine()).trimSpaceAndNewLine()
-        return FirebaseService.shared.registerUser(uid: uid, phoneNumber: phoneNumber, username: username)
+        return AuthFirebaseService.shared.registerUser(uid: uid, phoneNumber: phoneNumber, username: username)
             .trackActivity(loading)
             .trackError(errorTracker)
             .asDriverOnErrorJustComplete()

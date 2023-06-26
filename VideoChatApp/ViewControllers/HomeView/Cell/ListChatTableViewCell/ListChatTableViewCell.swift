@@ -47,7 +47,7 @@ class ListChatTableViewCell: UITableViewCell {
         self.vStatusActive.addBorder(borderWidth: 1, borderColor: .white)
     }
     
-    func configure(viewModel: HomeViewModel, item: ChatModel) {
+    func configure(viewModel: HomeViewModel, item: ConverationModel) {
         guard let uid = UserDefaultManager.shared.getID() else {
             return
         }
@@ -89,7 +89,7 @@ class ListChatTableViewCell: UITableViewCell {
         self.imvIconNewMessage.isHidden = !(unreadNumber > 0)
     }
     
-    func getUnreadNumber(item: ChatModel, uid: String) -> Int {
+    func getUnreadNumber(item: ConverationModel, uid: String) -> Int {
         guard let users = item.users,
               let unreadArray = item.unreadArray else {
             return 0

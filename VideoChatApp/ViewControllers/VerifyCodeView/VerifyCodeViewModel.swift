@@ -23,7 +23,7 @@ class VerifyCodeViewModel: BaseViewModel {
     }
     
     func checkAccountExits(_ uid: String) -> Single<UserModel> {
-        FirebaseService.shared.checkAccountExists(uid: uid)
+        AuthFirebaseService.shared.checkAccountExists(uid: uid)
 //            .trackActivity(loading)
     }
     

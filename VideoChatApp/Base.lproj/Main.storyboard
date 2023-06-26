@@ -503,19 +503,25 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="G6R-4a-7XV">
+                            <stackView opaque="NO" contentMode="scaleToFill" alignment="bottom" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="G6R-4a-7XV">
                                 <rect key="frame" x="0.0" y="363" width="414" height="170"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="aJt-re-9Vs">
-                                        <rect key="frame" x="0.0" y="0.0" width="414" height="85"/>
-                                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                        <nil key="textColor"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="HEc-B4-pyV">
-                                        <rect key="frame" x="0.0" y="85" width="414" height="85"/>
-                                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                                    </view>
+                                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="PH1-i3-joO">
+                                        <rect key="frame" x="0.0" y="145" width="25" height="25"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="25" id="G95-Bb-eo4"/>
+                                            <constraint firstAttribute="height" constant="25" id="UaA-76-gFQ"/>
+                                        </constraints>
+                                    </imageView>
+                                    <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="bottom" translatesAutoresizingMaskIntoConstraints="NO" id="MRW-vd-4Ld">
+                                        <rect key="frame" x="45" y="42" width="369" height="128"/>
+                                        <subviews>
+                                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TeF-vq-XSe">
+                                                <rect key="frame" x="203.5" y="0.0" width="165.5" height="128"/>
+                                                <color key="backgroundColor" systemColor="systemBlueColor"/>
+                                            </view>
+                                        </subviews>
+                                    </stackView>
                                 </subviews>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="170" id="PIR-0R-t6w"/>
@@ -527,6 +533,7 @@
                         <constraints>
                             <constraint firstItem="wYb-VX-hoa" firstAttribute="trailing" secondItem="G6R-4a-7XV" secondAttribute="trailing" id="80c-Tc-9h4"/>
                             <constraint firstItem="G6R-4a-7XV" firstAttribute="leading" secondItem="wYb-VX-hoa" secondAttribute="leading" id="fRw-qO-3Qy"/>
+                            <constraint firstItem="TeF-vq-XSe" firstAttribute="width" secondItem="wYb-VX-hoa" secondAttribute="width" multiplier="0.4" id="nFx-5P-DGI"/>
                             <constraint firstItem="G6R-4a-7XV" firstAttribute="centerY" secondItem="g1s-fz-JAA" secondAttribute="centerY" id="y5f-aG-K4r"/>
                         </constraints>
                     </view>
@@ -664,6 +671,9 @@
         <image name="plus" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemBlueColor">
+            <color red="0.0" green="0.47843137254901963" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
         <systemColor name="systemGray3Color">
             <color red="0.7803921568627451" green="0.7803921568627451" blue="0.80000000000000004" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>

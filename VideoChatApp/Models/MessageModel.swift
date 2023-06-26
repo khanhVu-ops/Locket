@@ -45,7 +45,7 @@ class MessageModel: NSObject, JsonInitObject {
     var senderID: String?
     var progress: Double?
     var created: Timestamp?
-    
+    var isBubble = true
 
     convenience init(type: MessageType, messageID: String? = nil, message: String? = nil, imageURL: [String]? = nil, ratioImage: Double? = nil, thumbVideo: String? = nil, videoURL: String? = nil, audioURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, progress: Double? = nil, senderID: String, created: Timestamp) {
         self.init()

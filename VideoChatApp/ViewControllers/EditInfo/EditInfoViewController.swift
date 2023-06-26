@@ -92,8 +92,9 @@ class EditInfoViewController: BaseViewController {
     
     func handleRegister() {
         self.viewModel.registerUser()
-            .drive(onNext: { [weak self] isSuccess in
+            .drive(onNext: { [weak self] userID in
                 print("go home")
+                UserDefaultManager.shared.setID(id: userID)
                 self?.goToTabbarController()
             })
             .disposed(by: disposeBag)

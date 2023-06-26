@@ -43,16 +43,20 @@ class ChatViewController: BaseViewController {
     }
     
     override func setUpUI() {
+        self.tbvListMessage.transform = CGAffineTransform.init(rotationAngle: (-(CGFloat)(Double.pi)))
+        automaticallyAdjustsScrollViewInsets = false
+        self.tbvListMessage.contentInset.top = 10
         self.vActive.circleClip()
         self.vActive.addBorder(borderWidth: 1, borderColor: .white)
         self.imvAvata.circleClip()
-        self.btnBack.setBackgroundImage(Constants.Image.backButton, for: .normal)
-        self.tbvListMessage.register(MessageTextCell.self, forCellReuseIdentifier: "MessageTextCell")
+        self.tbvListMessage.register(MessageTextCell.self, forCellReuseIdentifier: MessageTextCell.nibNameClass)
         self.tbvListMessage.register(MessageImageTableViewCell.nibClass, forCellReuseIdentifier: MessageImageTableViewCell.nibNameClass)
         self.tbvListMessage.register(MessageVideoTableViewCell.nibClass, forCellReuseIdentifier: MessageVideoTableViewCell.nibNameClass)
         self.tbvListMessage.register(MessageFileTableViewCell.nibClass, forCellReuseIdentifier: MessageFileTableViewCell.nibNameClass)
         self.tbvListMessage.register(MessageAudioTableViewCell.nibClass, forCellReuseIdentifier: MessageAudioTableViewCell.nibNameClass)
         
+        self.tbvListMessage.dataSource = self
+        self.tbvListMessage.delegate = self
         let refreshControl = UIRefreshControl()
         refreshControl.addTarget(self, action: #selector(refreshTable), for: .valueChanged)
         tbvListMessage.refreshControl = refreshControl
@@ -106,8 +110,11 @@ class ChatViewController: BaseViewController {
         
         self.btnSend.defaultTap()
             .subscribe(onNext: { [weak self] _ in
-                self?.btnSend.dimButton()
-                
+                guard let self = self else {
+                    return
+                }
+                self.btnSend.dimButton()
+                self.viewModel.handleTapBtnSend(type: .text)
             })
             .disposed(by: disposeBag)
         
@@ -152,6 +159,25 @@ class ChatViewController: BaseViewController {
     }
     
     override func bindViewModel() {
+        
+        // get list message
+        self.viewModel.getListMessages()
+            .subscribe(onNext: { [weak self] messages in
+                self?.viewModel.listMessages.accept(messages)
+                print("mess", messages.count)
+                self?.tbvListMessage.reloadData()
+            })
+            .disposed(by: disposeBag)
+        
+        self.viewModel.newMessageID.subscribe(onNext: { [weak self] messageID in
+            guard let self = self else {
+                return
+            }
+            
+            if self.viewModel.listMessages.value.count == 0 {
+                self.viewModel.getListMessages()
+            }
+        })
         // bind txtTypeHere
         self.txtTypeHere.rx
             .text

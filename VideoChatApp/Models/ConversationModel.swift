@@ -8,7 +8,7 @@
 import Foundation
 import FirebaseFirestore
 
-class ChatModel: NSObject, JsonInitObject {
+class ConverationModel: NSObject, JsonInitObject {
     var users: [String]?
     var conversationID: String?
     var conversationName: String?
@@ -91,7 +91,7 @@ class ChatModel: NSObject, JsonInitObject {
             "conversationID": self.conversationID ?? "",
             "conversationAvata": self.conversationAvata ?? "",
             "unreadArray": self.unreadArray ?? [],
-            "lastMessageType": self.lastMessageType ?? .text,
+            "lastMessageType": self.lastMessageType?.rawValue ?? 1,
             "lastMessage": self.lastMessage ?? "",
             "lastCreated": self.lastCreated ?? "",
             "lastSenderID": self.lastSenderID ?? ""

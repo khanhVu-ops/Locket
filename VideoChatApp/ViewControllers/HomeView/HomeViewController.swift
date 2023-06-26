@@ -60,7 +60,7 @@ class HomeViewController: BaseViewController {
     override func bindViewModel() {
         Observable.combineLatest(self.viewModel.getListChats(), self.viewModel.getListUsers())
             .subscribe(onNext: { [weak self] chats, users in
-                self?.viewModel.listChats.accept([ChatModel()] + chats)
+                self?.viewModel.listChats.accept([ConverationModel()] + chats)
                 self?.viewModel.listUsers.accept(users)
                 print("users", users.count)
                 self?.tbvListChats.reloadData()
@@ -129,9 +129,10 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         if tableView == tbvListChats {
             if indexPath.item > 0 {
                 chatVC.viewModel.uid2 = self.viewModel.listChats.value[indexPath.row].uid2
+                chatVC.viewModel.conversationID = self.viewModel.listChats.value[indexPath.row].conversationID ?? ""
             }
         } else {
-            chatVC.viewModel.uid2 = self.viewModel.listSearchs.value[indexPath.item].id
+            chatVC.viewModel.uid2 = self.viewModel.listSearchs.value[indexPath.item].id ?? ""
         }
         self.navigationController?.pushViewController(chatVC, animated: true)
         tableView.deselectRow(at: indexPath, animated: true)
