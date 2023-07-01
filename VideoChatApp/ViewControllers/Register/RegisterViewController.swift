@@ -97,6 +97,7 @@ class RegisterViewController: BaseViewController {
     func goToValidateCodeVC() {
 //        let loginVC  = VerifyCodeViewController()
 //        self.push(loginVC)
+//        UserDefaultManager.shared.setID(id: "b9oCvYOP5PQhqHZiGtC4ua4uHBG2")
         self.viewModel.sendPhoneCode(with: self.tfPhoneNumber.text ?? "")
             .drive(onNext: { [weak self] code in
                 print("codeeee:", code)

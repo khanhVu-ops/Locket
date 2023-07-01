@@ -5,6 +5,7 @@
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
@@ -17,44 +18,68 @@
                 <rect key="frame" x="0.0" y="0.0" width="170" height="128"/>
                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                 <subviews>
-                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bsY-Nx-mwk">
-                        <rect key="frame" x="0.0" y="0.0" width="170" height="128"/>
-                    </imageView>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Loading ..." textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="6" translatesAutoresizingMaskIntoConstraints="NO" id="1ql-zZ-o0Y">
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumFontSize="6" translatesAutoresizingMaskIntoConstraints="NO" id="1ql-zZ-o0Y">
                         <rect key="frame" x="5" y="5" width="160" height="118"/>
                         <fontDescription key="fontDescription" type="system" pointSize="12"/>
                         <nil key="textColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <button opaque="NO" contentMode="scaleAspectFit" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JRE-sW-nyu">
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="bsY-Nx-mwk">
                         <rect key="frame" x="0.0" y="0.0" width="170" height="128"/>
-                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                        <connections>
-                            <action selector="btnSelectItemTapped:" destination="gTV-IL-0wX" eventType="touchUpInside" id="LFI-4W-jE5"/>
-                        </connections>
-                    </button>
+                    </imageView>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NMv-8M-25D">
+                        <rect key="frame" x="127" y="102" width="33" height="16"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="13"/>
+                        <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="h8A-w4-QaR">
+                        <rect key="frame" x="65" y="44" width="40" height="40"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="40" id="89y-Ay-dY1"/>
+                            <constraint firstAttribute="width" constant="40" id="PR5-Ki-PWO"/>
+                        </constraints>
+                    </imageView>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1Wp-HY-M6K" customClass="ProgressView" customModule="VideoChatApp" customModuleProvider="target">
+                        <rect key="frame" x="75" y="54" width="20" height="20"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstAttribute="height" constant="20" id="QVB-LR-AJN"/>
+                            <constraint firstAttribute="width" constant="20" id="rfC-Sr-h7u"/>
+                        </constraints>
+                    </view>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="bsY-Nx-mwk" secondAttribute="bottom" id="0Zf-Ws-CjQ"/>
+                <constraint firstItem="h8A-w4-QaR" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="4ej-Sh-c8W"/>
                 <constraint firstAttribute="bottom" secondItem="1ql-zZ-o0Y" secondAttribute="bottom" constant="5" id="5a8-op-wGc"/>
+                <constraint firstAttribute="bottom" secondItem="NMv-8M-25D" secondAttribute="bottom" constant="10" id="8Ml-Q1-s8r"/>
                 <constraint firstItem="1ql-zZ-o0Y" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="5" id="AXT-X7-BMy"/>
-                <constraint firstAttribute="trailing" secondItem="JRE-sW-nyu" secondAttribute="trailing" id="FZo-d7-jfZ"/>
+                <constraint firstAttribute="trailing" secondItem="NMv-8M-25D" secondAttribute="trailing" constant="10" id="Bx2-uz-5XT"/>
+                <constraint firstItem="1Wp-HY-M6K" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="DWQ-Vh-eJq"/>
                 <constraint firstAttribute="trailing" secondItem="bsY-Nx-mwk" secondAttribute="trailing" id="Kje-q0-RFn"/>
-                <constraint firstItem="JRE-sW-nyu" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="N9D-pR-pbR"/>
-                <constraint firstAttribute="bottom" secondItem="JRE-sW-nyu" secondAttribute="bottom" id="O2M-bT-NpZ"/>
-                <constraint firstItem="JRE-sW-nyu" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="dkr-qh-iXf"/>
+                <constraint firstItem="1Wp-HY-M6K" firstAttribute="centerY" secondItem="gTV-IL-0wX" secondAttribute="centerY" id="feC-gK-emN"/>
                 <constraint firstItem="bsY-Nx-mwk" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="iRt-Uy-0aG"/>
                 <constraint firstItem="bsY-Nx-mwk" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="nXo-DO-uNa"/>
                 <constraint firstItem="1ql-zZ-o0Y" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="5" id="vyf-LB-D5W"/>
                 <constraint firstAttribute="trailing" secondItem="1ql-zZ-o0Y" secondAttribute="trailing" constant="5" id="wcp-g0-DZ8"/>
+                <constraint firstItem="h8A-w4-QaR" firstAttribute="centerX" secondItem="gTV-IL-0wX" secondAttribute="centerX" id="zba-pV-P5f"/>
             </constraints>
             <size key="customSize" width="170" height="128"/>
             <connections>
                 <outlet property="imv" destination="bsY-Nx-mwk" id="vKi-yF-ukp"/>
+                <outlet property="imvPlay" destination="h8A-w4-QaR" id="vh7-dv-iMH"/>
+                <outlet property="indicatorView" destination="1Wp-HY-M6K" id="QHy-bB-gmF"/>
+                <outlet property="lbDuration" destination="NMv-8M-25D" id="ft6-zW-6Ea"/>
             </connections>
             <point key="canvasLocation" x="224.63768115942031" y="81.696428571428569"/>
         </collectionViewCell>
     </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>

@@ -32,14 +32,18 @@ class BaseViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         addKeyboardHandler()
-        print("===> go to ", self.nibName)
+        print("===> go to ", self.nibName  ?? " vaix of")
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         removeKeyboardHandler()
         dismissKeyboard()
-        print("<=== dismiss ", self.nibName)
+    }
+    
+    deinit {
+        print("<=== dismiss ", self.nibName ?? "Vai o")
+
     }
     func setUpUI() {}
     
@@ -85,9 +89,11 @@ extension BaseViewController {
     
     @objc
     private func keyboardWillChangeFrame(_ notification: NSNotification) {
-        animateWithKeyboard(notification: notification) {
+        animateWithKeyboard(notification: notification) { [weak self]
             (keyboardFrame, duration) in
-            
+            guard let self = self else {
+                return
+            }
             let keyboardHeight = self.view.bounds.height - keyboardFrame.origin.y
             print(keyboardHeight)
             let isShow = keyboardFrame.height > 0 ? true : false

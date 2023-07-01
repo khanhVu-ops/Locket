@@ -101,13 +101,17 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if tableView == tbvListChats {
             if indexPath.row == 0 {
-                let cell = tableView.dequeueReusableCell(withIdentifier: "ListFriendCell") as! ListFriendCell
-                cell.homeVC = self
+                let cell = tableView.dequeueReusableCell(withIdentifier: ListFriendCell.nibNameClass) as! ListFriendCell
                 cell.bindingToViewModel(viewModel: self.viewModel)
+                cell.actionSelectCell = { [weak self] index in
+                    let chatVC = ChatViewController()
+                    chatVC.viewModel.uid2 = self?.viewModel.listUsers.value[index.item].id ?? ""
+                    self?.push(chatVC)
+                }
                 return cell
             } else {
                 let element = self.viewModel.listChats.value[indexPath.row]
-                let cell = tableView.dequeueReusableCell(withIdentifier: "ListChatTableViewCell", for: IndexPath(row: indexPath.row, section: 0)) as! ListChatTableViewCell
+                let cell = tableView.dequeueReusableCell(withIdentifier: ListChatTableViewCell.nibNameClass, for: IndexPath(row: indexPath.row, section: 0)) as! ListChatTableViewCell
                 cell.configure(viewModel: self.viewModel, item: element)
                 return cell
             }
@@ -138,6 +142,7 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }
+
 extension HomeViewController: UISearchBarDelegate {
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         self.handleWhenFinishSearch()

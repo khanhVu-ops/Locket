@@ -13,8 +13,8 @@ class ListFriendCell: UITableViewCell {
 
     @IBOutlet weak var cltvListUser: UICollectionView!
     let disposeBag = DisposeBag()
-    weak var viewModel: HomeViewModel?
-    weak var homeVC: HomeViewController?
+    
+    var actionSelectCell: ((IndexPath) -> Void)?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -28,14 +28,13 @@ class ListFriendCell: UITableViewCell {
     }
     
     func setUpView() {
-        self.cltvListUser.register(UINib(nibName: "ListUserCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "ListUserCollectionViewCell")
+        self.cltvListUser.register(ListUserCollectionViewCell.nibClass, forCellWithReuseIdentifier: ListUserCollectionViewCell.nibNameClass)
     }
     
     func bindingToViewModel(viewModel: HomeViewModel?) {
         self.cltvListUser.delegate = nil
         self.cltvListUser.dataSource = nil
-        self.viewModel = viewModel
-        viewModel?.listUsers.bind(to: self.cltvListUser.rx.items(cellIdentifier: "ListUserCollectionViewCell", cellType: ListUserCollectionViewCell.self)) {row, item, cell in
+        viewModel?.listUsers.bind(to: self.cltvListUser.rx.items(cellIdentifier: ListUserCollectionViewCell.nibNameClass, cellType: ListUserCollectionViewCell.self)) {row, item, cell in
             cell.configure(item: item)
         }.disposed(by: disposeBag)
         self.cltvListUser.rx.setDelegate(self).disposed(by: disposeBag)
@@ -48,8 +47,8 @@ extension ListFriendCell: UICollectionViewDelegate, UICollectionViewDelegateFlow
         return CGSize(width: 80, height: self.cltvListUser.frame.height)
     }
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let chatVC = ChatViewController()
-        chatVC.viewModel.uid2 = self.viewModel?.listUsers.value[indexPath.item].id ?? ""
-        self.homeVC?.navigationController?.pushViewController(chatVC, animated: true)
+        if let actionSelectCell = actionSelectCell {
+            actionSelectCell(indexPath)
+        }
     }
 }

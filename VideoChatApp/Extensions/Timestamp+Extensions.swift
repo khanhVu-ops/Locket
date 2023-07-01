@@ -9,18 +9,25 @@ import Foundation
 import UIKit
 import FirebaseFirestore
 extension Timestamp {
-    func convertDateToTimeString() -> String{
+    func convertTimestampToTimeString() -> String{
         let dateFormatter = DateFormatter()
         let calendar = Calendar.current // lấy lịch hiện tại
-        let year = calendar.component(.year, from: self.dateValue()) // lấy giá trị năm từ đối tượng date
-        let isCurrentDay = Calendar.current.isDate(self.dateValue(), inSameDayAs: Date())
-
-        let isCurrentYear = year == calendar.component(.year, from: Date())
+        let currentDate = Date()
+        let dateValue = self.dateValue()
+        let isCurrentDay = Calendar.current.isDate(dateValue, inSameDayAs: currentDate)
+        let isCurrentWeek = calendar.isDate(dateValue, equalTo: currentDate, toGranularity: .weekOfYear)
+        let isCurrentYear = calendar.isDate(dateValue, equalTo: currentDate, toGranularity: .year)
         if isCurrentDay {
-            dateFormatter.dateFormat = 
+            dateFormatter.dateFormat = "H:mm a"
+        } else if isCurrentWeek {
+            dateFormatter.dateFormat = "E H:mm a"
+        } else if isCurrentYear {
+            dateFormatter.dateFormat = "MMMM d 'at' H:mm a"
+        } else {
+            dateFormatter.dateFormat = "MMMM d, yyyy 'at' H:mm a"
         }
-        isCurrentYear ? (dateFormatter.dateFormat = "MMMM d") : (dateFormatter.dateFormat = "MMMM d, yyyy")
-        let dateString = dateFormatter.string(from: self)
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        let dateString = dateFormatter.string(from: self.dateValue()).uppercased()
         return dateString
     }
 }

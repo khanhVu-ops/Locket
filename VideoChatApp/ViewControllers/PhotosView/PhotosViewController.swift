@@ -10,20 +10,23 @@ import Photos
 import SnapKit
 import RxSwift
 import RxCocoa
-protocol PhotosDelegate: AnyObject {
-    func didTapSendImage(assets: [AssetModel])
-}
+//protocol PhotosDelegate: AnyObject {
+//    func didTapSendImage(assets: [AssetModel])
+//}
 
 class PhotosViewController: UIViewController {
     
     private lazy var cltvPhotos: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 2
+        layout.minimumInteritemSpacing = 2
+        layout.itemSize = CGSize(width: (view.frame.width-4)/3, height: (view.frame.width-4)/3)
         let cltv = UICollectionView(frame: view.bounds, collectionViewLayout: layout)
-        cltv.backgroundColor = .white
+        cltv.backgroundColor = .green
         cltv.allowsMultipleSelection = true
-        cltv.register(PhotosCollectionViewCell.self, forCellWithReuseIdentifier: "PhotosCollectionViewCell")
+        cltv.register(PhotosCollectionViewCell.self, forCellWithReuseIdentifier: PhotosCollectionViewCell.nibNameClass)
+        
         return cltv
     }()
     
@@ -68,8 +71,8 @@ class PhotosViewController: UIViewController {
     
     let photoViewModel = PhotosViewModel()
     let disposeBag = DisposeBag()
-    weak var delegate: PhotosDelegate?
-    weak var chatVC: ChatViewController?
+    
+    var actionSendAsset: (([MediaModel]) -> Void)?
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -102,9 +105,7 @@ class PhotosViewController: UIViewController {
                 self?.photoViewModel.fetchAssets()
             } else {
                 DispatchQueue.main.async {
-                    self?.dismiss(animated: true, completion: {
-                        self?.showAlertOpenSettingPhotos()
-                    })
+                    self?.showAlertOpenSettingPhotos()
                 }
             }
         }
@@ -112,19 +113,68 @@ class PhotosViewController: UIViewController {
     
     func bindingToViewModel() {
         self.photoViewModel.assetsBehavior
-            .bind(to: self.cltvPhotos.rx.items(cellIdentifier: "PhotosCollectionViewCell", cellType: PhotosCollectionViewCell.self)) { [weak self] index, value , cell in
-                cell.configure(viewModel: self?.photoViewModel, item: value, index: index)
+            .bind(to: self.cltvPhotos.rx.items(cellIdentifier: PhotosCollectionViewCell.nibNameClass, cellType: PhotosCollectionViewCell.self)) { [weak self] index, media , cell in
+                guard let self = self, let asset = media.asset else {
+                    return
+                }
+                media.ratio = asset.getImageAspectRatio() ?? 1
+                if media.type == .image {
+                    cell.setUpImage(asset: asset)
+                    asset.getFullSizeImageURL(completion: { [weak self] url in
+                        guard let self = self, let url = url else {
+                            return
+                        }
+                        media.filePath = url
+                        print(url)
+                        media.duration = 0
+//                        self.photoViewModel.deleteFile(at: url)
+                    })
+                } else if media.type == .video {
+                    asset.avAsset { [weak cell] avAsset in
+                        if let avAsset =  avAsset {
+                            let thumbnail = Video.shared.getThumbnailImageLocal(asset: avAsset)
+                            let duration = avAsset.duration.seconds
+                            media.filePath = avAsset.url
+                            media.thumbnail = thumbnail
+                            media.duration = duration
+                            cell?.setupVideo(image: thumbnail, duration: duration)
+                            
+                        }
+                    }
+                }
+                
+                cell.isSelect = media.isSelect
+                cell.actionSelect = {[weak self, weak cell]  in
+                    guard let self = self, let cell = cell else { return }
+                    media.isSelect = !media.isSelect
+                    cell.isSelect = media.isSelect
+                    guard self.photoViewModel.validate(type: media.type ?? .image, isSelect: media.isSelect) else {
+                        cell.isSelect = false
+                        return
+                    }
+                    if cell.isSelect {
+                        self.photoViewModel.mediaSelect.appendUnduplicate(object: media)
+                        print(media.filePath)
+                    } else {
+                        self.photoViewModel.mediaSelect.remove(object: media)
+                    }
+                }
+                cell.actionPreviewImage = {[weak self] in
+                    guard let self = self else { return }
+//                    self.previewMedia(data: self.images, index: indexPath.row, type: .ChatSend)
+                }
             }
             .disposed(by: disposeBag)
 
-        self.cltvPhotos.rx
-            .setDelegate(self)
-            .disposed(by: disposeBag)
-        
         self.photoViewModel.assetsBehavior
             .subscribe(onNext: { [weak self] value in
                 self?.lbTotalPhotos.text = "\(value.count)"
             })
+            .disposed(by: disposeBag)
+        
+        self.photoViewModel.mediaSelectObservable
+            .map({$0.isEmpty})
+            .bind(to: self.btnSave.rx.isHidden)
             .disposed(by: disposeBag)
     }
     
@@ -133,24 +183,10 @@ class PhotosViewController: UIViewController {
     }
     
     @objc func btnSaveTapped() {
-        self.dismiss(animated: true) {
-            self.delegate?.didTapSendImage(assets: self.photoViewModel.getPhotosSelected())
+        if let actionSendAsset = self.actionSendAsset {
+            actionSendAsset(self.photoViewModel.mediaSelect)
         }
+        self.dismiss(animated: true)
     }
     
-}
-
-extension PhotosViewController: UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: (self.cltvPhotos.frame.width-4)/3, height: (self.cltvPhotos.frame.width-4)/3)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        return 2
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        collectionView.deselectItem(at: indexPath, animated: true)
-        self.photoViewModel.didSelectItem(index: indexPath.item)
-    }
 }

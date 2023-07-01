@@ -40,24 +40,24 @@ class MessageVideoTableViewCell: UITableViewCell {
     
     func configure(item: MessageModel) {
         
-        if item.senderID != UserDefaultManager.shared.getID() {
-            self.stv.alignment = .leading
-        } else {
-            self.stv.alignment = .trailing
-        }
-        if let imageUrl = URL(string: item.thumbVideo ?? "") {
-            self.imvThumbnail.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "library"))
-            self.videoURL = item.videoURL
-        } else {
-            self.imvThumbnail.image = UIImage(named: "library")
-            print("Invalid URL")
-        }
-        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
-        if let duration = item.duration {
-            let minutes = Int(duration / 60)
-            let seconds = Int(duration.truncatingRemainder(dividingBy: 60))
-            self.lbDuration.text = String(format: "%02d:%02d", minutes, seconds)
-        }
+//        if item.senderID != UserDefaultManager.shared.getID() {
+//            self.stv.alignment = .leading
+//        } else {
+//            self.stv.alignment = .trailing
+//        }
+//        if let imageUrl = URL(string: item.thumbVideo ?? "") {
+//            self.imvThumbnail.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "library"))
+//            self.videoURL = item.videoURL
+//        } else {
+//            self.imvThumbnail.image = UIImage(named: "library")
+//            print("Invalid URL")
+//        }
+//        self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
+//        if let duration = item.duration {
+//            let minutes = Int(duration / 60)
+//            let seconds = Int(duration.truncatingRemainder(dividingBy: 60))
+//            self.lbDuration.text = String(format: "%02d:%02d", minutes, seconds)
+//        }
         
     }
     @IBAction func btnPlayTapped(_ sender: Any) {

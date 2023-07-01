@@ -7,7 +7,7 @@
 
 import Foundation
 import UIKit
-protocol OTPTextFieldDelegate{
+protocol OTPTextFieldDelegate: NSObject{
     func textFieldDidDelete(_ textField: OTPTextField,_ isEndCode: Bool)
 }
 
@@ -29,7 +29,7 @@ class NoActionTextField: UITextField {
 class OTPTextField: NoActionTextField {
     weak var previousTextField: NoActionTextField?
     weak var nextTextFiled: NoActionTextField?
-    var myCustomTextFieldDelegate : OTPTextFieldDelegate?
+    weak var myCustomTextFieldDelegate : OTPTextFieldDelegate?
     var check = false
     
     override func deleteBackward() {

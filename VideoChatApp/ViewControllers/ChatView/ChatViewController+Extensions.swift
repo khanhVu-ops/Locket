@@ -18,16 +18,13 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let item = self.viewModel.listMessages.value[indexPath.row]
         switch item.type {
-        case .image:
-            let cell = tableView.dequeueReusableCell(withIdentifier: MessageImageTableViewCell.nibNameClass, for: indexPath) as! MessageImageTableViewCell
-            cell.configure(item: item)
-            cell.chatVC = self
-            return cell
-        case .video:
-            let cell = tableView.dequeueReusableCell(withIdentifier: MessageVideoTableViewCell.nibNameClass, for: indexPath) as! MessageVideoTableViewCell
-            cell.delegate = self
-            cell.configure(item: item)
-            return cell
+//        case .image :
+//
+//        case .video:
+//            let cell = tableView.dequeueReusableCell(withIdentifier: MessageVideoTableViewCell.nibNameClass, for: indexPath) as! MessageVideoTableViewCell
+//            cell.delegate = self
+//            cell.configure(item: item)
+//            return cell
         case .audio:
             let cell = tableView.dequeueReusableCell(withIdentifier: MessageVideoTableViewCell.nibNameClass, for: indexPath) as! MessageAudioTableViewCell
             cell.configure(item: item)
@@ -37,46 +34,53 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
             cell.delegate = self
             cell.configure(item: item)
             return cell
-        default:
+        case .text:
             let cell = tableView.dequeueReusableCell(withIdentifier: MessageTextCell.nibNameClass, for: indexPath) as! MessageTextCell
             cell.configure(item: item, user: UserModel(), indexPath: indexPath)
-            cell.delegate = self
+            cell.actionTapBubble = { [weak self] in
+                self?.tbvListMessage.beginUpdates()
+                self?.tbvListMessage.endUpdates()
+            }
+            return cell
+        default:
+            let cell = tableView.dequeueReusableCell(withIdentifier: MessagePhotosCell.nibNameClass, for: indexPath) as! MessagePhotosCell
+            cell.configure(item: item, user: UserModel(), indexPath: indexPath)
+            cell.actionSelectImage = { [weak self] url in
+                print(url)
+                guard let self = self else {
+                    return
+                }
+                let listDetail = self.viewModel.getListDetailItem()
+                let detailVC  = DetailImageViewController()
+                detailVC.detailImageViewModel.listImages.accept(listDetail)
+                detailVC.detailImageViewModel.currentURL = url
+                detailVC.modalPresentationStyle = .fullScreen
+                self.present(detailVC, animated: true, completion: nil)
+            }
             return cell
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return self.viewModel.calculateHeightMessage(messageWidth: self.tbvListMessage.frame.width * 0.6, index: indexPath.item)
+//        return self.viewModel.calculateHeightMessage(messageWidth: self.tbvListMessage.frame.width * 0.6, index: indexPath.item)
+        return UITableView.automaticDimension
     }
 }
 
-extension ChatViewController: BubleTextMessageDelegate {
-    func didTapBubbleMessage(indexPath: IndexPath) {
-        tbvListMessage.beginUpdates()
-//        self.tbvListMessage.reloadRows(at: [indexPath], with: .automatic)
-        tbvListMessage.endUpdates()
-    }
-}
-
-extension ChatViewController: PhotosDelegate {
-    func didTapSendImage(assets: [AssetModel]) {
-//        self.viewModel.getDataAndSent(assets: assets) {[weak self] error in
-//            guard let error = error else {
-//                return
-//            }
-//            self?.showAlert(title: "Send Image Error!", message: error.localizedDescription)
-//        }
-    }
-}
+//extension ChatViewController: PhotosDelegate {
+//    func didTapSendImage(assets: [AssetModel]) {
+////        self.viewModel.getDataAndSent(assets: assets) {[weak self] error in
+////            guard let error = error else {
+////                return
+////            }
+////            self?.showAlert(title: "Send Image Error!", message: error.localizedDescription)
+////        }
+//    }
+//}
 
 extension ChatViewController: DetailImageProtocol {
     func didSelectDetailImage(url: String) {
-//        let listDetail = self.viewModel.getListDetailItem()
-//        let detailVC  = DetailImageViewController()
-//        detailVC.detailImageViewModel.listImages.accept(listDetail)
-//        detailVC.detailImageViewModel.currentURL = url
-//        detailVC.modalPresentationStyle = .fullScreen
-//        self.present(detailVC, animated: true, completion: nil)
+        
     }
 }
 

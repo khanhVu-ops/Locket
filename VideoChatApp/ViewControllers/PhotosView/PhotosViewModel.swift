@@ -11,123 +11,119 @@ import RxCocoa
 import Photos
 import UIKit
 
-enum AssetType {
-    case video
-    case image
-}
-class AssetModel {
-    var type: PHAssetMediaType
-    var asset: PHAsset
-    var isSelected: Bool
-    var thumbnail: UIImage
-    var duration: Double
-    
-    init(type: PHAssetMediaType, asset: PHAsset, issSelected: Bool = false, thumbnail: UIImage, duration: Double = 0.0) {
-        self.type = type
-        self.asset = asset
-        self.isSelected = issSelected
-        self.thumbnail = thumbnail
-        self.duration = duration
-    }
+enum AssetType: Int {
+    case video = 2
+    case image = 1
 }
 
 class PhotosViewModel {
-    var assetsFetchResults: PHFetchResult<PHAsset>!
+//    var assetsFetchResults: PHFetchResult<PHAsset>!
+    var mediaSelect:[MediaModel] = [] {
+        didSet {
+            updateNewMedia()
+        }
+    }
+    var mediaSelectObservable = BehaviorSubject<[MediaModel]>(value: [])
+    var numVideo = 0
+    var numImage = 0
     var imageManager: PHCachingImageManager!
-    let imageCellSize = CGSize(width: (UIScreen.main.bounds.size.width-4)/3, height: (UIScreen.main.bounds.size.width-4)/3)
-    var assetsBehavior = BehaviorRelay<[AssetModel]>(value: [])
-    let imageCache = NSCache<NSString, UIImage>()
-    
+    var assetsBehavior = BehaviorRelay<[MediaModel]>(value: [])
+    let fetchAssetQueue = DispatchQueue.init(label: "fetchAssetQueue", attributes: .concurrent)
     func fetchAssets() {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-
-        DispatchQueue.global(qos: .background).async {
+        fetchAssetQueue.async {
             let results = PHAsset.fetchAssets(with: options)
             print(results.count)
-            var newAsset = self.assetsBehavior.value
+            var assets = [MediaModel]()
             results.enumerateObjects { (asset, _, _) in
-                let key = "thumbnail-\(asset.localIdentifier)"
-                if let cachedImage = ImageCache.shared.image(forKey: key) {
-                    let model = AssetModel(type: asset.mediaType, asset: asset, issSelected: false, thumbnail: cachedImage, duration: asset.duration)
-                    newAsset.append(model)
-                } else {
-                    self.getThumbnailImage(for: asset) { image in
-                        guard let image = image else {
-                            return
-                        }
-                        let model = AssetModel(type: asset.mediaType, asset: asset, issSelected: false, thumbnail: image, duration: asset.duration)
-                        newAsset.append(model)
-                        if newAsset.count % 20 == 0 {
-                            DispatchQueue.main.async {
-                               self.assetsBehavior.accept(newAsset)
-                           }
-                        }
-                        ImageCache.shared.setImage(image, forKey: key)
-                    }
-                }
+                let media = MediaModel(asset: asset)
+                assets.appendUnduplicate(object: media)
             }
             DispatchQueue.main.async {
-                self.assetsBehavior.accept(newAsset)
+                self.assetsBehavior.accept(assets)
             }
         }
     }
-
-    func getThumbnailImage(for asset: PHAsset, completion: @escaping (UIImage?) -> Void) {
-        let imageManager = PHImageManager.default()
-        let thumbnailOptions = PHImageRequestOptions()
-        thumbnailOptions.deliveryMode = .opportunistic
-        thumbnailOptions.resizeMode = .exact
-        thumbnailOptions.isNetworkAccessAllowed = false
-        thumbnailOptions.isSynchronous = true
-        imageManager.requestImage(for: asset, targetSize: self.imageCellSize, contentMode: .aspectFill, options: thumbnailOptions) { (image, info) in
-            guard let image = image else {
-                completion(nil)
-                return
-            }
-            completion(image)
-        }
+    
+    func updateNewMedia() {
+        let numVideo = mediaSelect.filter({ meida in
+            meida.type == .video
+        }).count
+        print("count: ", mediaSelect.count)
+        self.numVideo = numVideo
+        self.numImage = self.mediaSelect.count - numVideo
+        self.mediaSelectObservable.onNext(self.mediaSelect)
     }
     
-    func getImageFromCache(forKey key: String) -> UIImage? {
-        let fileManager = FileManager.default
-        let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
-
-        let url = cacheDirectory.appendingPathComponent(key)
-        guard fileManager.fileExists(atPath: url.path) else {
-            return nil
+    func validate(type: MessageType, isSelect: Bool) -> Bool{
+        if !isSelect {return true}
+        if type == .video && numVideo >= 5 {
+            Toast.show("Max 5 video")
+            return false
+        } else if type == .image && numImage >= 10 {
+            Toast.show("Max 10 photo")
+            return false
         }
-        return UIImage(contentsOfFile: url.path)
-    }
-
-    func saveImageToCache(_ image: UIImage, forKey key: String) {
-        let fileManager = FileManager.default
-        let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
-        let url = cacheDirectory.appendingPathComponent(key)
-        let data = image.jpegData(compressionQuality: 0.8)
-        try? data?.write(to: url)
+        return true
     }
     
+    
+//    func getThumbnailImage(for asset: PHAsset, completion: @escaping (UIImage?) -> Void) {
+//        let imageManager = PHImageManager.default()
+//        let thumbnailOptions = PHImageRequestOptions()
+//        thumbnailOptions.deliveryMode = .opportunistic
+//        thumbnailOptions.resizeMode = .exact
+//        thumbnailOptions.isNetworkAccessAllowed = false
+//        thumbnailOptions.isSynchronous = true
+//        imageManager.requestImage(for: asset, targetSize: self.imageCellSize, contentMode: .aspectFill, options: thumbnailOptions) { (image, info) in
+//            guard let image = image else {
+//                completion(nil)
+//                return
+//            }
+//            completion(image)
+//        }
+//    }
+    
+//    func getImageFromCache(forKey key: String) -> UIImage? {
+//        let fileManager = FileManager.default
+//        let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
+//
+//        let url = cacheDirectory.appendingPathComponent(key)
+//        guard fileManager.fileExists(atPath: url.path) else {
+//            return nil
+//        }
+//        return UIImage(contentsOfFile: url.path)
+//    }
+//
+//    func saveImageToCache(_ image: UIImage, forKey key: String) {
+//        let fileManager = FileManager.default
+//        let cacheDirectory = fileManager.urls(for: .cachesDirectory, in: .userDomainMask).first!
+//        let url = cacheDirectory.appendingPathComponent(key)
+//        let data = image.jpegData(compressionQuality: 0.8)
+//        try? data?.write(to: url)
+//    }
+//
     func didSelectItem(index: Int) {
-        let asset = self.assetsBehavior.value[index]
-        asset.isSelected = !asset.isSelected
-        var newArray = assetsBehavior.value
-        newArray[index] = asset
-        DispatchQueue.main.async {
-            self.assetsBehavior.accept(newArray)
-        }
+//        let asset = self.assetsBehavior.value[index]
+//        asset.isSelected = !asset.isSelected
+//        var newArray = assetsBehavior.value
+//        newArray[index] = asset
+//        DispatchQueue.main.async {
+//            self.assetsBehavior.accept(newArray)
+//        }
     }
     
-    func getPhotosSelected() -> [AssetModel] {
-        let assets = self.assetsBehavior.value
-        var result: [AssetModel] = []
-        for asset in assets {
-            if asset.isSelected {
-                result.append(asset)
-            }
-        }
-        return result
-    }
+//    func getPhotosSelected() -> [AssetModel] {
+//        let assets = self.assetsBehavior.value
+//        var result: [AssetModel] = []
+//        for asset in assets {
+//            if asset.isSelected {
+//                result.append(asset)
+//            }
+//        }
+//        return result
+//    }
 }
 
 

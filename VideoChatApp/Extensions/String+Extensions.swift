@@ -22,6 +22,42 @@ extension String {
         return false
     }
     
+    func detectAndStyleLinks(foregroundColor: UIColor, fontSize: CGFloat) -> NSAttributedString {
+        // Create an NSMutableAttributedString from the input string
+        let attributedString = NSMutableAttributedString(string: self)
+        attributedString.addAttribute(.font, value: UIFont.systemFont(ofSize: fontSize), range: NSRange(location: 0, length: self.utf16.count))
+        attributedString.addAttribute(.foregroundColor, value: foregroundColor, range: NSRange(location: 0, length: self.utf16.count))
+        // Create an NSDataDetector instance with the PhoneNumber and Link types
+        let detector = try! NSDataDetector(types: NSTextCheckingResult.CheckingType.phoneNumber.rawValue |
+                                               NSTextCheckingResult.CheckingType.link.rawValue)
+        // Enumerate all matches in the input string
+        detector.enumerateMatches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count)) { (result, _, _) in
+            if let result = result {
+                switch result.resultType {
+                case .phoneNumber:
+                    if let phoneNumber = result.phoneNumber, let url = URL(string: "tel://\(phoneNumber.replacingOccurrences(of: " ", with: ""))") {
+                        // Apply attributes to the detected phone number
+                        attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: result.range)
+                        attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: result.range)
+                        attributedString.addAttribute(.link, value: url, range: result.range)
+                        print("Detected phone number: \(phoneNumber)")
+                    }
+                case .link:
+                    if let url = result.url {
+                        // Apply attributes to the detected link
+                        attributedString.addAttribute(.link, value: url, range: result.range)
+                        attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: result.range)
+                        attributedString.addAttribute(.foregroundColor, value: UIColor.white, range: result.range)
+                    }
+                default:
+                    break
+                }
+            }
+        }
+        
+        return attributedString
+    }
+    
     func isValidPhoneNumber() -> Bool {
 //        let phoneNumberRegex = "^(0\\d{9})|(?!0)\\d{10}$"
 //

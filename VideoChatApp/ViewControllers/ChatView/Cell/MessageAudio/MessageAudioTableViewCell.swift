@@ -76,7 +76,7 @@ class MessageAudioTableViewCell: UITableViewCell {
         }
         self.lbDuration.text = Utilitis.shared.convertDurationToTime(duration: item.duration ?? 0.0)
         self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.created!)
-        guard let audioURL = URL(string: item.audioURL ?? "") else {
+        guard let audioURL = URL(string: item.fileURL ?? "") else {
             return
         }
         self.loadAudio(url: audioURL)

@@ -16,42 +16,15 @@ class SettingViewController: BaseViewController {
     @IBOutlet weak var btnPlus: UIButton!
     @IBOutlet weak var lbUsername: UILabel!
     let settingViewModel = SettingViewModel()
-
-    private lazy var detailView: DetailImageView = {
-        detailView = DetailImageView()
-        detailView.delegate = self
-        detailView.isHidden = true
-        return detailView
-    }()
-    private lazy var vPopupSaved: PopupSavedView = {
-        let v = PopupSavedView()
-        v.isHidden = true
-        return v
-    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.setUpView()
         self.settingViewModel.getInfoUser()
-        self.bindingToViewModel()
         // Do any additional setup after loading the view.
     }
     
-    func setUpView() {
-        [self.detailView, self.vPopupSaved].forEach { sub in
-            self.view.addSubview(sub)
-        }
-        self.detailView.snp.makeConstraints { make in
-            make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top).offset(10)
-            make.leading.equalTo(self.view.safeAreaLayoutGuide.snp.leading)
-            make.trailing.equalTo(self.view.safeAreaLayoutGuide.snp.trailing)
-            make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
-        }
-        self.vPopupSaved.snp.makeConstraints { make in
-            make.centerX.centerY.equalToSuperview()
-            make.width.height.equalTo(self.vPopupSaved.popupWidth)
-        }
-        self.detailView.configBtnSend(isHidden: true)
+    
+    override func setUpUI() {
         self.imvAvata.addConnerRadius(radius: self.imvAvata.frame.width/2)
         self.imvAvata.addBorder(borderWidth: 8, borderColor: .black)
         
@@ -61,7 +34,7 @@ class SettingViewController: BaseViewController {
         self.btnChangeAvata.addBorder(borderWidth: 4, borderColor: .systemYellow)
     }
     
-    func bindingToViewModel() {
+    override func bindViewModel() {
         self.settingViewModel.loadingBehavior
             .subscribe(onNext: { [weak self] isLoading in
                 isLoading ? self?.showActivityIndicator() : self?.hideActivityIndicator()
@@ -81,12 +54,12 @@ class SettingViewController: BaseViewController {
     }
     
     @IBAction func btnLogOutTapped(_sender: UIButton) {
-        self.settingViewModel.handleLogOut { error in
+        self.settingViewModel.handleLogOut { [weak self] error in
             guard error == nil else {
-                self.showAlert(title: "Error!", message: error!.localizedDescription)
+                self?.showAlert(title: "Error!", message: error!.localizedDescription)
                 return
             }
-            self.goToSetRootIntroVC()
+            self?.goToSetRootIntroVC()
         }
     }
 
@@ -99,17 +72,17 @@ class SettingViewController: BaseViewController {
     
     func showAlertOptions() {
         let alert = UIAlertController(title: "Choose Options", message: nil, preferredStyle: .actionSheet)
-               alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { _ in
-                   self.openCamera()
-               }))
-
-               alert.addAction(UIAlertAction(title: "Avata Detail", style: .default, handler: { _ in
-                   self.openDetailAvata()
-               }))
-
-               alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
-
-               self.present(alert, animated: true, completion: nil)
+        alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { [weak self] _ in
+            self?.openCamera()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Avata Detail", style: .default, handler: { [weak self] _ in
+            self?.openDetailAvata()
+        }))
+        
+        alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
+        
+        self.present(alert, animated: true, completion: nil)
     }
     
     private func openCamera() {
@@ -123,49 +96,17 @@ class SettingViewController: BaseViewController {
         guard let image = self.imvAvata.image else {
             return
         }
-        self.detailView.configImage(image: image)
-        self.detailView.isHidden = false
-        self.view.backgroundColor = UIColor(hexString: "#242121")
     }
 }
 
 extension SettingViewController: CameraProtocol {
     func didSendImageCaptured(image: UIImage) {
-        self.settingViewModel.updateAvata(image: image) { url, error in
+        self.settingViewModel.updateAvata(image: image) { [weak self] url, error in
             guard let url = url, error == nil else {
-                self.showAlert(title: "Error!", message: error!.localizedDescription, completion: nil)
+                self?.showAlert(title: "Error!", message: error!.localizedDescription, completion: nil)
                 return
             }
-            self.imvAvata.sd_setImage(with: url, completed: nil)
-        }
-    }
-}
-
-extension SettingViewController: DetailImageViewProtocol {
-    func btnSendImageTapped(image: UIImage) {
-    }
-    
-    func btnCancelImageTapped() {
-        self.detailView.isHidden = true
-        self.view.backgroundColor = .white
-    }
-    
-    func btnDownloadTapped(image: UIImage) {
-        self.showActivityIndicator()
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.creationRequestForAsset(from: image)
-        }) { saved, error in
-            guard error == nil  else {
-                self.view.makeToast("Error saving image to library: \(error!.localizedDescription)")
-                return
-            }
-            DispatchQueue.main.async {
-                self.hideActivityIndicator()
-                self.vPopupSaved.isHidden = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.vPopupSaved.isHidden = true
-                }
-            }
+            self?.imvAvata.sd_setImage(with: url, completed: nil)
         }
     }
 }

@@ -15,12 +15,12 @@ enum FirestorePath: String {
     case conversations = "conversations"
 }
 
-enum StoragePath: String {
-    case images = "images"
-    case files = "files"
-    case audios = "audios"
-    case videos = "videos"
-}
+//enum StoragePath: String {
+//    case images = "images"
+//    case files = "files"
+//    case audios = "audios"
+//    case videos = "videos"
+//}
 
 final class FirebaseService: BaseFirebaseService {
     static let shared = FirebaseService()
@@ -50,7 +50,7 @@ final class FirebaseService: BaseFirebaseService {
     }
    
     func getListMessages(conversationID: String) -> Observable<[MessageModel]> {
-        let path = fireStore.collection(chatsClt).document(conversationID).collection(conversationsClt).order(by: "created", descending: true).limit(to: 20)
+        let path = fireStore.collection(chatsClt).document(conversationID).collection(conversationsClt).order(by: "created", descending: true).limit(to: 30)
         return self.rxRequestCollection(path: path, isListener: true)
     }
    
@@ -76,4 +76,25 @@ final class FirebaseService: BaseFirebaseService {
         let path = fireStore.collection(chatsClt).document(conversationID)
         self.updateData(path: path, data: data)
     }
+    
+    func uploadMedia(messageID: String, media: MediaModel) -> Observable<MediaUpload> {
+        return self.rxUploadMedia(messageID: messageID, fileURL: media.filePath, fileType: media.type ?? .image)
+    }
+    
+    func updateMediaFile(messageID: String, conversationID: String, url: String) {
+        let path = fireStore.collection(chatsClt).document(conversationID).collection(conversationsClt).document(messageID)
+        self.updateData(path: path, data: ["fileURL": url])
+    }
+    
+    func updateMediaImage(messageID: String, conversationID: String, url: [String]) {
+        let path = fireStore.collection(chatsClt).document(conversationID).collection(conversationsClt).document(messageID)
+        self.updateData(path: path, data: ["imageURL": url])
+    }
+    
+    func updateStatus(messageID: String, conversationID: String, status: String) {
+        let path = fireStore.collection(chatsClt).document(conversationID).collection(conversationsClt).document(messageID)
+        self.updateData(path: path, data: ["status": status])
+    }
+    
+    
 }

@@ -13,12 +13,14 @@ class BaseMessageTableViewCell: UITableViewCell {
         let lbTime = UILabel()
         lbTime.textAlignment = .center
         lbTime.backgroundColor = .clear
+        lbTime.font = UIFont.systemFont(ofSize: 12)
         return lbTime
     }()
     lazy var lbStatus:  UILabel = {
         let lbStatus = UILabel()
         lbStatus.textAlignment = .center
         lbStatus.backgroundColor = .clear
+        lbStatus.font = UIFont.systemFont(ofSize: 12)
         return lbStatus
     }()
     
@@ -38,16 +40,8 @@ class BaseMessageTableViewCell: UITableViewCell {
     
     lazy var btnReply: UIButton = {
         let btn = UIButton()
-//        btn.addTarget(self, action: <#T##Selector#>, for: <#T##UIControl.Event#>)
         return btn
     }()
-//    lazy var stvStatus:  UIStackView = {
-//        let stvStatus = UIStackView()
-//        stvStatus.addArrangedSubview(lbStatus)
-//        stvStatus.distribution = .fill
-//        stvStatus.axis = .vertical
-//        return stvStatus
-//    }()
     
     lazy var imvAvata:  UIImageView = {
         let imvAvata = UIImageView()
@@ -59,14 +53,6 @@ class BaseMessageTableViewCell: UITableViewCell {
     lazy var vContentMessage:  UIView = {
         let vContentMessage = UIView()
         vContentMessage.addConnerRadius(radius: 15)
-        vContentMessage.addBorder(borderWidth: 1, borderColor: Constants.Color.mainColor)
-        vContentMessage.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(tapBubble))
-        tapGesture.cancelsTouchesInView = false
-//        tapGesture.delegate = self
-//        tapGesture.delaysTouchesBegan = false
-//        tapGesture.delaysTouchesEnded = false
-//        vContentMessage.addGestureRecognizer(tapGesture)
         return vContentMessage
     }()
     
@@ -74,7 +60,7 @@ class BaseMessageTableViewCell: UITableViewCell {
         let stvMessage = UIStackView()
         stvMessage.addArrangedSubview(vContentMessage)
         stvMessage.distribution = .fill
-        stvMessage.alignment = .leading
+        stvMessage.alignment = .trailing
         stvMessage.spacing = 0
         stvMessage.axis = .vertical
         return stvMessage
@@ -103,26 +89,34 @@ class BaseMessageTableViewCell: UITableViewCell {
         stvContentCell.axis = .vertical
         return stvContentCell
     }()
-    
+
     var topStvConstraint: Constraint?
     var widthContentMessageConstraints: Constraint?
     let uid = UserDefaultManager.shared.getID()
-
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
         setUpView()
-        addContentMessage()
     }
+    
+//    override func layoutSubviews() {
+//        <#code#>
+//    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+    }
+    
     func setUpView() {
         self.contentView.addSubview(stvContentCell)
-        
-        self.contentView.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
+        UIView.performWithoutAnimation {
+            self.contentView.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
+
+        }
         self.stvContentCell.snp.makeConstraints { make in
             topStvConstraint = make.top.equalToSuperview().offset(5).constraint
             make.leading.equalToSuperview().offset(10)
@@ -132,7 +126,7 @@ class BaseMessageTableViewCell: UITableViewCell {
         
         self.lbTime.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.centerX.equalToSuperview()
+            make.centerX.equalTo(vTime)
             make.bottom.equalToSuperview().offset(-5)
         }
         
@@ -148,19 +142,19 @@ class BaseMessageTableViewCell: UITableViewCell {
             widthContentMessageConstraints = make.width.equalTo(self.contentView.snp.width).multipliedBy(0.6).constraint
         }
     }
-    
-    func addContentMessage() {}
-    
     func configure(item: MessageModel, user: UserModel, indexPath: IndexPath) {
-        self.stvMessage.alignment = item.senderID == uid ? .trailing : .leading
-        self.lbStatus.textAlignment = item.senderID == uid ? .right : .left
-        self.vContentMessage.backgroundColor = item.senderID == uid ? Constants.Color.mainColor : .white
-        self.imvAvata.isHidden = item.senderID == uid ? true : false
-        self.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
-        self.vTime.isHidden = item.isBubble
-        self.vStatus.isHidden = item.isBubble
-    }
-    
-    @objc func tapBubble() {}
+        UIView.performWithoutAnimation { 
+            self.stvMessage.alignment = item.senderID == uid ? .trailing : .leading
+            self.lbStatus.textAlignment = item.senderID == uid ? .right : .left
+            self.vContentMessage.backgroundColor = item.senderID == uid ? Constants.Color.mainColor : .white
+            if item.senderID != uid {
+                vContentMessage.addBorder(borderWidth: 1, borderColor: Constants.Color.mainColor)
 
+            }
+            self.imvAvata.isHidden = item.senderID == uid ? true : false
+            self.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
+            self.vTime.isHidden = item.isBubble
+            self.vStatus.isHidden = item.isBubble
+        }
+    }
 }

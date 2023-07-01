@@ -16,10 +16,6 @@ class HomeViewModel: BaseViewModel {
     var listSearchs = BehaviorRelay<[UserModel]>(value: [])
     var isEnableSearch = BehaviorRelay<Bool>(value: false)
     var uid = UserDefaultManager.shared.getID()
-    private let dataUpdate = PublishSubject<Void>()
-    var dataUpdateObsavable: Observable<Void> {
-        return dataUpdate.asObservable()
-    }
     
     func getListChats() -> Observable<[ConverationModel]> {
         return FirebaseService.shared.getListChats()

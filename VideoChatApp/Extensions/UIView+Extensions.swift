@@ -114,4 +114,11 @@ extension UIView {
         
             layer.insertSublayer(borderLayer, at: 0)
         }
+    
+    func removeAllSubviews() {
+        let allSubs = self.subviews
+        for aSub in allSubs {
+            aSub.removeFromSuperview()
+        }
+    }
 }

@@ -6,43 +6,55 @@
 //
 
 import UIKit
-
+import RxSwift
+import RxCocoa
 class ImageCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var imv: UIImageView!
+    @IBOutlet weak var indicatorView: ProgressView!
+    @IBOutlet weak var imvPlay: UIImageView!
+    @IBOutlet weak var lbDuration: UILabel!
     
     var url: String?
-    weak var delegate: DetailImageProtocol?
+    let disposeBag = DisposeBag()
+    var actionSelectImage: ((String) -> Void)?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
         setUpView()
     }
     
+    override func prepareForReuse() {
+        self.url = nil
+    }
+    
     func setUpView() {
         self.imv.addConnerRadius(radius: 5)
+        imv.contentMode = .scaleToFill
+        imv.isUserInteractionEnabled = true
+        imv.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapSelect)))
     }
     
     deinit {
-//        print("deinit")
         imv.sd_cancelCurrentImageLoad()
     }
     
-    func configure(item: String) {
-        if let imageUrl = URL(string: item) {
-            imv.sd_setImage(with: imageUrl, placeholderImage: UIImage(named: "library"))
-            self.url = item
-            
-        } else {
-            self.imv.image = UIImage(named: "library")
-            print("Invalid URL")
-        }
+    func configure(item: String, message: MessageModel) {
+        self.url = message.type == .video ? message.fileURL : item
+        self.imv.setImage(urlString: item, placeHolder: Constants.Image.imageDefault)
+        indicatorView.isAnimating = item == "Loading"
+        indicatorView.isHidden = !(item == "Loading")
+        imvPlay.isHidden = !(message.type == .video) && indicatorView.isHidden == true
+        lbDuration.isHidden = !(message.type == .video)
+        lbDuration.text = Utilitis.shared.convertDurationToTime(duration: message.duration ?? 0.0)
+        
     }
 
-    @IBAction func btnSelectItemTapped(_ sender: Any) {
-        guard let url = url else {
+    @objc func tapSelect() {
+        guard let url = self.url, let actionSelectImage = self.actionSelectImage else {
+            print("return")
             return
         }
-        self.delegate?.didSelectDetailImage(url: url)
+        actionSelectImage(url)
     }
 }

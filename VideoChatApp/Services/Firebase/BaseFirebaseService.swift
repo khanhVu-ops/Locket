@@ -85,26 +85,27 @@ class BaseFirebaseService {
         }
     }
     
-    func uploadFile(fileURL: URL,
-                    fileType: StoragePath,
-                    success: @escaping (URL) -> Void,
+    func uploadMedia(messageID: String, fileURL: URL,
+                    fileType: MessageType,
+                    success: @escaping (MediaUpload) -> Void,
                     failure: @escaping (_ message: String) -> Void) {
         guard let uid = UserDefaultManager.shared.getID() else {
             failure("Can't fetch user id!")
             return
         }
         do {
-            let fileName = [uid, String(Date().timeIntervalSince1970)].joined()
+            let fileName = [String(Date().timeIntervalSince1970), fileURL.lastPathComponent].joined()
             let data = try Data(contentsOf: fileURL)
-            let storageRef = storage.child(fileType.rawValue).child(fileName)
+            let storageRef = storage.child("\(fileType.rawValue)").child(uid).child(fileName)
             let metaData = StorageMetadata()
             switch fileType {
-            case .audios:
+            case .image:
+                metaData.contentType = "image/jpeg"
+            case .audio:
                 metaData.contentType = "audio/m4a"
-            case .videos:
+            case .video:
                 metaData.contentType = "video/mp4"
-            default:
-                break
+            default: break
             }
             storageRef.putData(data, metadata: metaData
                                , completion: { (metadata, error) in
@@ -112,12 +113,16 @@ class BaseFirebaseService {
                     failure(error!.localizedDescription)
                     return
                 }
-                storageRef.downloadURL { (urlVideo, err) in
-                    guard let urlVideo = urlVideo else {
+                if fileType == .image {
+                    self.deleteFile(at: fileURL)
+                }
+                storageRef.downloadURL { (url, err) in
+                    guard let url = url else {
                         failure(err!.localizedDescription)
                         return
                     }
-                    success(urlVideo)
+                    print(url)
+                    success(MediaUpload(messageID: messageID, url: url, type: fileType))
                 }
             })
         } catch (let error) {
@@ -125,38 +130,77 @@ class BaseFirebaseService {
         }
     }
     
-    func uploadImage(image: UIImage,
-                     fileType: StoragePath = .images,
-                     success: @escaping (URL) -> Void,
-                     failure: @escaping (_ message: String) -> Void) {
-        guard let uid = UserDefaultManager.shared.getID() else {
-            failure("Can't fetch user id!")
-            return
-        }
+    func uploadThumbnailImage(messageID: String,
+                              image: UIImage,
+                              success: @escaping (MediaUpload) -> Void,
+                              failure: @escaping (_ message: String) -> Void) {
         
-        guard let data = image.jpegData(compressionQuality: 0.8) else {
-            failure("Can't fetch data from image!")
+        guard let uid = UserDefaultManager.shared.getID() else {
             return
         }
-        let fileName = [uid, String(Date().timeIntervalSince1970)].joined()
-        let storageRef = storage.child(fileType.rawValue).child(fileName)
+        let fileName = [String(Date().timeIntervalSince1970), "thumbailVideo"].joined()
+        let storageRef = storage.child("\(2)").child(uid).child(fileName)
         let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
-        storageRef.putData(data, metadata: metaData
-                           , completion: { (metadata, error) in
+        let data = image.jpegData(compressionQuality: 0.5)
+        storageRef.putData(data!, metadata: metaData) { meta, error in
             guard error == nil else {
                 failure(error!.localizedDescription)
                 return
             }
-            storageRef.downloadURL { (urlVideo, err) in
-                guard let urlVideo = urlVideo else {
+            
+            storageRef.downloadURL { url, err in
+                guard let url = url ,err == nil else {
                     failure(err!.localizedDescription)
                     return
                 }
-                success(urlVideo)
+                success(MediaUpload(messageID: messageID, url: url, type: .image))
             }
-        })
+        }
     }
+    
+    func deleteFile(at url: URL) {
+        do {
+            try FileManager.default.removeItem(at: url)
+            print("File deleted successfully.")
+        } catch {
+            print("Error deleting file: \(error.localizedDescription)")
+        }
+    }
+
+    
+//    func uploadImage(image: UIImage,
+//                     fileType: StoragePath = .images,
+//                     success: @escaping (URL) -> Void,
+//                     failure: @escaping (_ message: String) -> Void) {
+//        guard let uid = UserDefaultManager.shared.getID() else {
+//            failure("Can't fetch user id!")
+//            return
+//        }
+//
+//        guard let data = image.jpegData(compressionQuality: 0.8) else {
+//            failure("Can't fetch data from image!")
+//            return
+//        }
+//        let fileName = [uid, String(Date().timeIntervalSince1970)].joined()
+//        let storageRef = storage.child(fileType.rawValue).child(fileName)
+//        let metaData = StorageMetadata()
+//        metaData.contentType = "image/jpeg"
+//        storageRef.putData(data, metadata: metaData
+//                           , completion: { (metadata, error) in
+//            guard error == nil else {
+//                failure(error!.localizedDescription)
+//                return
+//            }
+//            storageRef.downloadURL { (urlVideo, err) in
+//                guard let urlVideo = urlVideo else {
+//                    failure(err!.localizedDescription)
+//                    return
+//                }
+//                success(urlVideo)
+//            }
+//        })
+//    }
 }
 
 // MARK: rx + Observable
@@ -197,27 +241,31 @@ extension BaseFirebaseService {
         }
     }
     
-    func rxUploadFile(fileURL: URL, fileType: StoragePath) -> Observable<URL> {
-        Observable<URL>.create { observable -> Disposable in
-            self.uploadFile(fileURL: fileURL, fileType: fileType) { url in
-                observable.onNext(url)
-            } failure: { message in
-                observable.onError(AppError(code: .firebase, message: message))
+    func rxUploadMedia(messageID: String, fileURL: URL?, fileType: MessageType) -> Observable<MediaUpload> {
+        Observable<MediaUpload>.create { observable -> Disposable in
+            if let fileURL = fileURL {
+                self.uploadMedia(messageID: messageID, fileURL: fileURL, fileType: fileType) { media in
+                    observable.onNext(media)
+                } failure: { message in
+                    observable.onError(AppError(code: .firebase, message: message))
+                }
+            } else {
+                 observable.onError(AppError(code: .firebase, message: "Not found URL!"))
             }
             return Disposables.create()
         }
     }
     
-    func rxUploadImage(image: UIImage) -> Observable<URL> {
-        Observable<URL>.create { observable -> Disposable in
-            self.uploadImage(image: image) { url in
-                observable.onNext(url)
-            } failure: { message in
-                observable.onError(AppError(code: .firebase, message: message))
-            }
-            return Disposables.create()
-        }
-    }
+//    func rxUploadImage(image: UIImage) -> Observable<URL> {
+//        Observable<URL>.create { observable -> Disposable in
+//            self.uploadImage(image: image) { url in
+//                observable.onNext(url)
+//            } failure: { message in
+//                observable.onError(AppError(code: .firebase, message: message))
+//            }
+//            return Disposables.create()
+//        }
+//    }
 }
 
 //MARK: rx + BaseService + Single

@@ -8,6 +8,7 @@
 import Foundation
 import FirebaseFirestore
 import Differentiator
+import Photos
 
 enum MessageType: Int {
     case text = 1
@@ -15,6 +16,18 @@ enum MessageType: Int {
     case video = 3
     case audio = 4
     case file = 5
+}
+
+enum MessageStatus: Int {
+    case sent = 1
+    case seen = 2
+    case sending = 3
+}
+
+enum UploadStatus: String {
+    case loading = "loading"
+    case success = "success"
+    case error = "error"
 }
 
 struct SectionModel {
@@ -30,37 +43,59 @@ extension SectionModel: SectionModelType {
     }
 }
 
+class MediaModel: NSObject {
+    var type: MessageType?
+    var filePath: URL?
+    var asset: PHAsset?
+    var thumbnail: UIImage?
+    var ratio: Double = 1
+    var duration: Double?
+    var isSelect = false
+    convenience init(asset: PHAsset) {
+        self.init()
+        self.asset = asset
+        self.type = asset.mediaType == .image ? .image : .video
+        self.duration = asset.duration
+    }
+    
+    convenience init(fileURL: URL) {
+        self.init()
+        self.filePath = fileURL
+        self.type = .file
+    }
+    
+    convenience init(audioURL: URL, duration: Double) {
+        self.init()
+        self.filePath = audioURL
+        self.type = .audio
+        self.duration = duration
+    }
+}
+
 class MessageModel: NSObject, JsonInitObject {
     var type: MessageType?
     var messageID: String?
     var message: String?
     var imageURL: [String]?
     var ratioImage: Double?
-    var thumbVideo: String?
-    var videoURL: String?
-    var duration: Double?
-    var audioURL: String?
-    var fileName: String?
     var fileURL: String?
+    var duration: Double?
+    var fileName: String?
     var senderID: String?
-    var progress: Double?
     var created: Timestamp?
     var isBubble = true
+    var status: MessageStatus = .sent
 
-    convenience init(type: MessageType, messageID: String? = nil, message: String? = nil, imageURL: [String]? = nil, ratioImage: Double? = nil, thumbVideo: String? = nil, videoURL: String? = nil, audioURL: String? = nil, duration: Double? = nil, fileName: String? = nil, fileURL: String? = nil, progress: Double? = nil, senderID: String, created: Timestamp) {
+    convenience init(type: MessageType, messageID: String? = nil, message: String? = nil, imageURL: [String]? = nil, fileURL: String? = nil, ratioImage: Double? = nil, duration: Double? = nil, fileName: String? = nil, senderID: String, created: Timestamp) {
         self.init()
         self.type = type
         self.messageID = messageID
         self.message = message
         self.imageURL = imageURL
+        self.fileURL = fileURL
         self.ratioImage = ratioImage
-        self.thumbVideo = thumbVideo
-        self.videoURL = videoURL
-        self.audioURL = audioURL
         self.duration = duration
         self.fileName = fileName
-        self.fileURL = fileURL
-        self.progress = progress
         self.senderID = senderID
         self.created = created
     }
@@ -90,29 +125,17 @@ class MessageModel: NSObject, JsonInitObject {
             if key == "imageURL", let wrapValue = value as? [String] {
                 self.imageURL = wrapValue
             }
+            if key == "fileURL", let wrapValue = value as? String {
+                self.fileURL = wrapValue
+            }
             if key == "ratioImage", let wrapValue = value as? Double {
                 self.ratioImage = wrapValue
-            }
-            if key == "thumbVideo", let wrapValue = value as? String {
-                self.thumbVideo = wrapValue
-            }
-            if key == "videoURL", let wrapValue = value as? String {
-                self.videoURL = wrapValue
-            }
-            if key == "audioURL", let wrapValue = value as? String {
-                self.audioURL = wrapValue
             }
             if key == "duration", let wrapValue = value as? Double {
                 self.duration = wrapValue
             }
             if key == "fileName", let wrapValue = value as? String {
                 self.fileName = wrapValue
-            }
-            if key == "fileURL", let wrapValue = value as? String {
-                self.fileURL = wrapValue
-            }
-            if key == "progress", let wrapValue = value as? Double {
-                self.progress = wrapValue
             }
             if key == "senderID", let wrapValue = value as? String {
                 self.senderID = wrapValue
@@ -131,13 +154,9 @@ class MessageModel: NSObject, JsonInitObject {
             "message": self.message ?? "",
             "imageURL": self.imageURL ?? [],
             "ratioImage": self.ratioImage ?? 1.0,
-            "thumbVideo": self.thumbVideo ?? "",
-            "videoURL": self.videoURL ?? "",
-            "audioURL": self.audioURL ?? "",
+            "fileURL": self.fileURL ?? "",
             "duration": self.duration ?? 0.0,
             "fileName": self.fileName ?? "",
-            "fileURL": self.fileURL ?? "",
-            "progress": self.progress ?? 0.0,
             "senderID": self.senderID ?? "",
             "created": self.created ?? "",
         ] as [String : Any]

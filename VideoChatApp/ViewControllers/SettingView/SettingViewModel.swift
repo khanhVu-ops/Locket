@@ -41,14 +41,14 @@ class SettingViewModel {
     
     func updateAvata(image: UIImage, completion:@escaping (URL?, Error?)->Void) {
         self.loadingBehavior.accept(true)
-        FirebaseManager.shared.uploadImageToStorage(with: image) { url, error in
+        FirebaseManager.shared.uploadImageToStorage(with: image) { [weak self] url, error in
             guard let url = url, error == nil else {
                 completion(nil, error)
                 return
             }
-            FirebaseManager.shared.updateAvatar(url: "\(url)") { err in
+            FirebaseManager.shared.updateAvatar(url: "\(url)") { [weak self] err in
                 completion(url, err)
-                self.loadingBehavior.accept(false)
+                self?.loadingBehavior.accept(false)
             }
         }
     }
