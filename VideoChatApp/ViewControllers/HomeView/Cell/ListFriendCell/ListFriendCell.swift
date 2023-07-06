@@ -14,7 +14,7 @@ class ListFriendCell: UITableViewCell {
     @IBOutlet weak var cltvListUser: UICollectionView!
     let disposeBag = DisposeBag()
     
-    var actionSelectCell: ((IndexPath) -> Void)?
+    var actionSelectCell: ((Int, UserModel) -> Void)?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -36,6 +36,11 @@ class ListFriendCell: UITableViewCell {
         self.cltvListUser.dataSource = nil
         viewModel?.listUsers.bind(to: self.cltvListUser.rx.items(cellIdentifier: ListUserCollectionViewCell.nibNameClass, cellType: ListUserCollectionViewCell.self)) {row, item, cell in
             cell.configure(item: item)
+            cell.actionSelectUser = { [weak self] in
+                if let actionSelectCell = self?.actionSelectCell {
+                    actionSelectCell(row, item)
+                }
+            }
         }.disposed(by: disposeBag)
         self.cltvListUser.rx.setDelegate(self).disposed(by: disposeBag)
     }
@@ -45,10 +50,5 @@ extension ListFriendCell: UICollectionViewDelegate, UICollectionViewDelegateFlow
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: 80, height: self.cltvListUser.frame.height)
-    }
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        if let actionSelectCell = actionSelectCell {
-            actionSelectCell(indexPath)
-        }
     }
 }

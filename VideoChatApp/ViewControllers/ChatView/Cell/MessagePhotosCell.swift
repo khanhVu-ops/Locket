@@ -20,7 +20,6 @@ class MessagePhotosCell: BaseMessageTableViewCell {
         cltv.showsVerticalScrollIndicator = false
         cltv.register(ImageCollectionViewCell.nibClass, forCellWithReuseIdentifier: ImageCollectionViewCell.nibNameClass)
         cltv.layer.masksToBounds = false
-        cltv.backgroundColor = .green
         cltv.dataSource = self
         cltv.delegate = self
         return cltv
@@ -29,7 +28,6 @@ class MessagePhotosCell: BaseMessageTableViewCell {
     let spaceItem: CGFloat = 2
     var listPhotos = [String]()
     var message = MessageModel()
-    let disposeBag = DisposeBag()
     var maxWidth: CGFloat = 0
     var maxHeight: CGFloat = 0
     var ratio: Double = 0
@@ -38,9 +36,8 @@ class MessagePhotosCell: BaseMessageTableViewCell {
     var heightltvContraints: Constraint?
     override func setUpView() {
         super.setUpView()
-        self.maxWidth = rounded(self.contentView.frame.size.width * 0.7)
+        self.maxWidth = rounded(self.contentView.frame.size.width * 0.65)
         self.maxHeight = rounded(self.contentView.frame.size.width)
-        self.widthContentMessageConstraints?.deactivate()
         self.heightltvContraints?.deactivate()
         self.widthCltvContraints?.deactivate()
         
@@ -107,7 +104,7 @@ class MessagePhotosCell: BaseMessageTableViewCell {
     }
     
     func rounded(_ a: CGFloat) -> CGFloat {
-        return CGFloat(Double(a).rounded(toPlaces: 3))
+        return CGFloat(Double(a).rounded(toPlaces: 0))
     }
 }
 

@@ -6,15 +6,16 @@
 //
 
 import Foundation
-
+import Alamofire
 final class APIService {
     static let shared = APIService()
     let fcmServerKey = "AAAAxstpRhA:APA91bGKZ-t33ISHCUx-lk7pgHGD0Br3HRowvLwGiZ9J3VVcfTTdb7jw5I0o6QceAWOQ5rzE7yCfr4_TFtRhm6w8G6F4CiiUNApu_3ALfJEzQsusQLU_k1is2vpIBe57sUUel0IfESvN"
+    let notificationURL = "https://fcm.googleapis.com/fcm/send"
     func pushNotificationMessage(fcmToken: String?, uid: String?, title: String?, body: String, badge: Int?) {
         guard let fcmToken = fcmToken, let uid = uid, let title = title, let badge = badge else {
             return
         }
-        guard let url = URL(string: "https://fcm.googleapis.com/fcm/send") else {
+        guard let url = URL(string: notificationURL) else {
             return
         }
 

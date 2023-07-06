@@ -40,7 +40,7 @@ class EditInfoViewController: BaseViewController {
         self.vLastname.backgroundColor = Constants.Color.bgrTextField
         self.vLastname.addConnerRadius(radius: 15)
         self.tfLastname.attributedPlaceholder = "Last name".toAttributedStringWithColor(color: .white.withAlphaComponent(0.4))
-        self.addGestureDismissKeyboard()
+        self.addGestureDismissKeyboard(view: self.view)
         self.addFirstResponsder(self.tfFirstname)
     }
     

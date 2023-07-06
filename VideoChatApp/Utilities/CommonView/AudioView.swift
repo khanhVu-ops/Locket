@@ -30,6 +30,7 @@ class AudioView: UIView {
     var waveformView = WaveformView()
     
     weak var delegate: AudioViewProtocol?
+    var actionCancel: (()->Void)?
     lazy var btnDelete: UIButton = {
         let btn = UIButton()
         btn.backgroundColor = .clear
@@ -111,7 +112,7 @@ class AudioView: UIView {
         waveformView.backgroundColor = .systemPurple
         waveformView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
-            make.width.equalTo(1500)
+            make.width.equalTo(10000)
             make.height.equalTo(height)
         }
     }
@@ -212,7 +213,9 @@ class AudioView: UIView {
     
     @objc func btnDeleteTapped() {
         self.stopRecording()
-        self.delegate?.didTapBtnDeleteRecording()
+        if let actionCancel = actionCancel {
+            actionCancel()
+        }
     }
     
     @objc func btnStopRecordingTapped() {

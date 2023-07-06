@@ -35,32 +35,31 @@ class SettingViewController: BaseViewController {
     }
     
     override func bindViewModel() {
-        self.settingViewModel.loadingBehavior
-            .subscribe(onNext: { [weak self] isLoading in
-                isLoading ? self?.showActivityIndicator() : self?.hideActivityIndicator()
-            })
-            .disposed(by: disposeBag)
         
-        self.settingViewModel.userBehavior
-            .subscribe(onNext: { [weak self] user in
-                if let url = URL(string: user.avataURL ?? "") {
-                    self?.imvAvata.sd_setImage(with: url, completed: nil)
-                } else {
-                    self?.imvAvata.image = Constants.Image.defaultAvata
-                }
+        self.settingViewModel.getInfoUser()
+            .drive(onNext: { [weak self] user in
+                self?.settingViewModel.user = user
+                self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
                 self?.lbUsername.text = user.username
             })
             .disposed(by: disposeBag)
     }
     
     @IBAction func btnLogOutTapped(_sender: UIButton) {
-        self.settingViewModel.handleLogOut { [weak self] error in
-            guard error == nil else {
-                self?.showAlert(title: "Error!", message: error!.localizedDescription)
-                return
-            }
-            self?.goToSetRootIntroVC()
-        }
+        self.settingViewModel.handleLogOut()
+            .subscribe(onNext: { [weak self] in
+                AuthFirebaseService.shared.updateUserActive(isActive: false)
+                Utilitis.shared.setBadgeIcon(number: 0)
+                var fcm = self?.settingViewModel.user.fcmToken ?? []
+                let fcmToken = UserDefaultManager.shared.getNotificationToken()
+                print("token", fcmToken)
+                fcm.remove(object: fcmToken)
+                print("fcm: ", fcm.count)
+                AuthFirebaseService.shared.updateFcmToken(fcmToken: fcm)
+                UserDefaultManager.shared.setID(id: nil)
+                self?.goToSetRootIntroVC()
+            })
+            .disposed(by: disposeBag)
     }
 
     @IBAction func btnChangeAvataTapped(_ sender: Any) {
@@ -88,6 +87,7 @@ class SettingViewController: BaseViewController {
     private func openCamera() {
         let filterVC = FilterViewController()
         filterVC.delegate = self
+        filterVC.titleButonSend = "Update"
         filterVC.modalPresentationStyle = .fullScreen
         self.present(filterVC, animated: true, completion: nil)
     }
@@ -101,12 +101,10 @@ class SettingViewController: BaseViewController {
 
 extension SettingViewController: CameraProtocol {
     func didSendImageCaptured(image: UIImage) {
-        self.settingViewModel.updateAvata(image: image) { [weak self] url, error in
-            guard let url = url, error == nil else {
-                self?.showAlert(title: "Error!", message: error!.localizedDescription, completion: nil)
-                return
-            }
-            self?.imvAvata.sd_setImage(with: url, completed: nil)
-        }
+        self.settingViewModel.updateAvata(image: image)
+            .subscribe(onNext: { [weak self] url in
+                self?.imvAvata.image = image
+            })
+            .disposed(by: disposeBag)
     }
 }

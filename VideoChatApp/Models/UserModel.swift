@@ -69,7 +69,7 @@ class UserModel: NSObject, JsonInitObject {
             "username": username ?? "",
             "phoneNumber": phoneNumber ?? "",
             "avataURL": "",
-            "fcmToken": fcmToken ?? "",
+            "fcmToken": fcmToken ?? [],
             "isActive": true,
             "isChating": false,
             "totalBadge": totalBadge ?? 0

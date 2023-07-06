@@ -9,7 +9,8 @@ import Foundation
 import UIKit
 struct Constants {
     struct Color {
-        static let mainColor = UIColor(hexString: "#771F98")
+        static let tapBubleColor = UIColor(hexString: "#328A0A")
+        static let mainColor = UIColor(hexString: "#47C40F")
         static let tabbarColor = UIColor(hexString: "#F8F8F8")
         static let background = UIColor(hexString: "#242121")
         static let bgrTextField = UIColor(hexString: "#403E3E")

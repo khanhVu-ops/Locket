@@ -31,7 +31,11 @@ class ImageScrollView: UIScrollView, UIScrollViewDelegate {
     func set(image: UIImage) {
         imageZoomView.removeFromSuperview()
         imageZoomView = UIImageView(image: image)
-        imageZoomView.addConnerRadius(radius: 20)
+        if image.size.height/image.size.width < 4/3 {
+            imageZoomView.addConnerRadius(radius: 20)
+        } else {
+            imageZoomView.addConnerRadius(radius: 30)
+        }
         self.addSubview(imageZoomView)
         self.configurateFor(imageSize: image.size)
     }

@@ -14,20 +14,6 @@ class UserDefaultManager {
     let keyIdActive = "idActive"
     let keyNotificationToken = "tokenNotification"
     let keyUser = "user"
-    func updateIDWhenLogin(id: String) {
-        self.setID(id: id)
-        FirebaseManager.shared.getUserWithID(id: id) { user, error in
-            guard let user = user, error == nil else {
-                return
-            }
-            self.setUser(user: user)
-        }
-    }
-    
-    func updateIDWhenLogOut() {
-        self.setID(id: nil)
-        self.setUser(user: UserModel())
-    }
     
     func setID(id: String?) {
         userDefault.setValue(id, forKey: self.keyIdActive)
@@ -41,7 +27,7 @@ class UserDefaultManager {
         userDefault.setValue(token, forKey: self.keyNotificationToken)
     }
     
-    func getNotificationToken() -> String{
+    func getNotificationToken() -> String {
         return userDefault.string(forKey: self.keyNotificationToken) ?? ""
     }
     

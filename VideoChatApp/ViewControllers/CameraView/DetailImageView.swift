@@ -24,7 +24,7 @@ class DetailImageView: UIView {
     
     private lazy var btnCancel: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        btn.setBackgroundImage(UIImage(systemName: "chevron.left"), for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnCancelImageTapped), for: .touchUpInside)
         return btn
@@ -32,7 +32,7 @@ class DetailImageView: UIView {
     
     private lazy var btnDownload: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "arrow.down.to.line.compact"), for: .normal)
+        btn.setBackgroundImage(UIImage(systemName: "arrow.down.to.line.compact"), for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnDownloadTapped), for: .touchUpInside)
         return btn
@@ -86,13 +86,13 @@ class DetailImageView: UIView {
             make.top.leading.trailing.bottom.equalToSuperview()
         }
         self.btnCancel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.width.height.equalTo(40)
+            make.top.equalToSuperview().offset(20)
+            make.width.height.equalTo(30)
             make.leading.equalToSuperview().offset(20)
         }
         self.btnDownload.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.width.height.equalTo(40)
+            make.top.equalToSuperview().offset(20)
+            make.width.height.equalTo(30)
             make.trailing.equalToSuperview().offset(-20)
         }
         self.btnSendImage.snp.makeConstraints { make in

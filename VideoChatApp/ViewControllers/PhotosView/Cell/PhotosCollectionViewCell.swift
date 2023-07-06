@@ -51,6 +51,7 @@ class PhotosCollectionViewCell: UICollectionViewCell {
     }
     
     override func prepareForReuse() {
+        imv.image = nil
 //        self.photoViewModel = nil
     }
     
@@ -79,20 +80,21 @@ class PhotosCollectionViewCell: UICollectionViewCell {
         self.addGestureRecognizer(longPressGesture)
     }
     
-    func setUpImage(asset: PHAsset) {
-        asset.image(targetSize: CGSize(width: 250, height: 250)) { image in
-            DispatchQueue.main.async {
-                self.imv.image = image
-                self.lbDuration.isHidden = true
-            }
+    func setUpImage(image: UIImage?) {
+        DispatchQueue.main.async { [weak self] in
+            self?.imv.image = image
+            self?.lbDuration.isHidden = true
         }
+//        asset.image(targetSize: CGSize(width: 250, height: 250)) { image in
+//            
+//        }
     }
     
-    func setupVideo(image: UIImage?, duration: Double) {        
-        DispatchQueue.main.async {
-            self.imv.image = image
-            self.lbDuration.isHidden = false
-            self.lbDuration.text = Video.shared.formatTimeVideo(time: Int(duration))
+    func setupVideo(image: UIImage?, duration: Double?) {
+        DispatchQueue.main.async { [weak self] in
+            self?.imv.image = image
+            self?.lbDuration.isHidden = false
+            self?.lbDuration.text = Video.shared.formatTimeVideo(time: Int(duration ?? 0))
         }
     }
     

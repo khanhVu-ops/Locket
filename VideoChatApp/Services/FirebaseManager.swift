@@ -470,7 +470,7 @@ class FirestoreManager: FirestoreManagerProtocol {
                 return
             }
             self.updateFcmToken(fcmToken: "")
-            UserDefaultManager.shared.updateIDWhenLogOut()
+//            UserDefaultManager.shared.updateIDWhenLogOut()
             Utilitis.shared.setBadgeIcon(number: 0)
             completion(nil)
         })

@@ -52,7 +52,7 @@ class BaseMessageTableViewCell: UITableViewCell {
     
     lazy var vContentMessage:  UIView = {
         let vContentMessage = UIView()
-        vContentMessage.addConnerRadius(radius: 15)
+        vContentMessage.addConnerRadius(radius: 18)
         return vContentMessage
     }()
     
@@ -91,7 +91,6 @@ class BaseMessageTableViewCell: UITableViewCell {
     }()
 
     var topStvConstraint: Constraint?
-    var widthContentMessageConstraints: Constraint?
     let uid = UserDefaultManager.shared.getID()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -99,10 +98,6 @@ class BaseMessageTableViewCell: UITableViewCell {
         
         setUpView()
     }
-    
-//    override func layoutSubviews() {
-//        <#code#>
-//    }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -113,7 +108,10 @@ class BaseMessageTableViewCell: UITableViewCell {
     
     func setUpView() {
         self.contentView.addSubview(stvContentCell)
-        UIView.performWithoutAnimation {
+        UIView.performWithoutAnimation { [weak self] in
+            guard let self = self else {
+                return
+            }
             self.contentView.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
 
         }
@@ -125,36 +123,34 @@ class BaseMessageTableViewCell: UITableViewCell {
         }
         
         self.lbTime.snp.makeConstraints { make in
-            make.top.equalToSuperview()
+            make.top.equalToSuperview().offset(10)
             make.centerX.equalTo(vTime)
             make.bottom.equalToSuperview().offset(-5)
         }
         
         self.lbStatus.snp.makeConstraints { make in
-            make.top.bottom.equalToSuperview()
+            make.top.bottom.equalToSuperview().inset(5)
             make.leading.equalToSuperview().offset(38) // 25+8+5
             make.trailing.equalToSuperview().offset(-5)
         }
         self.imvAvata.snp.makeConstraints { make in
             make.width.height.equalTo(25)
         }
-        self.vContentMessage.snp.makeConstraints { make in
-            widthContentMessageConstraints = make.width.equalTo(self.contentView.snp.width).multipliedBy(0.6).constraint
-        }
     }
     func configure(item: MessageModel, user: UserModel, indexPath: IndexPath) {
-        UIView.performWithoutAnimation { 
+        UIView.performWithoutAnimation { [weak self] in
+            guard let self = self else {
+                return
+            }
             self.stvMessage.alignment = item.senderID == uid ? .trailing : .leading
             self.lbStatus.textAlignment = item.senderID == uid ? .right : .left
-            self.vContentMessage.backgroundColor = item.senderID == uid ? Constants.Color.mainColor : .white
-            if item.senderID != uid {
-                vContentMessage.addBorder(borderWidth: 1, borderColor: Constants.Color.mainColor)
-
-            }
+            self.vContentMessage.backgroundColor = item.senderID == uid ? Constants.Color.mainColor : .gray.withAlphaComponent(0.2)
             self.imvAvata.isHidden = item.senderID == uid ? true : false
             self.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
-            self.vTime.isHidden = item.isBubble
-            self.vStatus.isHidden = item.isBubble
+            self.vTime.isHidden = !item.isBubble
+            self.lbTime.text = item.created?.convertTimestampToTimeString()
+            self.vStatus.isHidden = !item.isBubble
+            self.lbStatus.text = item.status.rawValue
         }
     }
 }

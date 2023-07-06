@@ -9,13 +9,16 @@ import UIKit
 import RxSwift
 import RxCocoa
 class HomeViewController: BaseViewController {
+    
     @IBOutlet weak var tbvListChats: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var vTitle: UIView!
+    @IBOutlet weak var lbTitle: UILabel!
     let viewModel = HomeViewModel()
     
     private lazy var tbvSearch: UITableView = {
         let tbv = UITableView()
+        tbv.allowsSelection = false
         return tbv
     }()
     
@@ -43,6 +46,7 @@ class HomeViewController: BaseViewController {
         self.tbvSearch.rowHeight = UITableView.automaticDimension
         self.tbvSearch.isHidden = true
         
+        self.lbTitle.textColor = Constants.Color.mainColor
         
         self.searchBar.returnKeyType = .search
         self.searchBar.delegate = self
@@ -72,8 +76,12 @@ class HomeViewController: BaseViewController {
             .subscribe(onNext: { [weak self] searchText in
                 self?.tbvSearch.isHidden = false
                 self?.viewModel.handleQuery(query: searchText)
+            })
+            .disposed(by: disposeBag)
+        
+        self.viewModel.listSearchs
+            .subscribe(onNext: { [weak self] users in
                 self?.tbvSearch.reloadData()
-                print(searchText)
             })
             .disposed(by: disposeBag)
         
@@ -85,6 +93,14 @@ class HomeViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
+    
+    func goToChatVC(conversationID: String, uid2: String, user: UserModel) {
+        let chatVC = ChatViewController()
+        chatVC.viewModel.uid2 = uid2
+        chatVC.viewModel.conversationID.accept(conversationID)
+        chatVC.viewModel.user.accept(user)
+        self.push(chatVC)
+    }
 }
 
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
@@ -95,7 +111,6 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
         } else {
             return self.viewModel.listSearchs.value.count
         }
-        
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -103,43 +118,32 @@ extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
             if indexPath.row == 0 {
                 let cell = tableView.dequeueReusableCell(withIdentifier: ListFriendCell.nibNameClass) as! ListFriendCell
                 cell.bindingToViewModel(viewModel: self.viewModel)
-                cell.actionSelectCell = { [weak self] index in
-                    let chatVC = ChatViewController()
-                    chatVC.viewModel.uid2 = self?.viewModel.listUsers.value[index.item].id ?? ""
-                    self?.push(chatVC)
+                cell.actionSelectCell = { [weak self] index, user in
+                    self?.goToChatVC(conversationID: "", uid2: self?.viewModel.listUsers.value[index].id ?? "", user: user)
                 }
                 return cell
             } else {
                 let element = self.viewModel.listChats.value[indexPath.row]
                 let cell = tableView.dequeueReusableCell(withIdentifier: ListChatTableViewCell.nibNameClass, for: IndexPath(row: indexPath.row, section: 0)) as! ListChatTableViewCell
                 cell.configure(viewModel: self.viewModel, item: element)
+                cell.actionSelectRow = { [weak self] conversationID, uid2, user in
+                    self?.goToChatVC(conversationID: conversationID, uid2: uid2, user: user)
+                }
                 return cell
             }
         } else {
             let cell = tableView.dequeueReusableCell(withIdentifier: SearchTableViewCell.nibNameClass) as! SearchTableViewCell
             let item = self.viewModel.listSearchs.value[indexPath.row]
             cell.configure(item: item)
+            cell.actionSelectRow = { [weak self] uid2, user in
+                self?.goToChatVC(conversationID: "", uid2: uid2, user: user)
+            }
             return cell
         }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return UITableView.automaticDimension
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let chatVC = ChatViewController()
-        if tableView == tbvListChats {
-            if indexPath.item > 0 {
-                chatVC.viewModel.uid2 = self.viewModel.listChats.value[indexPath.row].uid2
-                chatVC.viewModel.conversationID = self.viewModel.listChats.value[indexPath.row].conversationID ?? ""
-            }
-        } else {
-            chatVC.viewModel.uid2 = self.viewModel.listSearchs.value[indexPath.item].id ?? ""
-        }
-        self.navigationController?.pushViewController(chatVC, animated: true)
-        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

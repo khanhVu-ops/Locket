@@ -603,7 +603,6 @@ PODS:
   - BoringSSL-GRPC/Implementation (0.0.24):
     - BoringSSL-GRPC/Interface (= 0.0.24)
   - BoringSSL-GRPC/Interface (0.0.24)
-  - Differentiator (5.0.0)
   - Firebase/Auth (10.7.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 10.7.0)
@@ -730,7 +729,6 @@ PODS:
     - Libuv-gRPC (= 0.0.10)
   - gRPC-Core/Interface (1.44.0)
   - GTMSessionFetcher/Core (3.1.0)
-  - IQKeyboardManagerSwift (6.5.11)
   - leveldb-library (1.22.1)
   - Libuv-gRPC (0.0.10):
     - Libuv-gRPC/Implementation (= 0.0.10)
@@ -748,10 +746,6 @@ PODS:
   - RxCocoa (6.5.0):
     - RxRelay (= 6.5.0)
     - RxSwift (= 6.5.0)
-  - RxDataSources (5.0.0):
-    - Differentiator (~> 5.0)
-    - RxCocoa (~> 6.0)
-    - RxSwift (~> 6.0)
   - RxRelay (6.5.0):
     - RxSwift (= 6.5.0)
   - RxSwift (6.5.0)
@@ -768,10 +762,8 @@ DEPENDENCIES:
   - FirebaseFirestore
   - FirebaseMessaging
   - FirebaseStorage
-  - IQKeyboardManagerSwift
   - ProgressHUD
   - RxCocoa (= 6.5.0)
-  - RxDataSources (~> 5.0)
   - RxSwift (= 6.5.0)
   - SDWebImage
   - SnapKit
@@ -783,7 +775,6 @@ SPEC REPOS:
     - abseil
     - Alamofire
     - BoringSSL-GRPC
-    - Differentiator
     - Firebase
     - FirebaseAppCheckInterop
     - FirebaseAuth
@@ -800,14 +791,12 @@ SPEC REPOS:
     - "gRPC-C++"
     - gRPC-Core
     - GTMSessionFetcher
-    - IQKeyboardManagerSwift
     - leveldb-library
     - Libuv-gRPC
     - nanopb
     - ProgressHUD
     - PromisesObjC
     - RxCocoa
-    - RxDataSources
     - RxRelay
     - RxSwift
     - SDWebImage
@@ -819,7 +808,6 @@ SPEC CHECKSUMS:
   abseil: ebe5b5529fb05d93a8bdb7951607be08b7fa71bc
   Alamofire: 4e95d97098eacb88856099c4fc79b526a299e48c
   BoringSSL-GRPC: 3175b25143e648463a56daeaaa499c6cb86dad33
-  Differentiator: e8497ceab83c1b10ca233716d547b9af21b9344d
   Firebase: 0219acf760880eeec8ce479895bd7767466d9f81
   FirebaseAppCheckInterop: 8e907eea79958960a8bd2058e067f31e03a7914b
   FirebaseAuth: dd64c01631df724b09f33e584625775c52f7d71f
@@ -836,14 +824,12 @@ SPEC CHECKSUMS:
   "gRPC-C++": 9675f953ace2b3de7c506039d77be1f2e77a8db2
   gRPC-Core: 943e491cb0d45598b0b0eb9e910c88080369290b
   GTMSessionFetcher: c9e714f7eec91a55641e2bab9f45fd83a219b882
-  IQKeyboardManagerSwift: c7955c0bdbf7b2eb29bb7daaa44e3d90f55a9a85
   leveldb-library: 50c7b45cbd7bf543c81a468fe557a16ae3db8729
   Libuv-gRPC: 55e51798e14ef436ad9bc45d12d43b77b49df378
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   ProgressHUD: 355915c8f033e626788fa9b0d99d06e8691595ab
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
   RxCocoa: 94f817b71c07517321eb4f9ad299112ca8af743b
-  RxDataSources: aa47cc1ed6c500fa0dfecac5c979b723542d79cf
   RxRelay: 1de1523e604c72b6c68feadedd1af3b1b4d0ecbd
   RxSwift: 5710a9e6b17f3c3d6e40d6e559b9fa1e813b2ef8
   SDWebImage: fd7e1a22f00303e058058278639bf6196ee431fe
@@ -851,6 +837,6 @@ SPEC CHECKSUMS:
   SwiftGen: 1366a7f71aeef49954ca5a63ba4bef6b0f24138c
   Toast-Swift: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
 
-PODFILE CHECKSUM: f9040cb7e6ae64fce5bcd097d125976cf8589dce
+PODFILE CHECKSUM: f78357787a66053da90d1565b34e5c5bdae41301
 
 COCOAPODS: 1.12.1

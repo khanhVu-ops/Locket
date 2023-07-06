@@ -39,14 +39,25 @@
                             <constraint firstAttribute="width" constant="15" id="nYn-5m-2MG"/>
                         </constraints>
                     </view>
+                    <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="X16-op-luV">
+                        <rect key="frame" x="0.0" y="0.0" width="80" height="129"/>
+                        <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
+                        <connections>
+                            <action selector="btnSelectCellTapped:" destination="gTV-IL-0wX" eventType="touchUpInside" id="YTP-21-a8G"/>
+                        </connections>
+                    </button>
                 </subviews>
             </view>
             <viewLayoutGuide key="safeArea" id="ZTg-uK-7eu"/>
             <constraints>
                 <constraint firstItem="QqK-gh-rul" firstAttribute="bottom" secondItem="02s-Gl-HCa" secondAttribute="bottom" id="745-IJ-zHQ"/>
                 <constraint firstItem="QqK-gh-rul" firstAttribute="trailing" secondItem="02s-Gl-HCa" secondAttribute="trailing" id="9w3-A6-LLA"/>
+                <constraint firstItem="X16-op-luV" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="IHL-Px-PbX"/>
+                <constraint firstItem="X16-op-luV" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" id="Obq-aE-4IO"/>
                 <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="1FH-C4-hTg" secondAttribute="bottom" id="Uuh-kH-Mly"/>
                 <constraint firstAttribute="trailing" secondItem="02s-Gl-HCa" secondAttribute="trailing" constant="10" id="a2h-2m-9px"/>
+                <constraint firstAttribute="bottom" secondItem="X16-op-luV" secondAttribute="bottom" id="daK-gy-byT"/>
+                <constraint firstAttribute="trailing" secondItem="X16-op-luV" secondAttribute="trailing" id="ezO-55-Int"/>
                 <constraint firstAttribute="trailing" secondItem="1FH-C4-hTg" secondAttribute="trailing" constant="10" id="hOG-SM-lzY"/>
                 <constraint firstItem="1FH-C4-hTg" firstAttribute="top" secondItem="02s-Gl-HCa" secondAttribute="bottom" constant="5" id="lc6-Mi-1di"/>
                 <constraint firstItem="1FH-C4-hTg" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="10" id="sXJ-8Q-ybb"/>

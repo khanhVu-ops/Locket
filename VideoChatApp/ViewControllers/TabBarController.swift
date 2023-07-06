@@ -7,15 +7,18 @@
 
 import UIKit
 import UserNotifications
+import RxSwift
+import RxCocoa
 class TabBarController: UITabBarController {
     
     var customTabBarView = UIView(frame: .zero)
-    
+    let disposeBag = DisposeBag()
     // MARK: View lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
         self.registerNotification()
+        configAccount()
         self.setUpView()
         self.setupTabBarUI()
     }
@@ -27,29 +30,31 @@ class TabBarController: UITabBarController {
     
     // MARK: Private methods
     func setUpView() {
-        FirebaseManager.shared.updateUserActive(isActive: true) { error in
-            guard error == nil else {
-                print(error!.localizedDescription)
-                return
-            }
-        }
-        guard let id = UserDefaultManager.shared.getID() else {
-            return
-        }
-        FirebaseManager.shared.getUserWithID(id: id) { user, error in
-            guard let user = user, error == nil else {
-                return
-            }
-            Utilitis.shared.setBadgeIcon(number: user.totalBadge ?? 0)
-            UserDefaultManager.shared.setUser(user: user)
-        }
-        
         let homeVC = HomeViewController()
         homeVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 0)
         let settingVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingViewController") as! SettingViewController
         settingVC.tabBarItem = UITabBarItem(title: "Setting", image: UIImage(systemName: "gearshape"), tag: 1)
         self.viewControllers = [homeVC, settingVC]
     }
+    
+    func configAccount() {
+        guard let id = UserDefaultManager.shared.getID() else {
+            return
+        }
+        FirebaseService.shared.getUserByUID(uid: id)
+            .subscribe(onNext: { user in
+                var fcm = user.fcmToken ?? []
+                let newFcm = UserDefaultManager.shared.getNotificationToken()
+                if !fcm.contains(newFcm) {
+                    fcm.append(newFcm)
+                    AuthFirebaseService.shared.updateFcmToken(fcmToken: fcm)
+                }
+                AuthFirebaseService.shared.updateUserActive(isActive: true)
+                Utilitis.shared.setBadgeIcon(number: user.totalBadge ?? 0)
+            })
+            .disposed(by: disposeBag)
+    }
+    
     private func setupCustomTabBarFrame() {
         let height = self.view.safeAreaInsets.bottom + 64
         var tabFrame = self.tabBar.frame
@@ -65,7 +70,7 @@ class TabBarController: UITabBarController {
         // Setup your colors and corner radius
         self.tabBar.backgroundColor = Constants.Color.tabbarColor
         self.tabBar.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        self.tabBar.tintColor = .purple
+        self.tabBar.tintColor = Constants.Color.mainColor
         self.tabBar.unselectedItemTintColor = UIColor.gray
         self.tabBar.addConnerRadius(radius: 15)
         self.tabBar.addShadow(color: .black, opacity: 0.3, radius: 2, offset: CGSize(width: 0, height: 0))

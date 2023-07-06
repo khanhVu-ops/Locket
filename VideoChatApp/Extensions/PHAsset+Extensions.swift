@@ -40,6 +40,22 @@ extension PHAsset {
         }
         return thumbnail
     }
+    
+    func getThumbnailImage(targetSize: CGSize, completion: @escaping (UIImage) -> Void) {
+        let imageManager = PHImageManager.default()
+        let thumbnailOptions = PHImageRequestOptions()
+        thumbnailOptions.deliveryMode = .opportunistic
+        thumbnailOptions.resizeMode = .exact
+        thumbnailOptions.isNetworkAccessAllowed = false
+        thumbnailOptions.isSynchronous = true
+        imageManager.requestImage(for: self, targetSize: targetSize, contentMode: .aspectFill, options: thumbnailOptions) { (image, info) in
+            guard let image = image else {
+                return
+            }
+            completion(image)
+        }
+    }
+    
     func image(targetSize: CGSize, completion: @escaping (UIImage) -> Void) {
         let imageManager = PHCachingImageManager()
         let options = PHImageRequestOptions()
@@ -91,28 +107,27 @@ extension PHAsset {
         }
     }
     
-    func getFullSizeImageURL(completion: @escaping (URL?) -> Void) {
-        let options = PHImageRequestOptions()
-        options.isNetworkAccessAllowed = true
-
-        PHImageManager.default().requestImage(for: self, targetSize: PHImageManagerMaximumSize, contentMode: .default, options: options) { image, info in
-            guard let image = image,
-                  let imageData = image.jpegData(compressionQuality: 0.8) else {
-                completion(nil)
-                return
-            }
-
-            let temporaryDirectoryURL = FileManager.default.temporaryDirectory
-            let fileName = ProcessInfo.processInfo.globallyUniqueString + ".jpeg"
-            let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
-
-            do {
-                try imageData.write(to: fileURL)
-                completion(fileURL)
-            } catch {
-                completion(nil)
-            }
-        }
-    }
+//    func getFullSizeImageURL(completion: @escaping (URL?) -> Void) {
+//        let options = PHImageRequestOptions()
+//        options.isNetworkAccessAllowed = true
+//        let temporaryDirectoryURL = FileManager.default.temporaryDirectory
+//        let fileName = ProcessInfo.processInfo.globallyUniqueString + ".jpeg"
+//        let fileURL = temporaryDirectoryURL.appendingPathComponent(fileName)
+//        if  FileManager.default.fileExists(atPath: fileURL.path)
+//        PHImageManager.default().requestImage(for: self, targetSize: PHImageManagerMaximumSize, contentMode: .default, options: options) { image, info in
+//            guard let image = image,
+//                  let imageData = image.jpegData(compressionQuality: 0.8) else {
+//                completion(nil)
+//                return
+//            }
+//
+//            do {
+//                try imageData.write(to: fileURL)
+//                completion(fileURL)
+//            } catch {
+//                completion(nil)
+//            }
+//        }
+//    }
 
 }

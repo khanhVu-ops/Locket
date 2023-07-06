@@ -50,7 +50,7 @@ final class AuthFirebaseService: BaseFirebaseService {
     func checkAccountExists(uid: String) -> Single<UserModel> {
         let path = fireStore.document("users/\(uid)")
         return Single.create { single in
-            self.requestDocument(path: path) { data in
+            self.requestDocument(path: path, isListener: false) { data in
                 single(.success(data))
             } failure: { message in
                 single(.failure(AppError(code: .firebase, message: message)))
@@ -64,5 +64,37 @@ final class AuthFirebaseService: BaseFirebaseService {
         let newUser = UserModel(id: uid, phoneNumber: phoneNumber, username: username, avataURL: "", isActive: true, fcmToken: []).convertToDictionary()
         UserDefaultManager.shared.setID(id: uid)
         return self.rxSetData(path: path, data: newUser)
+    }
+    
+    func logOut() -> Observable<Void> {
+        return Observable.create { observer in
+            let firebaseAuth = Auth.auth()
+            do {
+                try firebaseAuth.signOut()
+                observer.onNext(())
+                observer.onCompleted()
+            } catch let error {
+                observer.onError(error)
+            }
+            return Disposables.create()
+        }
+    }
+    
+    func updateUserActive(isActive: Bool) {
+        guard let uid = UserDefaultManager.shared.getID() else {
+            return
+        }
+        print("HI")
+        let ref = fireStore.collection(usersClt).document(uid)
+        ref.updateData([
+            "isActive": isActive
+        ])
+    }
+    
+    func updateFcmToken(fcmToken: [String]) {
+        guard let uid = UserDefaultManager.shared.getID() else {
+            return
+        }
+        fireStore.collection(usersClt).document(uid).updateData(["fcmToken": fcmToken])
     }
 }

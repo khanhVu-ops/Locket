@@ -20,7 +20,10 @@ protocol JsonInitObject: NSObject {
 class BaseFirebaseService {
     let fireStore = Firestore.firestore()
     let storage = Storage.storage().reference()
-    
+    var lastMessageSnapshot: QueryDocumentSnapshot?
+    let usersClt = "users"
+    let chatsClt = "chats"
+    let conversationsClt = "conversations"
     func requestCollection<T: JsonInitObject>(path: Query,
                                               isListener: Bool,
                                               success: @escaping ([T]) -> Void,
@@ -32,6 +35,9 @@ class BaseFirebaseService {
                     return
                 }
                 var listObj: [T] = []
+                if T() is MessageModel {
+                    self.lastMessageSnapshot = snapshot.documents.last
+                }
                 for document in snapshot.documents {
                     let obj = T(json: document.data())
                     listObj.append(obj)
@@ -52,21 +58,31 @@ class BaseFirebaseService {
                 success(listObj)
             }
         }
-        
     }
     
     func requestDocument<T: JsonInitObject>(path: DocumentReference,
-                                               success: @escaping (T) -> Void,
-                                               failure: @escaping (_ message: String) -> Void) {
-        path.getDocument { document, error in
-            guard let data = document?.data(), error == nil else {
-                print(error?.localizedDescription ?? "eror")
-                failure(error?.localizedDescription ?? "request firestore error!")
-                return
+                                            isListener: Bool,
+                                            success: @escaping (T) -> Void,
+                                            failure: @escaping (_ message: String) -> Void) {
+        if isListener {
+            path.addSnapshotListener { document, error in
+                guard let data = document?.data(), error == nil else {
+                    print(error?.localizedDescription ?? "eror")
+                    failure(error?.localizedDescription ?? "request firestore error!")
+                    return
+                }
+                success(T(json: data))
             }
-            success(T(json: data))
+        } else {
+            path.getDocument { document, error in
+                guard let data = document?.data(), error == nil else {
+                    print(error?.localizedDescription ?? "eror")
+                    failure(error?.localizedDescription ?? "request firestore error!")
+                    return
+                }
+                success(T(json: data))
+            }
         }
-
     }
     
     func updateData(path: DocumentReference, data: [String: Any]) {
@@ -85,9 +101,9 @@ class BaseFirebaseService {
         }
     }
     
-    func uploadMedia(messageID: String, fileURL: URL,
-                    fileType: MessageType,
-                    success: @escaping (MediaUpload) -> Void,
+    func uploadMedia(fileType: MessageType,
+                     fileURL: URL,
+                    success: @escaping (String) -> Void,
                     failure: @escaping (_ message: String) -> Void) {
         guard let uid = UserDefaultManager.shared.getID() else {
             failure("Can't fetch user id!")
@@ -95,6 +111,7 @@ class BaseFirebaseService {
         }
         do {
             let fileName = [String(Date().timeIntervalSince1970), fileURL.lastPathComponent].joined()
+            print("file name: ",fileName)
             let data = try Data(contentsOf: fileURL)
             let storageRef = storage.child("\(fileType.rawValue)").child(uid).child(fileName)
             let metaData = StorageMetadata()
@@ -113,16 +130,14 @@ class BaseFirebaseService {
                     failure(error!.localizedDescription)
                     return
                 }
-                if fileType == .image {
-                    self.deleteFile(at: fileURL)
-                }
+
                 storageRef.downloadURL { (url, err) in
                     guard let url = url else {
                         failure(err!.localizedDescription)
                         return
                     }
                     print(url)
-                    success(MediaUpload(messageID: messageID, url: url, type: fileType))
+                    success("\(url)")
                 }
             })
         } catch (let error) {
@@ -130,20 +145,19 @@ class BaseFirebaseService {
         }
     }
     
-    func uploadThumbnailImage(messageID: String,
-                              image: UIImage,
-                              success: @escaping (MediaUpload) -> Void,
-                              failure: @escaping (_ message: String) -> Void) {
-        
-        guard let uid = UserDefaultManager.shared.getID() else {
+    func uploadImage(image: UIImage?,
+                     success: @escaping (String) -> Void,
+                     failure: @escaping (_ message: String) -> Void) {
+        guard let uid = UserDefaultManager.shared.getID(), let image = image else {
+            failure("image nil")
             return
         }
-        let fileName = [String(Date().timeIntervalSince1970), "thumbailVideo"].joined()
+        let fileName = [String(Date().timeIntervalSince1970), "images"].joined()
         let storageRef = storage.child("\(2)").child(uid).child(fileName)
         let metaData = StorageMetadata()
         metaData.contentType = "image/jpeg"
         let data = image.jpegData(compressionQuality: 0.5)
-        storageRef.putData(data!, metadata: metaData) { meta, error in
+        storageRef.putData(data!, metadata: metaData) {meta, error in
             guard error == nil else {
                 failure(error!.localizedDescription)
                 return
@@ -154,7 +168,7 @@ class BaseFirebaseService {
                     failure(err!.localizedDescription)
                     return
                 }
-                success(MediaUpload(messageID: messageID, url: url, type: .image))
+                success(url.absoluteString)
             }
         }
     }
@@ -218,9 +232,9 @@ extension BaseFirebaseService {
         }
     }
     
-    func rxRequestDocument<T: JsonInitObject>(path: DocumentReference) -> Observable<T> {
+    func rxRequestDocument<T: JsonInitObject>(path: DocumentReference, isListener: Bool) -> Observable<T> {
         Observable<T>.create { observable -> Disposable in
-            self.requestDocument(path: path) { data in
+            self.requestDocument(path: path, isListener: isListener) { data in
                 observable.onNext(data)
             } failure: { message in
                 observable.onError(AppError(code: .firebase, message: message))
@@ -233,6 +247,7 @@ extension BaseFirebaseService {
         Observable<String>.create { observable -> Disposable in
             self.setData(path: path, data: data) { documentID in
                 observable.onNext(documentID)
+                observable.onCompleted()
             } failure: { message in
                 observable.onError(AppError(code: .firebase, message: message))
             }
@@ -241,11 +256,14 @@ extension BaseFirebaseService {
         }
     }
     
-    func rxUploadMedia(messageID: String, fileURL: URL?, fileType: MessageType) -> Observable<MediaUpload> {
-        Observable<MediaUpload>.create { observable -> Disposable in
+    
+    
+    func rxUploadMedia(fileType: MessageType, fileURL: URL?) -> Observable<String> {
+        Observable<String>.create { observable -> Disposable in
             if let fileURL = fileURL {
-                self.uploadMedia(messageID: messageID, fileURL: fileURL, fileType: fileType) { media in
-                    observable.onNext(media)
+                self.uploadMedia(fileType: fileType, fileURL: fileURL) { url in
+                    observable.onNext(url)
+                    observable.onCompleted()
                 } failure: { message in
                     observable.onError(AppError(code: .firebase, message: message))
                 }
@@ -255,7 +273,6 @@ extension BaseFirebaseService {
             return Disposables.create()
         }
     }
-    
 //    func rxUploadImage(image: UIImage) -> Observable<URL> {
 //        Observable<URL>.create { observable -> Disposable in
 //            self.uploadImage(image: image) { url in

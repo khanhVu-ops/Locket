@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import IQKeyboardManagerSwift
 import FirebaseCore
 import FirebaseFirestore
 import FirebaseMessaging
@@ -20,8 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.window = UIApplication.shared.keyWindow?.window
-//        IQKeyboardManager.shared.enable = true
-//        IQKeyboardManager.shared.enableAutoToolbar = false
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
@@ -34,7 +31,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         return true
     }
-
     
     // MARK: UISceneSession Lifecycle
     
@@ -52,17 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_ application: UIApplication) {
         print("tẻminate")
-        FirebaseManager.shared.updateStatusChating(isChating: false)
-        
-        guard let id = UserDefaultManager.shared.getID() else {
-            return
-        }
-        FirebaseManager.shared.getUserWithID(id: id) { user, error in
-            guard let user = user, error == nil else {
-                return
-            }
-            Utilitis.shared.setBadgeIcon(number: user.totalBadge ?? 0)
-        }
+        FirebaseService.shared.updateStatusChating(isChating: false)
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -80,7 +66,7 @@ extension AppDelegate: MessagingDelegate {
     func updateFirestorePushTokenIfNeeded() {
         if let token = Messaging.messaging().fcmToken, UserDefaultManager.shared.getID() != "" {
             print("Firebase token: \(token)")
-            FirebaseManager.shared.updateFcmToken(fcmToken: token)
+            UserDefaultManager.shared.setNotificationToken(token: token)
         }
     }
 }

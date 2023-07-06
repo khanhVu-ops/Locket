@@ -66,7 +66,7 @@ class CameraView: UIView {
     private lazy var btnSwitchCamera: UIButton = {
         let btn = UIButton()
         btn.addTarget(self, action: #selector(btnSwitchcameraTapped), for: .touchUpInside)
-        btn.setImage(UIImage(systemName: "arrow.triangle.2.circlepath.camera"), for: .normal)
+        btn.setBackgroundImage(UIImage(systemName: "camera.rotate.fill"), for: .normal)
         btn.tintColor = .white
         return btn
     }()
@@ -79,7 +79,7 @@ class CameraView: UIView {
     
     private lazy var btnCancel: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "xmark"), for: .normal)
+        btn.setBackgroundImage(UIImage(systemName: "xmark"), for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnCancelTapped), for: .touchUpInside)
         return btn
@@ -87,7 +87,7 @@ class CameraView: UIView {
     
     private lazy var btnFlash: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "bolt.slash.fill"), for: .normal)
+        btn.setBackgroundImage(UIImage(systemName: "bolt.slash.fill"), for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnFlashTapped), for: .touchUpInside)
         return btn
@@ -132,18 +132,18 @@ class CameraView: UIView {
             make.leading.trailing.equalToSuperview().inset(5)
         }
         self.btnCancel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.width.height.equalTo(40)
+            make.top.equalToSuperview().offset(20)
+            make.width.height.equalTo(30)
             make.leading.equalToSuperview().offset(20)
         }
         self.btnSwitchCamera.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.width.height.equalTo(40)
+            make.top.equalTo(self.btnCancel)
+            make.width.height.equalTo(30)
             make.trailing.equalTo(self.snp.centerX).offset(-10)
         }
         self.btnFlash.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.width.height.equalTo(40)
+            make.top.equalTo(self.btnCancel)
+            make.width.height.equalTo(30)
             make.leading.equalTo(self.snp.centerX).offset(10)
         }
         self.btnCapture.snp.makeConstraints { make in

@@ -11,13 +11,14 @@ import AVFoundation
 import Vision
 import Photos
 import Toast_Swift
+import ProgressHUD
 protocol CameraProtocol: NSObject {
     func didSendImageCaptured(image: UIImage)
 }
 class FilterViewController: UIViewController {
 
-    private var cameraView: CameraView!
-    private var detailView: DetailImageView!
+    private var cameraView = CameraView(cameraType: .photo)
+    private var detailView = DetailImageView()
     weak var delegate: CameraProtocol?
     private var imagePicker = UIImagePickerController()
     private lazy var vPopupSaved: PopupSavedView = {
@@ -25,6 +26,12 @@ class FilterViewController: UIViewController {
         v.isHidden = true
         return v
     }()
+    
+    var titleButonSend: String = "Send" {
+        didSet {
+            self.detailView.configBtnSend(isHidden: false, btnTitle: titleButonSend)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -44,13 +51,11 @@ class FilterViewController: UIViewController {
     
     func setUpView() {
         self.view.backgroundColor = UIColor(hexString: "#242121")
-        self.cameraView = CameraView(cameraType: .photo)
         self.cameraView.delegate = self
         self.cameraView.isHidden = false
-        self.detailView = DetailImageView()
         self.detailView.delegate = self
         self.detailView.isHidden = true
-        self.detailView.configBtnSend(isHidden: false, btnTitle: "Update")
+        
         [cameraView, detailView, vPopupSaved].forEach { sub in
             self.view.addSubview(sub)
         }
@@ -114,7 +119,7 @@ extension FilterViewController: DetailImageViewProtocol {
     }
     
     func btnDownloadTapped(image: UIImage) {
-        self.showActivityIndicator()
+        ProgressHUD.show()
         PHPhotoLibrary.shared().performChanges({
             PHAssetChangeRequest.creationRequestForAsset(from: image)
         }) { saved, error in
@@ -123,7 +128,7 @@ extension FilterViewController: DetailImageViewProtocol {
                 return
             }
             DispatchQueue.main.async {
-                self.hideActivityIndicator()
+                ProgressHUD.dismiss()
                 self.vPopupSaved.isHidden = false
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.vPopupSaved.isHidden = true

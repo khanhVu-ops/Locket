@@ -11,6 +11,7 @@
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HomeViewController" customModule="VideoChatApp" customModuleProvider="target">
             <connections>
+                <outlet property="lbTitle" destination="xZQ-bx-fDl" id="KYj-6s-pQn"/>
                 <outlet property="searchBar" destination="A9E-rF-rHm" id="xhR-OG-cp4"/>
                 <outlet property="tbvListChats" destination="WkF-Rd-jfS" id="dee-SN-tVS"/>
                 <outlet property="vTitle" destination="gR7-YJ-nC2" id="6Uk-B0-DUe"/>
@@ -28,8 +29,8 @@
                         <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gR7-YJ-nC2">
                             <rect key="frame" x="0.0" y="0.0" width="414" height="40"/>
                             <subviews>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Home Chats" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xZQ-bx-fDl">
-                                    <rect key="frame" x="128" y="3.5" width="158" height="33.5"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Home" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xZQ-bx-fDl">
+                                    <rect key="frame" x="169" y="3.5" width="76" height="33.5"/>
                                     <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="28"/>
                                     <color key="textColor" red="0.87058823529999996" green="0.3760883652" blue="0.67140059429999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
@@ -54,7 +55,7 @@
                         <constraint firstItem="A9E-rF-rHm" firstAttribute="leading" secondItem="JK7-t1-T8X" secondAttribute="leading" constant="10" id="W2V-al-hzU"/>
                     </constraints>
                 </stackView>
-                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="WkF-Rd-jfS">
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" style="plain" separatorStyle="none" allowsSelection="NO" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="WkF-Rd-jfS">
                     <rect key="frame" x="0.0" y="135" width="414" height="761"/>
                     <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                 </tableView>

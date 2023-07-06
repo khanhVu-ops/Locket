@@ -18,21 +18,31 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let item = self.viewModel.listMessages.value[indexPath.row]
         switch item.type {
-//        case .image :
-//
-//        case .video:
-//            let cell = tableView.dequeueReusableCell(withIdentifier: MessageVideoTableViewCell.nibNameClass, for: indexPath) as! MessageVideoTableViewCell
-//            cell.delegate = self
-//            cell.configure(item: item)
-//            return cell
         case .audio:
-            let cell = tableView.dequeueReusableCell(withIdentifier: MessageVideoTableViewCell.nibNameClass, for: indexPath) as! MessageAudioTableViewCell
-            cell.configure(item: item)
+            let cell = tableView.dequeueReusableCell(withIdentifier: MessageAudioCell.nibNameClass, for: indexPath) as! MessageAudioCell
+            cell.configure(item: item, user: UserModel(), indexPath: indexPath)
             return cell
         case .file:
-            let cell = tableView.dequeueReusableCell(withIdentifier: MessageVideoTableViewCell.nibNameClass, for: indexPath) as! MessageFileTableViewCell
-            cell.delegate = self
-            cell.configure(item: item)
+            let cell = tableView.dequeueReusableCell(withIdentifier: MessageFileCell.nibNameClass, for: indexPath) as! MessageFileCell
+//            cell.delegate = self
+            cell.configure(item: item, user: UserModel(), indexPath: indexPath)
+            cell.actionOpenFile = { [weak self] fileURL in
+                guard let self = self else {
+                    return
+                }
+                self.viewModel.downloadFile(from: fileURL)
+                    .trackActivity(self.viewModel.loading)
+                    .trackError(self.viewModel.errorTracker)
+                    .subscribe(onNext: { [weak self] url in
+                        self?.viewModel.fileURLPreview = url
+                        let qlPreview = QLPreviewController()
+                        qlPreview.dataSource = self
+                        DispatchQueue.main.async {
+                            self?.present(qlPreview, animated: true, completion: nil)
+                        }
+                    })
+                    .disposed(by: self.disposeBag)
+            }
             return cell
         case .text:
             let cell = tableView.dequeueReusableCell(withIdentifier: MessageTextCell.nibNameClass, for: indexPath) as! MessageTextCell
@@ -62,25 +72,25 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-//        return self.viewModel.calculateHeightMessage(messageWidth: self.tbvListMessage.frame.width * 0.6, index: indexPath.item)
         return UITableView.automaticDimension
     }
+    
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+         let offsetY = scrollView.contentOffset.y
+         let contentHeight = scrollView.contentSize.height
+         let tableViewHeight = scrollView.frame.size.height
+         
+         if offsetY > contentHeight - tableViewHeight && !isLoadingData {
+             // User has scrolled to the last row, fetch more data
+             self.loadMoreMessages()
+             print("fetch more")
+         }
+     }
 }
 
-//extension ChatViewController: PhotosDelegate {
-//    func didTapSendImage(assets: [AssetModel]) {
-////        self.viewModel.getDataAndSent(assets: assets) {[weak self] error in
-////            guard let error = error else {
-////                return
-////            }
-////            self?.showAlert(title: "Send Image Error!", message: error.localizedDescription)
-////        }
-//    }
-//}
-
-extension ChatViewController: DetailImageProtocol {
-    func didSelectDetailImage(url: String) {
-        
+extension ChatViewController: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        return !isRecoding
     }
 }
 
@@ -95,30 +105,6 @@ extension ChatViewController: CameraProtocol {
     }
 }
 
-extension ChatViewController: AudioViewProtocol {
-    func didTapBtnDeleteRecording() {
-        self.updateEventAnimate(vButtonMessage: false, btnSend: true, btnLibrary: false, btnArrowRight: true, audioView: true)
-    }
-}
-
-extension ChatViewController: MessageFileProtocol {
-    func didSelectOpenFile(fileURL: URL) {
-        print("FileURL", fileURL)
-//        self.viewModel.previewFileFromURL(url: fileURL) { [weak self] localURL, error in
-//            guard let localURL = localURL, error == nil else {
-//                self?.showAlert(title: "Error!", message: error!.localizedDescription, completion: nil)
-//                return
-//            }
-//            self?.viewModel.fileURLPreview = localURL
-//            let qlPreview = QLPreviewController()
-//            qlPreview.dataSource = self
-//            DispatchQueue.main.async {
-//                self?.present(qlPreview, animated: true, completion: nil)
-//            }
-//        }
-    }
-}
-
 extension ChatViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
            // Handle the selected file URLs here
@@ -126,14 +112,11 @@ extension ChatViewController: UIDocumentPickerDelegate {
             return
         }
         let fileName = fileURL.lastPathComponent
-        self.showAlertWithActionCancel(title: "Remind", message: "You want to send the file \(fileName) to \(self.viewModel.user2.value.username ?? "")") {
+        let fileSize = fileURL.fileSize()
+        self.showAlertWithActionCancel(title: "Remind", message: "You want to send the file \(fileName) to \(self.viewModel.user.value.username ?? "")") {
             print("Hi")
-//            self.viewModel.sendFile(fileName: fileName,fileURL: fileURL) { error in
-//                guard let error = error else {
-//                    return
-//                }
-//                self.showAlert(title: "Error!", message: error.localizedDescription, completion: nil)
-//            }
+            let media = MediaModel(fileURL: fileURL, fileName: fileName, fileSize: fileSize)
+            self.viewModel.handleSendNewMessage(type: .file, media: [media])
         }
     }
     

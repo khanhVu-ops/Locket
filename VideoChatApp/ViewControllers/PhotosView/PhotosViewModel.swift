@@ -24,8 +24,8 @@ class PhotosViewModel {
         }
     }
     var mediaSelectObservable = BehaviorSubject<[MediaModel]>(value: [])
-    var numVideo = 0
-    var numImage = 0
+    var numVideo = BehaviorRelay<Int>(value: 0)
+    var numImage = BehaviorRelay<Int>(value: 0)
     var imageManager: PHCachingImageManager!
     var assetsBehavior = BehaviorRelay<[MediaModel]>(value: [])
     let fetchAssetQueue = DispatchQueue.init(label: "fetchAssetQueue", attributes: .concurrent)
@@ -51,39 +51,42 @@ class PhotosViewModel {
             meida.type == .video
         }).count
         print("count: ", mediaSelect.count)
-        self.numVideo = numVideo
-        self.numImage = self.mediaSelect.count - numVideo
+        self.numVideo.accept(numVideo)
+        self.numImage.accept(self.mediaSelect.count - numVideo)
         self.mediaSelectObservable.onNext(self.mediaSelect)
     }
     
-    func validate(type: MessageType, isSelect: Bool) -> Bool{
+    func validate(type: MessageType, url: URL?, isSelect: Bool) -> Bool{
         if !isSelect {return true}
-        if type == .video && numVideo >= 5 {
+        if type == .video && numVideo.value >= 5 && checkSize(url: url, type: type) {
             Toast.show("Max 5 video")
             return false
-        } else if type == .image && numImage >= 10 {
+        } else if type == .image && numImage.value >= 10 && checkSize(url: url, type: type) {
             Toast.show("Max 10 photo")
             return false
         }
         return true
     }
     
+    func checkSize(url: URL?,type: MessageType) -> Bool{
+        let size = url?.fileSize() ?? 0
+        guard size < 10 || type != .image else {
+            Toast.show("Choose image < 10 mb")
+            return false
+        }
+        guard size < 10 || type != .audio else {
+            Toast.show("Choose audio < 10 mb")
+            return false
+        }
+        guard size < 100 else {
+            Toast.show(type == .file ? "Choose file < 100 mb" : "Choose video < 100 mb")
+            return false
+        }
+        return true
+    }
     
-//    func getThumbnailImage(for asset: PHAsset, completion: @escaping (UIImage?) -> Void) {
-//        let imageManager = PHImageManager.default()
-//        let thumbnailOptions = PHImageRequestOptions()
-//        thumbnailOptions.deliveryMode = .opportunistic
-//        thumbnailOptions.resizeMode = .exact
-//        thumbnailOptions.isNetworkAccessAllowed = false
-//        thumbnailOptions.isSynchronous = true
-//        imageManager.requestImage(for: asset, targetSize: self.imageCellSize, contentMode: .aspectFill, options: thumbnailOptions) { (image, info) in
-//            guard let image = image else {
-//                completion(nil)
-//                return
-//            }
-//            completion(image)
-//        }
-//    }
+    
+    
     
 //    func getImageFromCache(forKey key: String) -> UIImage? {
 //        let fileManager = FileManager.default

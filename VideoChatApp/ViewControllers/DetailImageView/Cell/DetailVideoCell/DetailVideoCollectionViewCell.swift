@@ -16,7 +16,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         slider.minimumValue = 0
         slider.maximumTrackTintColor = .gray
         slider.minimumTrackTintColor = Constants.Color.mainColor
-//        slider.backgroundColor = .white
+        slider.setThumbImage(UIImage(named: "ic_play_circle")?.resize(with: CGSize(width: 20, height: 20)), for: .normal)
         slider.addTarget(self, action: #selector(sliderDidChangeValue), for: .valueChanged)
         return slider
     }()
@@ -54,13 +54,18 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     var playerLayer: AVPlayerLayer?
     var player = AVPlayer()
     var item: DetailItem?
+    var timeRecord = 0
     private var timeObserver: Any?
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
         self.setUpView()
-
     }
     
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     private func setUpView() {
         self.addSubview(self.stvStatus)
         [btnPlay, slider, lbTime].forEach { sub in
@@ -87,6 +92,8 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         self.playerLayer = AVPlayerLayer(player: player)
         self.playerLayer?.player = self.player
         self.playerLayer?.videoGravity = .resizeAspect
+        self.playerLayer?.cornerRadius = 25
+        self.playerLayer?.masksToBounds = true
         self.layer.insertSublayer(self.playerLayer!, below: self.stvStatus.layer)
 
     }
@@ -122,6 +129,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             let asset = AVAsset(url: videoURL)
             let playerItem = AVPlayerItem(asset: asset)
             self.player.replaceCurrentItem(with: playerItem)
+            self.player.volume = 0.9
             DispatchQueue.main.async {
                 self.playerLayer?.frame = CGRect(x: 20, y: 0, width: self.bounds.width-40, height: self.bounds.height)
                 self.addObserverPeriodicTime()
@@ -144,27 +152,49 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             if self.activityIndicator.isAnimating {
                 self.stopIndicator()
             }
-            if let item = self.item {
-                if item.duration > 0 {
-                    self.slider.maximumValue = Float(item.duration)
-                    let currentTime = time.seconds
-                    self.item?.currentTime = currentTime
-                    if currentTime == item.duration {
-                        self.pauseVideo()
-                        self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
-                    } else {
-                        self.slider.value = Float(currentTime)
-                        self.lbTime.text = Utilitis.shared.convertDurationToTime(duration: item.duration - currentTime)
-                    }
-                } else {
-                    item.duration = self.player.currentItem?.duration.seconds ?? 10.0
-                }
-            } else {
-                print("NO tiems")
+            
+            self.updateVideoPlayerState(progressTime: time)
+//            if let item = self.item {
+//                if item.duration > 0 {
+//                    self.slider.maximumValue = Float(item.duration)
+//                    let currentTime = time.seconds
+//                    self.item?.currentTime = currentTime
+//                    if currentTime == item.duration {
+//                        self.pauseVideo()
+//                        self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
+//                    } else {
+//                        self.slider.value = Float(currentTime)
+//                        self.lbTime.text = Utilitis.shared.convertDurationToTime(duration: item.duration - currentTime)
+//                    }
+//                } else {
+//                    item.duration = self.player.currentItem?.duration.seconds ?? 10.0
+//                }
+//            } else {
+//                print("NO tiems")
             }
         }
-    }
     
+        func updateVideoPlayerState(progressTime: CMTime) {
+            guard let duration = player.currentItem?.duration else { return }
+            let timeRemaining = duration - progressTime
+            guard !(timeRemaining.seconds.isNaN || timeRemaining.seconds.isInfinite) else {
+                return
+            }
+            timeRecord = Int(duration.seconds)
+            let remainTime = Int(timeRemaining.seconds)
+            update(second: remainTime)
+        }
+        
+        func update(second: Int) {
+    //        let time = (second >= 0) ? second : timeRecord
+            let progress:Float = Float((timeRecord - second))/Float(timeRecord )
+            lbTime.text = Video.shared.formatTimeVideo(time: second)
+            slider.value = progress
+            self.layoutIfNeeded()
+            if second == 0 {
+                pauseVideo()
+            }
+        }
     @objc private func updateSlider() {
         // Lấy giá trị hiện tại của thời gian phát của video
         let currentTime = player.currentItem?.currentTime().seconds ?? 0.0
@@ -208,7 +238,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     
     @objc func sliderDidChangeValue() {
         // Chuyển đổi giá trị của slider thành thời gian phát của video
-        let time = CMTime(seconds: Double(self.slider.value), preferredTimescale: 1)
+        let time = CMTime(seconds: Double(self.slider.value * Float(timeRecord)), preferredTimescale: 1)
         
         // Chuyển đổi thời gian phát thành khoảng thời gian mà player cần bắt đầu phát từ đó
         player.seek(to: time)

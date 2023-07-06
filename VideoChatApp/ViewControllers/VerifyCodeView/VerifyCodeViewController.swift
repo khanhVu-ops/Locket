@@ -40,6 +40,7 @@ class VerifyCodeViewController: BaseViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        self.viewModel.countDounBehavior.accept(0)
         self.stopTimer()
     }
     
@@ -68,7 +69,7 @@ class VerifyCodeViewController: BaseViewController {
         self.lbSentTo.text = "Sent to \(viewModel.phoneNumber)"
         self.lbCountDown.textColor = .lightGray
         self.btnTryAgain.setAttributedTitle("Try again!".toAttributedStringWithUnderlineAndColor(color: .blue), for: .normal)
-        self.addGestureDismissKeyboard()
+        self.addGestureDismissKeyboard(view: self.view)
     }
     
     override func setUpTap() {
@@ -134,24 +135,27 @@ class VerifyCodeViewController: BaseViewController {
                         return
                     }
                     print("UID:", uid)
-                    self.viewModel.countDounBehavior.accept(0)
-                    self.viewModel.checkAccountExits(uid)
-                        .subscribe { [weak self] single in
-                            switch single {
-                            case .success(let user):
-                                UserDefaultManager.shared.setID(id: user.id)
-                                self?.goToTabbarController()
-                            case .failure(_):
-                                let editInfoVC = EditInfoViewController()
-                                editInfoVC.viewModel.phoneNumber = self?.viewModel.phoneNumber ?? ""
-                                editInfoVC.viewModel.uid = uid
-                                self?.push(editInfoVC)
-                            }
-                        }
-                        .disposed(by: self.disposeBag)
+                    self.checkAccount(uid: uid)
                 })
                 .disposed(by: disposeBag)
         }
+    }
+    
+    func checkAccount(uid: String) {
+        self.viewModel.checkAccountExits(uid)
+            .subscribe { [weak self] single in
+                switch single {
+                case .success(let user):
+                    UserDefaultManager.shared.setID(id: user.id)
+                    self?.goToTabbarController()
+                case .failure(_):
+                    let editInfoVC = EditInfoViewController()
+                    editInfoVC.viewModel.phoneNumber = self?.viewModel.phoneNumber ?? ""
+                    editInfoVC.viewModel.uid = uid
+                    self?.push(editInfoVC)
+                }
+            }
+            .disposed(by: self.disposeBag)
     }
     
     func startCountDown(duration: Int) {

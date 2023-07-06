@@ -6,17 +6,14 @@
 //
 
 import UIKit
-import RxSwift
-import RxCocoa
+import SnapKit
+import ProgressHUD
 class ImageCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet weak var imv: UIImageView!
-    @IBOutlet weak var indicatorView: ProgressView!
-    @IBOutlet weak var imvPlay: UIImageView!
+    @IBOutlet weak var btnPlay: UIButton!
     @IBOutlet weak var lbDuration: UILabel!
-    
     var url: String?
-    let disposeBag = DisposeBag()
     var actionSelectImage: ((String) -> Void)?
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -33,6 +30,11 @@ class ImageCollectionViewCell: UICollectionViewCell {
         imv.contentMode = .scaleToFill
         imv.isUserInteractionEnabled = true
         imv.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapSelect)))
+        btnPlay.circleClip()
+        lbDuration.setPadding(UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10))
+        lbDuration.backgroundColor = .darkGray.withAlphaComponent(0.6)
+        lbDuration.addConnerRadius(radius: 5)
+        btnPlay.backgroundColor = .darkGray.withAlphaComponent(0.6)
     }
     
     deinit {
@@ -42,11 +44,9 @@ class ImageCollectionViewCell: UICollectionViewCell {
     func configure(item: String, message: MessageModel) {
         self.url = message.type == .video ? message.fileURL : item
         self.imv.setImage(urlString: item, placeHolder: Constants.Image.imageDefault)
-        indicatorView.isAnimating = item == "Loading"
-        indicatorView.isHidden = !(item == "Loading")
-        imvPlay.isHidden = !(message.type == .video) && indicatorView.isHidden == true
+        btnPlay.isHidden = !(message.type == .video)
         lbDuration.isHidden = !(message.type == .video)
-        lbDuration.text = Utilitis.shared.convertDurationToTime(duration: message.duration ?? 0.0)
+        lbDuration.text = " " + Utilitis.shared.convertDurationToTime(duration: message.duration ?? 0.0) + " "
         
     }
 
@@ -56,5 +56,9 @@ class ImageCollectionViewCell: UICollectionViewCell {
             return
         }
         actionSelectImage(url)
+    }
+    
+    @IBAction func btnPlayTapped(_ sender: Any) {
+        tapSelect()
     }
 }

@@ -12,6 +12,7 @@ class ListUserCollectionViewCell: UICollectionViewCell {
     @IBOutlet weak var lbUsername: UILabel!
     @IBOutlet weak var imvAvata: UIImageView!
     @IBOutlet weak var vActive: UIView!
+    var actionSelectUser: (()->Void)?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -35,4 +36,9 @@ class ListUserCollectionViewCell: UICollectionViewCell {
         self.lbUsername.text = item.username
     }
 
+    @IBAction func btnSelectCellTapped(_ sender: Any) {
+        if let actionSelectUser = actionSelectUser {
+            actionSelectUser()
+        }
+    }
 }

@@ -204,8 +204,8 @@ class DetailImageViewController: UIViewController {
     }
     
     func bindDataToViewModel() {
-        self.cltvListImage.register(UINib(nibName: "DetailImageCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "DetailImageCollectionViewCell")
-        self.cltvListImage.register(UINib(nibName: "DetailVideoCollectionViewCell", bundle: nil), forCellWithReuseIdentifier: "DetailVideoCollectionViewCell")
+        self.cltvListImage.register(DetailImageCollectionViewCell.self, forCellWithReuseIdentifier: DetailImageCollectionViewCell.nibNameClass)
+        self.cltvListImage.register(DetailVideoCollectionViewCell.self, forCellWithReuseIdentifier: DetailVideoCollectionViewCell.nibNameClass)
         
         self.detailImageViewModel.listImages
             .bind(to: self.cltvListImage.rx.items) { [weak self] collectionView, index, element -> UICollectionViewCell in
@@ -243,22 +243,6 @@ class DetailImageViewController: UIViewController {
                 let count = self?.detailImageViewModel.listImages.value.count ?? 1
                 self?.lbCountItem.text = "\(index + 1)/\(count)"
                 self?.lbTypeFile.text = self?.detailImageViewModel.listImages.value[index].type == .image ? "Image" : "Video"
-                self?.btnNext.isHidden = false
-                self?.btnPrevious.isHidden = false
-                if index == 0 {
-                    self?.btnPrevious.isHidden = true
-                }
-                if index == (self?.detailImageViewModel.listImages.value.count ?? 1) - 1 {
-                    self?.btnNext.isHidden = true
-                }
-            })
-            .disposed(by: disposeBag)
-        
-        self.detailImageViewModel.loadingBehavior
-            .subscribe(onNext: { [weak self] isLoading in
-                DispatchQueue.main.async {
-                    isLoading ? self?.showActivityIndicator() : self?.hideActivityIndicator()
-                }
             })
             .disposed(by: disposeBag)
     }
@@ -283,29 +267,35 @@ class DetailImageViewController: UIViewController {
     
     @objc func btnCancelTapped() {
         self.dismiss(animated: true, completion: nil)
-//        self.navigationController?.popViewController(animated: true)
     }
     
     @objc func btnDownloadTapped() {
-        self.requestPermissionAccessPhotos { isEnable in
+        self.requestPermissionAccessPhotos { [weak self] isEnable in
+            guard let strongSelf = self else {
+                return
+            }
             if isEnable {
-                self.detailImageViewModel.saveToLibrary {[weak self] error in
-                    DispatchQueue.main.async {
-                        guard error == nil else {
-                            self?.showAlert(title: "Chat App", message: "Save error: \(error!)", completion: nil)
-                            return
-                        }
-                        self?.vPopUpSaved.isHidden = false
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                            self?.vPopUpSaved.isHidden = true
-                        }
-                    }
-                }
+                strongSelf.detailImageViewModel.saveToPhotos()
+                    .trackActivity(strongSelf.detailImageViewModel.loading)
+                    .trackError(strongSelf.detailImageViewModel.errorTracker)
+                    .subscribe(onNext: { [weak self] in
+                        self?.showPopupSaved()
+                    })
+                    .disposed(by: strongSelf.disposeBag)
             } else {
-                self.showAlertOpenSettingPhotos()
+                strongSelf.showAlertOpenSettingPhotos()
             }
         }
         
+    }
+    
+    func showPopupSaved() {
+        DispatchQueue.main.async { [weak self] in
+            self?.vPopUpSaved.isHidden = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self?.vPopUpSaved.isHidden = true
+            }
+        }
     }
     
     @objc func handleSwipe(_ gestureRecognizer: UIPanGestureRecognizer) {

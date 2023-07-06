@@ -33,7 +33,6 @@ class MessageTextCell: BaseMessageTableViewCell {
 
     override func setUpView() {
         super.setUpView()
-        self.widthContentMessageConstraints?.deactivate()
         self.vContentMessage.addSubview(self.tvMessage)
         self.tvMessage.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview()
@@ -59,17 +58,22 @@ class MessageTextCell: BaseMessageTableViewCell {
         }
         print("tap bubble")
         item.isBubble.toggle()
-        UIView.animate(withDuration: 0.3) {
-            self.vContentMessage.backgroundColor = item.isBubble ? self.vContentMessage.backgroundColor?.withAlphaComponent(0.8) : self.vContentMessage.backgroundColor?.withAlphaComponent(1)
-            self.vTime.isHidden = item.isBubble
-            self.vStatus.isHidden = item.isBubble
-            self.lbStatus.text = !item.isBubble ? "sent" : ""
-            self.lbTime.text = !item.isBubble ? item.created?.convertTimestampToTimeString() : ""
-
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else {
+                return
+            }
+            if item.senderID == self.uid {
+                self.vContentMessage.backgroundColor = !item.isBubble ? Constants.Color.mainColor : Constants.Color.tapBubleColor
+            }
+            self.vTime.isHidden = !item.isBubble
+            self.vStatus.isHidden = !item.isBubble
         }
-        UIView.animate(withDuration: 0.5) { 
-            self.lbStatus.alpha = !item.isBubble ? 0.8 : 0
-            self.lbTime.alpha = !item.isBubble ? 0.8 : 0
+        UIView.animate(withDuration: 0.5) { [weak self] in
+            guard let self = self else {
+                return
+            }
+            self.lbStatus.alpha = item.isBubble ? 0.8 : 0
+            self.lbTime.alpha = item.isBubble ? 0.8 : 0
         }
         if let actionTapBubble = actionTapBubble {
             actionTapBubble()

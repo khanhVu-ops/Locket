@@ -20,6 +20,7 @@ class HomeViewModel: BaseViewModel {
     func getListChats() -> Observable<[ConverationModel]> {
         return FirebaseService.shared.getListChats()
             .trackError(errorTracker)
+            .trackActivity(loading)
             .asObservable()
     }
     
@@ -33,9 +34,13 @@ class HomeViewModel: BaseViewModel {
     }
     
     func handleQuery(query: String) {
-        let users = listUsers.value
-        let listSearch = users.filter({$0.username!.lowercased().hasPrefix(query.lowercased())})
-        self.listSearchs.accept(listSearch)
+        if query.trimSpaceAndNewLine() != "" {
+            let users = listUsers.value
+            let listSearch = users.filter({$0.username!.lowercased().hasPrefix(query.lowercased())})
+            self.listSearchs.accept(listSearch)
+        } else {
+            self.listSearchs.accept([])
+        }
     }
     
     func getUid2FromUsers(users: [String]) -> String? {

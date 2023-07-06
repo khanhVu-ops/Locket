@@ -7,7 +7,6 @@
 
 import Foundation
 import FirebaseFirestore
-import Differentiator
 import Photos
 
 enum MessageType: Int {
@@ -18,10 +17,10 @@ enum MessageType: Int {
     case file = 5
 }
 
-enum MessageStatus: Int {
-    case sent = 1
-    case seen = 2
-    case sending = 3
+enum MessageStatus: String {
+    case sent = "sent"
+    case seen = "seen"
+    case sending = "sending"
 }
 
 enum UploadStatus: String {
@@ -30,22 +29,10 @@ enum UploadStatus: String {
     case error = "error"
 }
 
-struct SectionModel {
-    var header: String
-    var items: [Item]
-}
-
-extension SectionModel: SectionModelType {
-    typealias Item = MessageModel
-    init(original: SectionModel, items: [MessageModel]) {
-        self = original
-        self.items = items
-    }
-}
-
 class MediaModel: NSObject {
     var type: MessageType?
     var filePath: URL?
+    var fileName: String? = ""
     var asset: PHAsset?
     var thumbnail: UIImage?
     var ratio: Double = 1
@@ -58,9 +45,11 @@ class MediaModel: NSObject {
         self.duration = asset.duration
     }
     
-    convenience init(fileURL: URL) {
+    convenience init(fileURL: URL, fileName: String, fileSize: Double) {
         self.init()
         self.filePath = fileURL
+        self.fileName = fileName
+        self.duration = fileSize
         self.type = .file
     }
     
@@ -83,8 +72,8 @@ class MessageModel: NSObject, JsonInitObject {
     var fileName: String?
     var senderID: String?
     var created: Timestamp?
-    var isBubble = true
-    var status: MessageStatus = .sent
+    var isBubble = false
+    var status: MessageStatus = .sending
 
     convenience init(type: MessageType, messageID: String? = nil, message: String? = nil, imageURL: [String]? = nil, fileURL: String? = nil, ratioImage: Double? = nil, duration: Double? = nil, fileName: String? = nil, senderID: String, created: Timestamp) {
         self.init()
@@ -143,7 +132,16 @@ class MessageModel: NSObject, JsonInitObject {
             if key == "created", let wrapValue = value as? Timestamp {
                 self.created = wrapValue
             }
-           
+            if key == "status", let wrapValue = value as? String {
+                switch wrapValue {
+                case "sent":
+                    self.status = .sent
+                case "seen":
+                    self.status = .seen
+                default:
+                    self.status = .sending
+                }
+            }
         }
     }
     
@@ -159,6 +157,7 @@ class MessageModel: NSObject, JsonInitObject {
             "fileName": self.fileName ?? "",
             "senderID": self.senderID ?? "",
             "created": self.created ?? "",
+            "status": self.status.rawValue ?? "sending"
         ] as [String : Any]
     }
 }

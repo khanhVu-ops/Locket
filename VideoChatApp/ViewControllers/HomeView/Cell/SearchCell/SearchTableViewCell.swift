@@ -13,6 +13,9 @@ class SearchTableViewCell: UITableViewCell {
     @IBOutlet weak var lbUsername: UILabel!
     @IBOutlet weak var vActive: UIView!
     
+    var actionSelectRow: ((String, UserModel) -> Void)?
+    var uid2: String?
+    var user: UserModel?
     override func awakeFromNib() {
         super.awakeFromNib()
         setUpView()
@@ -34,6 +37,8 @@ class SearchTableViewCell: UITableViewCell {
     }
     
     func configure(item: UserModel) {
+        self.uid2 = item.id
+        self.user = item
         if let url = URL(string: item.avataURL!) {
             self.imvAvata.sd_setImage(with: url, placeholderImage: Constants.Image.defaultAvata)
         } else {
@@ -41,5 +46,11 @@ class SearchTableViewCell: UITableViewCell {
         }
         self.vActive.backgroundColor = item.isActive! ? .green : .gray
         self.lbUsername.text = item.username
+    }
+    @IBAction func btnSelectRowTapped(_ sender: Any) {
+        guard let uid2 = uid2, let user = user, let actionSelectRow = actionSelectRow else {
+            return
+        }
+        actionSelectRow(uid2, user)
     }
 }

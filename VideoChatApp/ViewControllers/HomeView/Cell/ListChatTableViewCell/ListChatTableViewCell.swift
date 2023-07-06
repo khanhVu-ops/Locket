@@ -18,8 +18,13 @@ class ListChatTableViewCell: UITableViewCell {
     @IBOutlet weak var imvAvata: UIImageView!
     @IBOutlet weak var vStatusActive: UIView!
     @IBOutlet weak var imvIconNewMessage: UIImageView!
+    
     private let colorMessage = UIColor(hexString: "#5C5C5C")
+    var actionSelectRow: ((String, String, UserModel) -> Void)?
+    var uid2: String?
+    var conversationID: String?
     let disposeBag = DisposeBag()
+    var user: UserModel?
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -51,6 +56,8 @@ class ListChatTableViewCell: UITableViewCell {
         guard let uid = UserDefaultManager.shared.getID() else {
             return
         }
+        self.uid2 = item.uid2
+        self.conversationID = item.conversationID
         var txt = ""
         txt = item.lastSenderID == uid ? "You: " : ""
         switch item.lastMessageType {
@@ -73,6 +80,7 @@ class ListChatTableViewCell: UITableViewCell {
         
         viewModel.getUserByUID(uid: item.uid2)
             .subscribe(onNext: { [weak self] user in
+                self?.user = user
                 self?.lbUsername.text = user.username
                 self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
                 self?.vStatusActive.backgroundColor = user.isActive! ? .green : .gray
@@ -101,5 +109,12 @@ class ListChatTableViewCell: UITableViewCell {
             }
         }
         return unread
+    }
+    
+    @IBAction func btnSelectRowTapped(_ sender: Any) {
+        guard let uid2 = uid2, let user = user,  let conversationID = conversationID, let actionSelectRow = actionSelectRow else {
+            return
+        }
+        actionSelectRow(conversationID, uid2, user)
     }
 }

@@ -38,7 +38,7 @@ class RegisterViewController: BaseViewController {
         self.vPhoneNumber.backgroundColor = Constants.Color.bgrTextField
         self.vPhoneNumber.addConnerRadius(radius: 15)
         self.tfPhoneNumber.attributedPlaceholder = "123456789".addSpaceToPhoneNumber().toAttributedStringWithColor(color: .gray.withAlphaComponent(0.2))
-        self.addGestureDismissKeyboard()
+        self.addGestureDismissKeyboard(view: self.view)
     }
     
     override func setUpTap() {

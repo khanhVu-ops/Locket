@@ -68,8 +68,8 @@ class BaseViewController: UIViewController {
         textField.becomeFirstResponder()
     }
     
-    func addGestureDismissKeyboard() {
-        self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
+    func addGestureDismissKeyboard(view: UIView) {
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
     }
     
     @objc func dismissKeyboard() {

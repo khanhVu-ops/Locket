@@ -29,4 +29,21 @@ final class Utilitis {
         let seconds = Int(Int(duration) - minutes * 60)
         return String(format: "%02d:%02d", minutes, seconds)
     }
+    
+    func deleteFile(at url: URL) {
+        do {
+            try FileManager.default.removeItem(at: url)
+            print("File deleted successfully.")
+        } catch {
+            print("Error deleting file: \(error.localizedDescription)")
+        }
+    }
+    
+    func extractFileName(from url: URL) -> String? {
+        let components = url.pathComponents
+        if let lastComponent = components.last {
+            return lastComponent
+        }
+        return nil
+    }
 }

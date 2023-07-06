@@ -26,7 +26,7 @@ class DetailItem {
     }
 }
 
-class DetailImageViewModel {
+class DetailImageViewModel: BaseViewModel {
     let listImages = BehaviorRelay<[DetailItem]>(value: [])
     let indexItemBehavior = BehaviorRelay<Int>(value: 0)
     let loadingBehavior = BehaviorRelay<Bool>(value: false)
@@ -50,57 +50,107 @@ class DetailImageViewModel {
         })
     }
     
-    func saveToLibrary(completion: @escaping(Error?)-> Void) {
-        let index = self.indexItemBehavior.value
-        let item = self.listImages.value[index]
-        self.loadingBehavior.accept(true)
-        DispatchQueue.global(qos: .background).async {
-            guard let url = URL(string: item.url) else {
-                self.loadingBehavior.accept(false)
-                return
-            }
-            do {
-                let data = try Data(contentsOf: url)
-                switch item.type {
-                case.video:
-                    let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
-                    let filePath = "\(docPath)/tempFile.mp4"
-                    try data.write(to: URL(fileURLWithPath: filePath))
-                    PHPhotoLibrary.shared().performChanges({
-                        let request = PHAssetCreationRequest.forAsset()
-                        request.addResource(with: .video, fileURL: URL(fileURLWithPath: filePath), options: nil)
-                        request.creationDate = Date()
-                    }) { (result, error) in
-                        guard error == nil else {
-                            completion(error)
-                            self.loadingBehavior.accept(false)
-                            return
+
+    func saveToPhotos() -> Observable<Void> {
+        return Observable.create { observable in
+            let index = self.indexItemBehavior.value
+            let item = self.listImages.value[index]
+            DispatchQueue.global(qos: .background).async {
+                if let url = URL(string: item.url) {
+                    do {
+                        let data = try Data(contentsOf: url)
+                        switch item.type {
+                        case.video:
+                            let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+                            let filePath = "\(docPath)/tempFile.mp4"
+                            try data.write(to: URL(fileURLWithPath: filePath))
+                            PHPhotoLibrary.shared().performChanges({
+                                let request = PHAssetCreationRequest.forAsset()
+                                request.addResource(with: .video, fileURL: URL(fileURLWithPath: filePath), options: nil)
+                                request.creationDate = Date()
+                            }) { (result, error) in
+                                if error != nil  {
+                                    observable.onError(AppError(code: .app, message: error!.localizedDescription))
+                                }
+                                observable.onNext(())
+                            }
+                        case .image:
+                            guard let image = UIImage(data: data as Data) else {
+                                self.loadingBehavior.accept(false)
+                                return
+                            }
+                            PHPhotoLibrary.shared().performChanges({
+                                let imageRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
+                                imageRequest.creationDate = Date() // Set creation date of the image asset, if needed
+                            }, completionHandler: { (success, error) in
+                                if error != nil  {
+                                    observable.onError(AppError(code: .app, message: error!.localizedDescription))
+                                }
+                                observable.onNext(())
+                            })
                         }
-                        self.loadingBehavior.accept(false)
-                        completion(nil)
+                    } catch (let error) {
+                        observable.onError(AppError(code: .app, message: error.localizedDescription))
+
                     }
-                case .image:
-                    guard let image = UIImage(data: data as Data) else {
-                        self.loadingBehavior.accept(false)
-                        return
-                    }
-                    PHPhotoLibrary.shared().performChanges({
-                        let imageRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
-                        imageRequest.creationDate = Date() // Set creation date of the image asset, if needed
-                    }, completionHandler: { (success, error) in
-                        guard error == nil else {
-                            completion(error)
-                            self.loadingBehavior.accept(false)
-                            return
-                        }
-                        completion(nil)
-                        self.loadingBehavior.accept(false)
-                    })
+                } else {
+                    observable.onError(AppError(code: .app, message: "URL invalid!"))
                 }
-            } catch {
-                completion(error)
-                self.loadingBehavior.accept(false)
             }
+            return Disposables.create()
         }
     }
+    
+//    func saveToLibrary(completion: @escaping(Error?)-> Void) {
+//
+//        self.loadingBehavior.accept(true)
+//        DispatchQueue.global(qos: .background).async {
+//            guard let url = URL(string: item.url) else {
+//                self.loadingBehavior.accept(false)
+//                return
+//            }
+//            do {
+//                let data = try Data(contentsOf: url)
+//                switch item.type {
+//                case.video:
+//                    let docPath = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
+//                    let filePath = "\(docPath)/tempFile.mp4"
+//                    try data.write(to: URL(fileURLWithPath: filePath))
+//                    PHPhotoLibrary.shared().performChanges({
+//                        let request = PHAssetCreationRequest.forAsset()
+//                        request.addResource(with: .video, fileURL: URL(fileURLWithPath: filePath), options: nil)
+//                        request.creationDate = Date()
+//                    }) { (result, error) in
+//                        guard error == nil else {
+//                            completion(error)
+//                            self.loadingBehavior.accept(false)
+//                            return
+//                        }
+//                        self.loadingBehavior.accept(false)
+//                        completion(nil)
+//                    }
+//                case .image:
+//                    guard let image = UIImage(data: data as Data) else {
+//                        self.loadingBehavior.accept(false)
+//                        return
+//                    }
+//                    PHPhotoLibrary.shared().performChanges({
+//                        let imageRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
+//                        imageRequest.creationDate = Date() // Set creation date of the image asset, if needed
+//                    }, completionHandler: { (success, error) in
+//                        guard error == nil else {
+//                            completion(error)
+//                            self.loadingBehavior.accept(false)
+//                            return
+//                        }
+//                        completion(nil)
+//                        self.loadingBehavior.accept(false)
+//                    })
+//                }
+//            } catch {
+//                completion(error)
+//                self.loadingBehavior.accept(false)
+//            }
+//        }
+//    }
 }

@@ -8,15 +8,14 @@
 import UIKit
 import MobileCoreServices
 
-protocol DetailImageProtocol: NSObject {
-    func didSelectDetailImage(url: String)
-}
 class ChatViewController: BaseViewController {
 
     @IBOutlet weak var bottomConstraint: NSLayoutConstraint!
     @IBOutlet weak var vBodyScreen: UIView!
     @IBOutlet weak var vTopScreen: UIView!
     @IBOutlet weak var vTypeHere: UIView!
+    @IBOutlet weak var lbPlaceHolder: UILabel!
+    @IBOutlet weak var vBorderTxt: UIView!
     @IBOutlet weak var txtTypeHere: UITextView!
     @IBOutlet weak var tbvListMessage: UITableView!
     @IBOutlet weak var lbUsername: UILabel!
@@ -34,12 +33,28 @@ class ChatViewController: BaseViewController {
     @IBOutlet weak var btnSend: UIButton!
     @IBOutlet weak var btnBack: UIButton!
     let viewModel = ChatViewModel()
-    private weak var refreshControl: UIRefreshControl!
+//    private weak var refreshControl: UIRefreshControl!
     var isRecoding = false
     var audioView : AudioView!
+    var isLoadingData = false
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        FirebaseService.shared.updateStatusChating(isChating: true)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        FirebaseService.shared.updateStatusChating(isChating: false)
+    }
+    
+    deinit {
+        self.viewModel.removeFileDownload()
     }
 //MARK: SetupUI
     override func setUpUI() {
@@ -50,37 +65,48 @@ class ChatViewController: BaseViewController {
         self.imvAvata.circleClip()
         self.tbvListMessage.register(MessageTextCell.self, forCellReuseIdentifier: MessageTextCell.nibNameClass)
         self.tbvListMessage.register(MessagePhotosCell.self, forCellReuseIdentifier: MessagePhotosCell.nibNameClass)
-        self.tbvListMessage.register(MessageVideoTableViewCell.nibClass, forCellReuseIdentifier: MessageVideoTableViewCell.nibNameClass)
-        self.tbvListMessage.register(MessageFileTableViewCell.nibClass, forCellReuseIdentifier: MessageFileTableViewCell.nibNameClass)
-        self.tbvListMessage.register(MessageAudioTableViewCell.nibClass, forCellReuseIdentifier: MessageAudioTableViewCell.nibNameClass)
+        self.tbvListMessage.register(MessageFileCell.self, forCellReuseIdentifier: MessageFileCell.nibNameClass)
+        self.tbvListMessage.register(MessageAudioCell.self, forCellReuseIdentifier: MessageAudioCell.nibNameClass)
         
         self.tbvListMessage.dataSource = self
         self.tbvListMessage.delegate = self
         
-        self.txtTypeHere.text = self.viewModel.txtChatPlaceHolder
-        self.txtTypeHere.textColor = UIColor.lightGray
+        self.btnSend.isHidden = true
+        self.btnArrowRight.isHidden = true
+        self.btnFile.tintColor = Constants.Color.mainColor
+        self.btnCamera.tintColor = Constants.Color.mainColor
+        self.btnAudio.tintColor = Constants.Color.mainColor
+        self.btnLibrary.tintColor = Constants.Color.mainColor
+        self.btnArrowRight.tintColor = Constants.Color.mainColor
+        self.vBorderTxt.addConnerRadius(radius: 15)
         self.txtTypeHere.backgroundColor = .white
+        self.txtTypeHere.delegate = self
         self.vBodyScreen.backgroundColor = UIColor(hexString: "#F8F8F8")
         self.vTypeHere.backgroundColor = UIColor(hexString: "#F8F8F8")
         self.viewModel.defaultHeightTv = self.getSizeOfTextView().height
+        self.viewModel.currentHeightTv = self.viewModel.defaultHeightTv
         self.heightTxtConstraint.constant = self.viewModel.defaultHeightTv
-        self.btnSend.isHidden = true
-        self.btnArrowRight.isHidden = true
+        print("height: ", self.viewModel.defaultHeightTv)
+        self.txtTypeHere.text = ""
+        let txtGesture = UITapGestureRecognizer(target: self, action: #selector(tapTxtTypeHere))
+        self.txtTypeHere.addGestureRecognizer(txtGesture)
         
-        audioView = AudioView(height: self.vTypeHere.frame.height-20)
-        audioView.isHidden = true
-        audioView.delegate = self
+        self.audioView = AudioView(height: self.vTypeHere.frame.height-20)
         self.vTypeHere.addSubview(audioView)
-        audioView.backgroundColor = .clear
-        audioView.snp.makeConstraints { make in
+        self.audioView.isHidden = true
+        self.audioView.actionCancel = { [weak self] in
+            self?.updateUIWhenRecording(isRecording: false)
+        }
+        self.audioView.backgroundColor = .clear
+        self.audioView.snp.makeConstraints { make in
             make.top.bottom.equalToSuperview().inset(10)
             make.leading.equalToSuperview().inset(10)
             make.trailing.equalTo(self.btnSend.snp.leading).offset(-10)
         }
-        audioView.addConnerRadius(radius: 10)
-        audioView.layoutIfNeeded()
+        self.audioView.addConnerRadius(radius: 10)
+        self.audioView.layoutIfNeeded()
         
-        self.addGestureDismissKeyboard()
+        self.addGestureDismissKeyboard(view: self.tbvListMessage)
     }
     
     //MARK: Setup Tap
@@ -96,26 +122,35 @@ class ChatViewController: BaseViewController {
         self.btnArrowRight.defaultTap()
             .subscribe(onNext: { [weak self] _ in
                 UIView.animate(withDuration: 0.3) {
-                    self?.leadingStvButtonMessageConstraint.constant = 10
                     self?.heightTxtConstraint.constant = self?.viewModel.defaultHeightTv ?? 0
-                    self?.updateViewTypeTxtWhenEdit(isEdit: false)
-//                    self?.viewModel.isEndEditFromBtnArrow = true
-//                    self?.txtTypeHere.isEditable = false
-//                    self?.txtTypeHere.resignFirstResponder()
+                    self?.updateWhenInputText(isEdit: false)
                 }
             })
             .disposed(by: disposeBag)
         
         self.btnSend.defaultTap()
             .subscribe(onNext: { [weak self] _ in
-                guard let self = self, self.txtTypeHere.text.trimSpaceAndNewLine() != "" else {
+                guard let self = self else {
                     return
                 }
-                self.btnSend.dimButton()
-                self.viewModel.txtMessage = self.txtTypeHere.text
-                self.txtTypeHere.text = ""
-                self.heightTxtConstraint.constant = self.viewModel.defaultHeightTv
-                self.viewModel.handleSendNewMessage(type: .text, media: [])
+                if self.isRecoding {
+                    let duration = self.audioView.duration
+                    self.audioView.stopRecording()
+                    self.updateUIWhenRecording(isRecording: false)
+                    let media = MediaModel(audioURL: self.audioView.audioURL, duration: duration)
+                    self.viewModel.handleSendNewMessage(type: .audio, media: [media])
+                    //send firebase
+                    
+                } else {
+                    if self.txtTypeHere.text.trimSpaceAndNewLine() == "" {
+                        return
+                    }
+                    self.btnSend.dimButton()
+                    self.viewModel.txtMessage = self.txtTypeHere.text
+                    self.txtTypeHere.text = ""
+                    self.heightTxtConstraint.constant = self.viewModel.defaultHeightTv
+                    self.viewModel.handleSendNewMessage(type: .text, media: [])
+                }
             })
             .disposed(by: disposeBag)
         
@@ -133,10 +168,14 @@ class ChatViewController: BaseViewController {
         self.btnAudio.defaultTap()
             .subscribe(onNext: { [weak self] _ in
                 self?.btnAudio.dimButton()
-                self?.isRecoding = true
-                self?.updateEventAnimate(vButtonMessage: true, btnSend: false, btnLibrary: true, btnArrowRight: true, audioView: false)
-                self?.audioView.startRecording()
-
+                self?.viewModel.checkPermissionAudio(completion: { [weak self] granted in
+                    if granted {
+                        self?.updateUIWhenRecording(isRecording: true)
+                        self?.audioView.startRecording()
+                    } else {
+                        self?.showAlertOpenSettingAudio()
+                    }
+                })
             })
             .disposed(by: disposeBag)
         
@@ -160,44 +199,46 @@ class ChatViewController: BaseViewController {
             .disposed(by: disposeBag)
     }
     
-    func subscribeGetMessages() {
-        self.viewModel.getListMessages()
-            .subscribe(onNext: { [weak self] messages in
-                guard let self = self, messages.count > 0 else {
-                    return
-                }
-                self.viewModel.listMessages.accept(messages)
-                UIView.performWithoutAnimation {
-                    self.tbvListMessage.reloadData()
-                }
-                
-                print("mess", messages.count)
-            })
-            .disposed(by: disposeBag)
-    }
-    
-    func insertNewMessage() {
-
-        let indexPath = IndexPath(row: 0, section: 0)
-
-        tbvListMessage.insertRows(at: [indexPath], with: .automatic)
-    }
-    
     //MARK: bind ViewModel
     override func bindViewModel() {
-        // get list message
-        self.subscribeGetMessages()
-        self.viewModel.newMessageID.subscribe(onNext: { [weak self] messageID in
-            guard let self = self else {
-                return
-            }
-            print(messageID)
-            if self.viewModel.listMessages.value.count == 0 {
-                self.subscribeGetMessages()
-            }
-            
-        }).disposed(by: disposeBag)
+        // get data
+        self.viewModel.getConversationID()
+        self.viewModel.getInfoUser()
         
+        self.viewModel.listMessages
+            .subscribe(onNext: { [weak self] messages in
+                UIView.performWithoutAnimation { [weak self] in
+                    self?.tbvListMessage.reloadData()
+                }
+            })
+            .disposed(by: disposeBag)
+        
+        self.viewModel.conversationID
+            .subscribe(onNext: { [weak self] conversaionID in
+                guard let self = self else {
+                    return
+                }
+                self.viewModel.getListMessages(conversationID: conversaionID)
+            })
+            .disposed(by: disposeBag)
+        
+        self.viewModel.newMessageID
+            .subscribe(onNext: { [weak self] messageID in
+                self?.viewModel.updateStatusMessage(messageID: messageID, status: .sent)
+            })
+            .disposed(by: disposeBag)
+        
+        self.viewModel.user
+            .subscribe(onNext: { [weak self] user in
+                self?.lbUsername.text = user.username
+                self?.lbActive.text = user.isActive! ? "Online" : "Offline"
+                self?.vActive.backgroundColor = user.isActive! ? .green : .gray
+                self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
+            })
+            .disposed(by: disposeBag)
+        
+        
+        // bind textview
         self.txtTypeHere.rx
             .didChange
             .subscribe(onNext: { [weak self] in
@@ -205,12 +246,7 @@ class ChatViewController: BaseViewController {
                     return
                 }
                 if self.btnArrowRight.isHidden {
-                    UIView.animate(withDuration: 0.1) { [weak self] in
-                        self?.leadingStvButtonMessageConstraint.constant = 40 - (10 + (self?.stvButtonMessage.frame.width ?? 0))
-                        self?.view.layoutIfNeeded()
-                    } completion: { [weak self] _ in
-                        self?.updateViewTypeTxtWhenEdit(isEdit: true)
-                    }
+                    self.updateWhenInputText(isEdit: true)
                 }
                 let newSize = self.getSizeOfTextView()
                 if newSize.height < self.viewModel.maxheightTv {
@@ -229,13 +265,8 @@ class ChatViewController: BaseViewController {
                 guard let self = self else {
                     return
                 }
-                if self.txtTypeHere.text == self.viewModel.txtChatPlaceHolder {
-                    self.txtTypeHere.text = ""
-                } else {
-                    self.heightTxtConstraint.constant = self.viewModel.currentHeightTv
-                }
-                self.txtTypeHere.textColor = UIColor.black
-                self.updateWhenInputText(isEndEdit: false)
+                self.heightTxtConstraint.constant = self.viewModel.currentHeightTv
+                self.updateWhenInputText(isEdit: true)
 
             })
             .disposed(by: disposeBag)
@@ -246,14 +277,22 @@ class ChatViewController: BaseViewController {
                 guard let self = self else {
                     return
                 }
-                if self.txtTypeHere.text == "" {
-                    self.txtTypeHere.text = self.viewModel.txtChatPlaceHolder
-                    self.txtTypeHere.textColor = UIColor.lightGray
-                }
                 self.heightTxtConstraint.constant = self.viewModel.defaultHeightTv
-                self.updateWhenInputText(isEndEdit: true)
+                self.updateWhenInputText(isEdit: false)
             })
             .disposed(by: disposeBag)
+    
+        self.txtTypeHere.rx.text.orEmpty
+            .map({
+                $0.isEmpty
+            })
+            .subscribe(onNext: { [weak self] isEnable in
+                self?.lbPlaceHolder.isHidden = !isEnable
+                self?.btnSend.isHidden = isEnable
+                self?.btnLibrary.isHidden = !isEnable
+            })
+            .disposed(by: disposeBag)
+
     }
     
     override func bindEvent() {
@@ -263,23 +302,22 @@ class ChatViewController: BaseViewController {
                 guard let self = self else { return }
                 print(keyboard.height)
                 self.bottomConstraint.constant = keyboard.height > 0 ? (keyboard.height) : 20
-                UIView.animate(withDuration: keyboard.duration) {
-                    self.view.layoutIfNeeded()
+                UIView.animate(withDuration: keyboard.duration) { [weak self] in
+                    self?.view.layoutIfNeeded()
                 }
             }).disposed(by: disposeBag)
     }
     
-    @objc func refreshTable() {
-        print("REFRESH")
-//        self.chatViewModel.fetchMoreMessages {[weak self] error in
-//            guard let error = error else {
-//                self?.tbvListMessage.refreshControl?.endRefreshing()
-//                return
-//            }
-//            self?.showAlert(title: "Error!", message: error.localizedDescription, completion: nil)
-//            self?.tbvListMessage.refreshControl?.endRefreshing()
-//        }
-//        tbvListMessage.refreshControl?.endRefreshing()
+    @objc func tapTxtTypeHere() {
+        self.txtTypeHere.becomeFirstResponder()
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else {
+                return
+            }
+            self.heightTxtConstraint.constant = self.viewModel.currentHeightTv
+            self.updateWhenInputText(isEdit: true)
+            self.view.layoutIfNeeded()
+        }
     }
     
     func getSizeOfTextView() -> CGSize {
@@ -290,38 +328,69 @@ class ChatViewController: BaseViewController {
 }
 
 extension ChatViewController {
-    func updateEventAnimate(vButtonMessage: Bool, btnSend: Bool, btnLibrary: Bool, btnArrowRight: Bool, audioView: Bool) {
-        self.stvButtonMessage.isHidden = vButtonMessage
-        self.btnSend.isHidden = btnSend
-        self.btnLibrary.isHidden = btnLibrary
-        self.btnArrowRight.isHidden = btnArrowRight
-        self.audioView.isHidden = audioView
+
+    func updateUIWhenRecording(isRecording: Bool) {
+        self.isRecoding = isRecording
+        self.stvButtonMessage.isHidden = isRecording
+        self.audioView.isHidden = !isRecording
+        self.btnSend.isHidden = !isRecording
+        self.btnLibrary.isHidden = isRecording
     }
     
-    func updateViewTypeTxtWhenEdit(isEdit: Bool) {
-        self.stvButtonMessage.isHidden = isEdit
-        self.btnArrowRight.isHidden = !isEdit
-        self.view.layoutIfNeeded()
-    }
-    
-    func updateWhenInputText(isEndEdit: Bool) {
-        self.btnSend.isHidden = isEndEdit
-        self.btnLibrary.isHidden = !isEndEdit
+    func updateWhenInputText(isEdit: Bool) {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else {
                 return
             }
-            self.leadingStvButtonMessageConstraint.constant = isEndEdit ? 10 : 40 - (10 + (self.stvButtonMessage.frame.width))
-            self.updateViewTypeTxtWhenEdit(isEdit: !isEndEdit)
+            self.leadingStvButtonMessageConstraint.constant = !isEdit ? 10 : 35 - (10 + (self.stvButtonMessage.frame.width))
+            self.stvButtonMessage.isHidden = isEdit
+            self.btnArrowRight.isHidden = !isEdit
             self.view.layoutIfNeeded()
         }
-
     }
     
     private func scrollFirstRow(_ animated: Bool = false) {
         DispatchQueue.main.async { [weak self] in
             self?.tbvListMessage.scrollToRow(at: IndexPath(row: 0, section: 0), at: .bottom, animated: animated)
         }
+    }
+    
+    func createActivityIndicator() -> UIView {
+        let activityIndicator = UIActivityIndicatorView(style: .gray)
+        activityIndicator.startAnimating()
+        activityIndicator.frame = CGRect(x: 0, y: 0, width: tbvListMessage.bounds.width, height: 40)
         
+        let containerView = UIView(frame: CGRect(x: 0, y: 0, width: tbvListMessage.bounds.width, height: 40))
+        containerView.addSubview(activityIndicator)
+        
+        return containerView
+    }
+    
+    func loadMoreMessages() {
+        self.isLoadingData = true
+        tbvListMessage.tableFooterView = createActivityIndicator()
+        self.viewModel.loadMoreMessages()
+            .subscribe(onNext: { [weak self] new in
+                guard let self = self else {
+                    return
+                }
+                if new.count > 0 {
+                    self.isLoadingData = false
+                    self.tbvListMessage.tableFooterView = nil
+                    var old = self.viewModel.listMessages.value
+                    
+                    print("count: ", new.count)
+                    old.append(contentsOf: new)
+                    print("old: ", old.count)
+                    self.viewModel.listMessages.accept(old)
+                } else {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                        self.isLoadingData = false
+                        self.tbvListMessage.tableFooterView = nil
+                    }
+                }
+                
+            })
+            .disposed(by: disposeBag)
     }
 }

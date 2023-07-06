@@ -16,13 +16,17 @@ class DetailImageCollectionViewCell: UICollectionViewCell {
         return imv
     }()
     var scrollView: ImageScrollView!
-    override func awakeFromNib() {
-        super.awakeFromNib()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
         self.addSubview(self.imvDetail)
         self.imvDetail.addConnerRadius(radius: 20)
         scrollView = ImageScrollView()
         self.addSubview(scrollView)
-        // Initialization code
+    }
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func prepareForReuse() {
@@ -32,7 +36,7 @@ class DetailImageCollectionViewCell: UICollectionViewCell {
     
     func loadImage(url: String, frameScroll: CGRect, cellSize: CGSize) {
         self.scrollView.frame = frameScroll
-        let imgSize = CGSize(width: cellSize.width - 20, height: cellSize.height)
+        let imgSize = CGSize(width: cellSize.width - 20, height: cellSize.height - 20)
         self.scrollView.cellSize = imgSize
         if let imageUrl = URL(string: url) {
             self.imvDetail.sd_setImage(with: imageUrl, completed: { (image, error, cacheType, url) in

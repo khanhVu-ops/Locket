@@ -9,24 +9,9 @@ import Foundation
 import UIKit
 
 extension UILabel {
-//    func convertAtributteOfLinkMessage() {
-//        guard let text = self.text else {
-//            return
-//        }
-//        let detectorType: NSTextCheckingResult.CheckingType = [.phoneNumber, .link]
-//        let attributedString = NSMutableAttributedString(string: text)
-//
-//        do {
-//            let detector = try NSDataDetector(types: detectorType.rawValue)
-//            let results = detector.matches(in: text, options: [], range: NSRange(location: 0, length:
-//        text.utf16.count))
-//            
-//            for result in results {
-//                attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: result.range)
-//            }
-//            self.attributedText = attributedString
-//        } catch {
-//            print("handle error")
-//        }
-//    }
+    func setPadding(_ padding: UIEdgeInsets) {
+            let textRect = self.textRect(forBounds: self.bounds, limitedToNumberOfLines: self.numberOfLines)
+            let paddedRect = textRect.inset(by: padding)
+            self.frame = paddedRect
+        }
 }
