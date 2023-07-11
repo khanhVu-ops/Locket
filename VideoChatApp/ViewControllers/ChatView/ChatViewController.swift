@@ -40,7 +40,6 @@ class ChatViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.viewModel.updateWhenLoadChat()
     }
     
     deinit {
@@ -213,6 +212,7 @@ class ChatViewController: BaseViewController {
                     return
                 }
                 self.viewModel.getListMessages(conversationID: conversaionID)
+                self.viewModel.updateWhenLoadChat(conversationID: conversaionID)
             })
             .disposed(by: disposeBag)
         

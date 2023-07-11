@@ -43,6 +43,7 @@ class ChatViewModel: BaseViewModel {
     
     func getConversationID() {
         if conversationID.value == "" && uid2 != "" {
+            print("uid2", uid2)
             FirebaseService.shared.getConversationID(from: uid2) { [weak self] conversation in
                 guard let conversation = conversation else {
                     return
@@ -63,6 +64,7 @@ class ChatViewModel: BaseViewModel {
     
     func getListMessages(conversationID: String) {
         if conversationID != "" {
+            print("conver", conversationID)
             FirebaseService.shared.getListMessages(conversationID: conversationID)
                 .trackError(errorTracker)
                 .subscribe(onNext: { [weak self] messages in
@@ -208,8 +210,10 @@ class ChatViewModel: BaseViewModel {
         }
     }
     
-    func updateWhenLoadChat() {
-        FirebaseService.shared.updateUnreadMessage(conversationID: conversationID.value, uid: uid!, clearUnread: true)
+    func updateWhenLoadChat(conversationID: String) {
+        if conversationID != "" {
+            FirebaseService.shared.updateUnreadMessage(conversationID: conversationID, uid: uid!, clearUnread: true)
+        }
         FirebaseService.shared.updateStatusChating(isChating: true)
     }
         

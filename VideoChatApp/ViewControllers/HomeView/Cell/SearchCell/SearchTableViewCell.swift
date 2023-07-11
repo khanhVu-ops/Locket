@@ -48,6 +48,7 @@ class SearchTableViewCell: UITableViewCell {
     }
     @IBAction func btnSelectRowTapped(_ sender: Any) {
         guard let uid2 = uid2, let user = user, let actionSelectRow = actionSelectRow else {
+            print("return")
             return
         }
         actionSelectRow(uid2, user)
