@@ -29,7 +29,6 @@ class SearchTableViewCell: UITableViewCell {
     }
     
     func setUpView() {
-        print("re", imvAvata.frame.width)
         self.imvAvata.addConnerRadius(radius: 30)
         self.imvAvata.addBorder(borderWidth: 1, borderColor: Constants.Color.mainColor)
         self.vActive.circleClip()

@@ -34,22 +34,10 @@ protocol CameraViewDelegate: AnyObject {
 }
 
 class CameraView: UIView {
-    var session: AVCaptureSession!
-    var previewLayer : AVCaptureVideoPreviewLayer!
-    var photoOutput : AVCapturePhotoOutput!
-    var videoOutput: AVCaptureVideoDataOutput!
-    var videoDeviceInput: AVCaptureDeviceInput!
-    
-    var outputType = OutputType.photo
-    var flash: AVCaptureDevice.FlashMode = .off
-    private var isCapture = false
-    private let sessionQueue = DispatchQueue(label: "session queue")// Communicate with the session and other session objects on this queue.
-    private var setupResult: SessionSetupResult = .success
-    private let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera], mediaType: .video, position: .unspecified)
     
     lazy var vPreviewVideo: UIView = {
         let v = UIView()
-        v.layer.cornerRadius = 15
+        v.layer.cornerRadius = 20
         v.layer.masksToBounds = true
         v.backgroundColor = UIColor(hexString: "#242121")
         return v
@@ -66,20 +54,26 @@ class CameraView: UIView {
     private lazy var btnSwitchCamera: UIButton = {
         let btn = UIButton()
         btn.addTarget(self, action: #selector(btnSwitchcameraTapped), for: .touchUpInside)
-        btn.setBackgroundImage(UIImage(systemName: "camera.rotate.fill"), for: .normal)
+        btn.setImage(UIImage(systemName: "camera.rotate.fill"), for: .normal)
         btn.tintColor = .white
         return btn
     }()
     
-    private lazy var btnCapture: CustomCaptureButton = {
+    private lazy var vCapture: CustomCaptureButton = {
         let vCapture = CustomCaptureButton(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
-        vCapture.btn.addTarget(self, action: #selector(didTapCaptureImage), for: .touchUpInside)
         return vCapture
+    }()
+    
+    private lazy var btnCapture: UIButton = {
+        let btn = UIButton()
+        btn.backgroundColor = .clear
+        btn.addTarget(self, action: #selector(didTapCaptureImage), for: .touchUpInside)
+        return btn
     }()
     
     private lazy var btnCancel: UIButton = {
         let btn = UIButton()
-        btn.setBackgroundImage(UIImage(systemName: "xmark"), for: .normal)
+        btn.setImage(UIImage(systemName: "xmark"), for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnCancelTapped), for: .touchUpInside)
         return btn
@@ -87,7 +81,7 @@ class CameraView: UIView {
     
     private lazy var btnFlash: UIButton = {
         let btn = UIButton()
-        btn.setBackgroundImage(UIImage(systemName: "bolt.slash.fill"), for: .normal)
+        btn.setImage(UIImage(systemName: "bolt.slash.fill"), for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnFlashTapped), for: .touchUpInside)
         return btn
@@ -101,10 +95,25 @@ class CameraView: UIView {
         return btn
     }()
     
+    var session = AVCaptureSession()
+    var previewLayer = AVCaptureVideoPreviewLayer()
+    var photoOutput : AVCapturePhotoOutput!
+    var videoOutput: AVCaptureVideoDataOutput!
+    var videoDeviceInput: AVCaptureDeviceInput!
+    
+    var outputType = OutputType.photo
+    var flash: AVCaptureDevice.FlashMode = .off
+    private var isCapture = false
+    private let sessionQueue = DispatchQueue(label: "session queue")// Communicate with the session and other session objects on this queue.
+    private var setupResult: SessionSetupResult = .success
+    private let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera], mediaType: .video, position: .unspecified)
+    
+    
     weak var delegate: CameraViewDelegate?
     init(cameraType: OutputType) {
         super.init(frame: .zero)
         self.outputType = cameraType
+        self.previewLayer.session = self.session
         self.checkPermissions()
         self.configView()
         sessionQueue.async {
@@ -118,35 +127,35 @@ class CameraView: UIView {
     
     func configView() {
         self.backgroundColor = UIColor(hexString: "#242121")
-        [self.vPreviewVideo,self.btnCancel, self.btnSwitchCamera, self.btnFlash, self.btnCapture, self.btnLibrary].forEach { subView in
+        [self.vPreviewVideo,self.btnCancel, self.btnSwitchCamera, self.btnFlash, self.vCapture, self.btnCapture, self.btnLibrary].forEach { subView in
             self.addSubview(subView)
         }
         self.vPreviewVideo.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.top.equalTo(self.snp.top)
+            make.leading.trailing.equalToSuperview()
             if outputType == .portrait {
                 make.height.equalTo(self.snp.width).multipliedBy(Double(4.0/3.0))
             } else {
                 make.height.equalTo(self.snp.width).multipliedBy(Double(1920.0/1080.0))
             }
-            make.centerX.equalToSuperview()
-            make.top.equalTo(self.snp.top)
-            make.leading.trailing.equalToSuperview().inset(5)
         }
         self.btnCancel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.width.height.equalTo(30)
-            make.leading.equalToSuperview().offset(20)
+            make.top.equalToSuperview().offset(10)
+            make.width.height.equalTo(50)
+            make.leading.equalToSuperview().offset(10)
         }
         self.btnSwitchCamera.snp.makeConstraints { make in
             make.top.equalTo(self.btnCancel)
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(50)
             make.trailing.equalTo(self.snp.centerX).offset(-10)
         }
         self.btnFlash.snp.makeConstraints { make in
             make.top.equalTo(self.btnCancel)
-            make.width.height.equalTo(30)
+            make.width.height.equalTo(50)
             make.leading.equalTo(self.snp.centerX).offset(10)
         }
-        self.btnCapture.snp.makeConstraints { make in
+        self.vCapture.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.width.height.equalTo(60)
             if outputType == .portrait {
@@ -155,9 +164,12 @@ class CameraView: UIView {
                 make.bottom.equalTo(self.vPreviewVideo.snp.bottom).offset(-40)
             }
         }
+        self.btnCapture.snp.makeConstraints { make in
+            make.leading.trailing.top.bottom.equalTo(self.vCapture).inset(-5)
+        }
         self.btnLibrary.snp.makeConstraints { make in
             make.width.height.equalTo(60)
-            make.centerY.equalTo(self.btnCapture.snp.centerY)
+            make.centerY.equalTo(self.vCapture.snp.centerY)
             make.leading.equalToSuperview().offset(20)
         }
         self.fetchFirstAssets {[weak self] image in
@@ -175,7 +187,6 @@ class CameraView: UIView {
         if setupResult != .success {
             return
         }
-        self.session = AVCaptureSession()
         self.session.beginConfiguration()
         self.session.sessionPreset = .photo
         // Add input.
@@ -218,7 +229,6 @@ class CameraView: UIView {
         sessionQueue.async {
             if self.setupResult == .success {
                 self.session.stopRunning()
-                self.session = nil
             }
         }
     }
@@ -311,7 +321,6 @@ class CameraView: UIView {
     
     //MARK: Set up output
     func setUpPreviewLayer() {
-        self.previewLayer = AVCaptureVideoPreviewLayer(session: self.session)
         self.previewLayer.videoGravity = .resizeAspectFill
         self.vPreviewVideo.layer.insertSublayer(self.previewLayer, above: self.vPreviewVideo.layer)
         self.previewLayer.frame = self.vPreviewVideo.bounds
@@ -480,12 +489,10 @@ class CameraView: UIView {
     }
     
     @objc func didTapCaptureImage() {
-        print("capture")
         UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
-            self.btnCapture.layer.borderWidth = 10
-            
+            self.vCapture.layer.borderWidth = 12
         } completion: { _ in
-            self.btnCapture.layer.borderWidth = 6
+            self.vCapture.layer.borderWidth = 6
         }
         switch self.outputType {
         case .video:

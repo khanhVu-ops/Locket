@@ -31,7 +31,7 @@ class EditInfoViewController: BaseViewController {
         self.view.backgroundColor = Constants.Color.background
         self.btnBack.backgroundColor = Constants.Color.bgrTextField
         self.btnBack.circleClip()
-        self.vContinue.backgroundColor = Constants.Color.bgrButton
+        self.vContinue.backgroundColor = Constants.Color.mainColor
         self.vContinue.addConnerRadius(radius: 20)
         self.enableButton(btnContinue, vContinue, isEnable: false)
         self.vFirstname.backgroundColor = Constants.Color.bgrTextField
@@ -93,7 +93,6 @@ class EditInfoViewController: BaseViewController {
     func handleRegister() {
         self.viewModel.registerUser()
             .drive(onNext: { [weak self] userID in
-                print("go home")
                 UserDefaultManager.shared.setID(id: userID)
                 self?.goToTabbarController()
             })

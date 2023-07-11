@@ -29,7 +29,6 @@
 		3315354A29D5471000100006 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315354729D5471000100006 /* UserModel.swift */; };
 		3315357829D5472500100006 /* UserDefaultManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315354C29D5472500100006 /* UserDefaultManager.swift */; };
 		3315357929D5472500100006 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315354D29D5472500100006 /* FirebaseManager.swift */; };
-		3315357A29D5472500100006 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315355029D5472500100006 /* SettingViewController.swift */; };
 		3315357B29D5472500100006 /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315355129D5472500100006 /* SettingViewModel.swift */; };
 		3315357E29D5472500100006 /* ListUserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315355729D5472500100006 /* ListUserCollectionViewCell.swift */; };
 		3315357F29D5472500100006 /* ListUserCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3315355829D5472500100006 /* ListUserCollectionViewCell.xib */; };
@@ -48,6 +47,8 @@
 		3315359329D5472500100006 /* UIView+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315357629D5472500100006 /* UIView+Extensions.swift */; };
 		3315359429D5472500100006 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315357729D5472500100006 /* UIColor+Extensions.swift */; };
 		33303AAF29FE8A6E00B8F6CF /* UIlabel+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33303AAE29FE8A6E00B8F6CF /* UIlabel+Extensions.swift */; };
+		333637E62A58786000B1DE15 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333637E42A58786000B1DE15 /* SettingViewController.swift */; };
+		333637E72A58786000B1DE15 /* SettingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 333637E52A58786000B1DE15 /* SettingViewController.xib */; };
 		333ABA6B2A386E2400037620 /* VerifyCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333ABA6A2A386E2400037620 /* VerifyCodeViewModel.swift */; };
 		3347D7A62A4831B400840655 /* BaseMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347D7A52A4831B400840655 /* BaseMessageTableViewCell.swift */; };
 		337C03202A36B6CB002231ED /* ObservableType+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337C031F2A36B6CB002231ED /* ObservableType+Extensions.swift */; };
@@ -130,7 +131,6 @@
 		3315354729D5471000100006 /* UserModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		3315354C29D5472500100006 /* UserDefaultManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultManager.swift; sourceTree = "<group>"; };
 		3315354D29D5472500100006 /* FirebaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
-		3315355029D5472500100006 /* SettingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		3315355129D5472500100006 /* SettingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
 		3315355729D5472500100006 /* ListUserCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListUserCollectionViewCell.swift; sourceTree = "<group>"; };
 		3315355829D5472500100006 /* ListUserCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ListUserCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -149,6 +149,8 @@
 		3315357629D5472500100006 /* UIView+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIView+Extensions.swift"; sourceTree = "<group>"; };
 		3315357729D5472500100006 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
 		33303AAE29FE8A6E00B8F6CF /* UIlabel+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIlabel+Extensions.swift"; sourceTree = "<group>"; };
+		333637E42A58786000B1DE15 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		333637E52A58786000B1DE15 /* SettingViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingViewController.xib; sourceTree = "<group>"; };
 		333ABA6A2A386E2400037620 /* VerifyCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeViewModel.swift; sourceTree = "<group>"; };
 		3347D7A52A4831B400840655 /* BaseMessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMessageTableViewCell.swift; sourceTree = "<group>"; };
 		337C031F2A36B6CB002231ED /* ObservableType+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObservableType+Extensions.swift"; sourceTree = "<group>"; };
@@ -321,9 +323,7 @@
 				3315356F29D5472500100006 /* TabBarController.swift */,
 				3315356829D5472500100006 /* IntroViewController.swift */,
 				33F461E42A36FBD4008A0DF6 /* Base */,
-				33F461F02A3720A7008A0DF6 /* Register */,
-				339365052A38388A004EB336 /* VerifyCodeView */,
-				33A381F52A38A261009877FD /* EditInfo */,
+				338FA0692A57F73D003161EC /* Login Modul */,
 				3315356929D5472500100006 /* HomeView */,
 				3315354F29D5472500100006 /* SettingView */,
 				3315355229D5472500100006 /* ChatView */,
@@ -337,7 +337,8 @@
 		3315354F29D5472500100006 /* SettingView */ = {
 			isa = PBXGroup;
 			children = (
-				3315355029D5472500100006 /* SettingViewController.swift */,
+				333637E42A58786000B1DE15 /* SettingViewController.swift */,
+				333637E52A58786000B1DE15 /* SettingViewController.xib */,
 				3315355129D5472500100006 /* SettingViewModel.swift */,
 			);
 			path = SettingView;
@@ -442,10 +443,10 @@
 				33F3D18F2A08F1620037CF6A /* Timestamp+Extensions.swift */,
 				33F461F52A372E9A008A0DF6 /* UIButton+Extensions.swift */,
 				330904172A37545500BCEB79 /* Optional+Extensions.swift */,
-				337C031E2A36B686002231ED /* Rx+Extensions */,
 				33A103832A46D23C000FCEF0 /* UITextView+Extensions.swift */,
 				338AE9092A4BE51E00892BD2 /* PHAsset+Extensions.swift */,
 				338AE90D2A4BFCB400892BD2 /* BaseExtensions.swift */,
+				337C031E2A36B686002231ED /* Rx+Extensions */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -494,6 +495,16 @@
 				338C679829E3C08D002474B9 /* DetailImageView.swift */,
 			);
 			path = CameraView;
+			sourceTree = "<group>";
+		};
+		338FA0692A57F73D003161EC /* Login Modul */ = {
+			isa = PBXGroup;
+			children = (
+				33F461F02A3720A7008A0DF6 /* Register */,
+				339365052A38388A004EB336 /* VerifyCodeView */,
+				33A381F52A38A261009877FD /* EditInfo */,
+			);
+			path = "Login Modul";
 			sourceTree = "<group>";
 		};
 		339365052A38388A004EB336 /* VerifyCodeView */ = {
@@ -658,6 +669,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				331534E629D5446B00100006 /* LaunchScreen.storyboard in Resources */,
+				333637E72A58786000B1DE15 /* SettingViewController.xib in Resources */,
 				3399E1D629D6714100DF8021 /* ImageCollectionViewCell.xib in Resources */,
 				3315358529D5472500100006 /* ListFriendCell.xib in Resources */,
 				331034222A3F264000ECB040 /* HomeViewController.xib in Resources */,
@@ -773,6 +785,7 @@
 				337C03222A36B90B002231ED /* BaseFirebaseService.swift in Sources */,
 				33C715872A4AA2B200353BF8 /* MessagePhotosCell.swift in Sources */,
 				337D53A129E8E3370067EC0F /* String+Extensions.swift in Sources */,
+				333637E62A58786000B1DE15 /* SettingViewController.swift in Sources */,
 				3315359329D5472500100006 /* UIView+Extensions.swift in Sources */,
 				331534DC29D5446A00100006 /* SceneDelegate.swift in Sources */,
 				3315357929D5472500100006 /* FirebaseManager.swift in Sources */,
@@ -786,7 +799,6 @@
 				330904162A3753FD00BCEB79 /* Toast.swift in Sources */,
 				331034212A3F264000ECB040 /* HomeViewController.swift in Sources */,
 				33F3D1922A0903370037CF6A /* Utilities.swift in Sources */,
-				3315357A29D5472500100006 /* SettingViewController.swift in Sources */,
 				3399E1D529D6714100DF8021 /* ImageCollectionViewCell.swift in Sources */,
 				339C19DC2A46170200A96764 /* UIImageView+Extensions.swift in Sources */,
 				3315354A29D5471000100006 /* UserModel.swift in Sources */,

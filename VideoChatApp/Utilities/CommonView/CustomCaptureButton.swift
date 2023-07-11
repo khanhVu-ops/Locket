@@ -9,7 +9,7 @@ import UIKit
 import SnapKit
 class CustomCaptureButton: UIView {
 
-    let btn = UIButton()
+    let vCenter = UIView()
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpView(frame: frame)
@@ -19,9 +19,9 @@ class CustomCaptureButton: UIView {
     }
     
     func setUpView(frame: CGRect) {
-        self.addSubview(btn)
+        self.addSubview(vCenter)
         
-        btn.snp.makeConstraints { make in
+        vCenter.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
             make.width.height.equalToSuperview().offset(2)
         }
@@ -30,10 +30,10 @@ class CustomCaptureButton: UIView {
         self.layer.borderColor = UIColor.black.cgColor
         self.backgroundColor = .white
         
-        btn.layer.cornerRadius = frame.width/2
-        btn.layer.borderWidth = 2
-        btn.layer.borderColor = UIColor.white.cgColor
-        btn.backgroundColor = .clear
+        vCenter.layer.cornerRadius = frame.width/2
+        vCenter.layer.borderWidth = 2
+        vCenter.layer.borderColor = UIColor.white.cgColor
+        vCenter.backgroundColor = .clear
     }
     
 

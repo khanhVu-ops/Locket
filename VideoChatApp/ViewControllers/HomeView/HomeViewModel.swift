@@ -20,7 +20,6 @@ class HomeViewModel: BaseViewModel {
     func getListChats() -> Observable<[ConverationModel]> {
         return FirebaseService.shared.getListChats()
             .trackError(errorTracker)
-            .trackActivity(loading)
             .asObservable()
     }
     
@@ -56,5 +55,14 @@ class HomeViewModel: BaseViewModel {
         return FirebaseService.shared.getUserByUID(uid: uid)
             .trackError(errorTracker)
             .asObservable()
+    }
+    
+    func getUserLocalFromUID(uid: String) -> UserModel? {
+        for user in listUsers.value {
+            if user.id == uid {
+                return user
+            }
+        }
+        return nil
     }
 }

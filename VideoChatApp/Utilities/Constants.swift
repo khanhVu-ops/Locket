@@ -10,7 +10,9 @@ import UIKit
 struct Constants {
     struct Color {
         static let tapBubleColor = UIColor(hexString: "#328A0A")
-        static let mainColor = UIColor(hexString: "#47C40F")
+        static let mainColor = UIColor(hexString: "#57da50")
+        static let guestColor = UIColor(hexString: "#f1fff1")
+        static let inputTxtChatColor = UIColor(hexString: "dbffed")
         static let tabbarColor = UIColor(hexString: "#F8F8F8")
         static let background = UIColor(hexString: "#242121")
         static let bgrTextField = UIColor(hexString: "#403E3E")

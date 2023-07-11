@@ -35,7 +35,7 @@ class AudioView: UIView {
         let btn = UIButton()
         btn.backgroundColor = .clear
         btn.setImage(UIImage(systemName: "trash.fill"), for: .normal)
-        btn.tintColor = .systemPurple
+        btn.tintColor = Constants.Color.mainColor
         btn.addTarget(self, action: #selector(btnDeleteTapped), for: .touchUpInside)
         return btn
     }()
@@ -64,7 +64,7 @@ class AudioView: UIView {
             v.addSubview(sub)
         }
         v.addConnerRadius(radius: 10)
-        v.backgroundColor = .systemPurple
+        v.backgroundColor = Constants.Color.mainColor
         return v
     }()
     
@@ -109,7 +109,7 @@ class AudioView: UIView {
         }
         scrollView.isUserInteractionEnabled = false
         scrollView.addSubview(waveformView)
-        waveformView.backgroundColor = .systemPurple
+        waveformView.backgroundColor = .clear
         waveformView.snp.makeConstraints { make in
             make.top.leading.trailing.bottom.equalToSuperview()
             make.width.equalTo(10000)

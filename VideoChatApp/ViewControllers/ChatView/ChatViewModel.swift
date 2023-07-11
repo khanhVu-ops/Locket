@@ -18,6 +18,7 @@ class ChatViewModel: BaseViewModel {
     
     var listMessages = BehaviorRelay<[MessageModel]>(value: [])
     var isFirstLoadData = true
+    var bodyNotification = ""
     // textview
     let txtChatPlaceHolder = "Type here ..."
     var currentHeightTv: CGFloat = 0
@@ -68,8 +69,7 @@ class ChatViewModel: BaseViewModel {
                     guard let self = self, messages.count > 0 else {
                         return
                     }
-                    messages[0].isBubble = true
-                    self.listMessages.accept(messages)
+                    self.listMessages.accept(self.prehandleMessages(messages: messages))
                 })
                 .disposed(by: disposeBag)
         }
@@ -89,7 +89,7 @@ class ChatViewModel: BaseViewModel {
         
         let uid = uid ?? ""
         var content = MessageModel()
-        var bodyNotification = ""
+        
         switch type {
         case .text:
             let textMessage = txtMessage.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -166,10 +166,6 @@ class ChatViewModel: BaseViewModel {
         }
     }
     
-    func pushNotification() {
-        FirebaseService.shared.updateUnreadMessage(conversationID: conversationID.value, uid: uid2, clearUnread: false)
-    }
-    
     func downloadFile(from url: URL) -> Observable<URL> {
         return Observable.create { observer in
             if let fileName = Utilitis.shared.extractFileName(from: url) {
@@ -206,6 +202,15 @@ class ChatViewModel: BaseViewModel {
     
     func updateStatusMessage(messageID: String, status: MessageStatus) {
         FirebaseService.shared.updateStatus(messageID: messageID, conversationID: conversationID.value, status: status)
+        if user.value.isChating == false {
+            FirebaseService.shared.updateUnreadMessage(conversationID: conversationID.value, uid: uid2, clearUnread: false)
+            APIService.shared.pushNotificationMessage(fcmToken: self.user.value.fcmToken, uid: self.uid2, title: UserDefaultManager.shared.getUsername(), body: bodyNotification, badge: self.user.value.totalBadge ?? 0 + 1)
+        }
+    }
+    
+    func updateWhenLoadChat() {
+        FirebaseService.shared.updateUnreadMessage(conversationID: conversationID.value, uid: uid!, clearUnread: true)
+        FirebaseService.shared.updateStatusChating(isChating: true)
     }
         
     func getListDetailItem() -> [DetailItem] {
@@ -229,5 +234,19 @@ class ChatViewModel: BaseViewModel {
         for file in self.fileSaved {
             Utilitis.shared.deleteFile(at: file)
         }
+    }
+    
+    func prehandleMessages(messages: [MessageModel]) -> [MessageModel] {
+        messages.first?.isShowStatus = true
+        messages.last?.isShowTime = true
+        let count = messages.count
+        for i in 0..<count-1 {
+            if !messages[i].isCurrentDay(preMessage: messages[i+1]) || messages[i].isShowTime(preMessage: messages[i+1]) {
+                messages[i].isShowTime = true
+            }
+            messages[i+1].isSameTime = messages[i].isSameTime(preMessage: messages[i+1])
+        }
+        
+        return messages
     }
 }

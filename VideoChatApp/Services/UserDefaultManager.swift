@@ -13,7 +13,7 @@ class UserDefaultManager {
     let userDefault = UserDefaults.standard
     let keyIdActive = "idActive"
     let keyNotificationToken = "tokenNotification"
-    let keyUser = "user"
+    let keyUsername = "username"
     
     func setID(id: String?) {
         userDefault.setValue(id, forKey: self.keyIdActive)
@@ -31,23 +31,12 @@ class UserDefaultManager {
         return userDefault.string(forKey: self.keyNotificationToken) ?? ""
     }
     
-    func setUser(user: UserModel) {
-//        let encoder = JSONEncoder()
-//        if let encoded = try? encoder.encode(user) {
-//            userDefault.set(encoded, forKey: self.keyUser)
-//        }
+    func setUsername(username: String) {
+        userDefault.setValue(username, forKey: self.keyUsername)
     }
     
-    func getUser() -> UserModel? {
-//        guard let savedUser = UserDefaults.standard.object(forKey: self.keyUser) as? Data else {
-//            print("Can't get user data from Userdefaults")
-//            return nil
-//        }
-//        let decoder = JSONDecoder()
-//        guard let user = try? decoder.decode(UserModel.self, from: savedUser) else {
-//            return nil
-//        }
-        return nil
+    func getUsername() -> String {
+        return userDefault.string(forKey: self.keyUsername) ?? ""
     }
     
 }

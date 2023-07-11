@@ -58,6 +58,10 @@ class ListChatTableViewCell: UITableViewCell {
         }
         self.uid2 = item.uid2
         self.conversationID = item.conversationID
+        self.user = viewModel.getUserLocalFromUID(uid: item.uid2)
+        self.lbUsername.text = user?.username
+        self.imvAvata.setImage(urlString: user?.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
+        self.vStatusActive.backgroundColor = (user?.isActive == true) ? .green : .gray
         var txt = ""
         txt = item.lastSenderID == uid ? "You: " : ""
         switch item.lastMessageType {
@@ -78,14 +82,7 @@ class ListChatTableViewCell: UITableViewCell {
         self.lbTime.text = Utilitis.shared.convertToString(timestamp: item.lastCreated ?? Timestamp(date: Date()))
         self.updatText(unreadNumber: getUnreadNumber(item: item, uid: uid))
         
-        viewModel.getUserByUID(uid: item.uid2)
-            .subscribe(onNext: { [weak self] user in
-                self?.user = user
-                self?.lbUsername.text = user.username
-                self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
-                self?.vStatusActive.backgroundColor = user.isActive! ? .green : .gray
-            })
-            .disposed(by: disposeBag)
+        
     }
     
 

@@ -176,9 +176,9 @@
                     <rect key="frame" x="0.0" y="44" width="414" height="70"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j9m-Xt-NTq">
-                            <rect key="frame" x="10" y="15" width="30" height="30"/>
+                            <rect key="frame" x="10" y="10" width="40" height="40"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="30" id="CMu-jp-rUr"/>
+                                <constraint firstAttribute="width" constant="40" id="CMu-jp-rUr"/>
                                 <constraint firstAttribute="width" secondItem="j9m-Xt-NTq" secondAttribute="height" multiplier="1:1" id="OX7-3k-iPP"/>
                             </constraints>
                             <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -186,14 +186,14 @@
                             <state key="normal" image="chevron.left" catalog="system"/>
                         </button>
                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="Xkk-bp-gaL">
-                            <rect key="frame" x="45" y="5" width="50" height="50"/>
+                            <rect key="frame" x="55" y="5" width="50" height="50"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="50" id="h1v-yK-Oia"/>
                                 <constraint firstAttribute="width" secondItem="Xkk-bp-gaL" secondAttribute="height" multiplier="1:1" id="sI2-2o-Y1I"/>
                             </constraints>
                         </imageView>
                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" alignment="top" translatesAutoresizingMaskIntoConstraints="NO" id="R36-ea-zpt">
-                            <rect key="frame" x="110" y="20" width="284" height="20"/>
+                            <rect key="frame" x="120" y="20" width="274" height="20"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gDx-8u-59L">
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>

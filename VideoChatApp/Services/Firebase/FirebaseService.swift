@@ -123,6 +123,7 @@ final class FirebaseService: BaseFirebaseService {
                     "lastMessage": message.message ?? "",
                     "lastCreated": message.created ?? "",
                     "lastSenderID": message.senderID ?? ""] as [String : Any]
+        print(message.senderID)
         let path = fireStore.collection(chatsClt).document(conversationID)
         self.updateData(path: path, data: data)
     }
@@ -208,7 +209,7 @@ final class FirebaseService: BaseFirebaseService {
         guard let uid = UserDefaultManager.shared.getID() else {
             return
         }
-        fireStore.collection(chatsClt).document(uid).updateData(["isChating": isChating])
+        fireStore.collection(usersClt).document(uid).updateData(["isChating": isChating])
     }
     
     func updateUnreadMessage(conversationID: String, uid: String, clearUnread: Bool) {

@@ -93,8 +93,6 @@ class MessagePhotosCell: BaseMessageTableViewCell {
             }
         } else {
             let row: CGFloat = CGFloat(ceil(Double(count)/3))
-            print("ceil count :", count)
-            print("ceil: ",row)
             self.cltvPhotos.snp.makeConstraints { make in
                 heightltvContraints = make.height.equalTo(rounded(sizeItem.height * row + (row-1)*spaceItem)).constraint
                 widthCltvContraints = make.width.equalTo(maxWidth).constraint
@@ -110,7 +108,6 @@ class MessagePhotosCell: BaseMessageTableViewCell {
 
 extension MessagePhotosCell: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        print(listPhotos.count)
         return listPhotos.count
     }
     

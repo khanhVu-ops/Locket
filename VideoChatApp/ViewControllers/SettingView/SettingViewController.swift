@@ -10,16 +10,24 @@ import RxSwift
 import RxCocoa
 import SnapKit
 import Photos
+import FirebaseCoreInternal
 class SettingViewController: BaseViewController {
     @IBOutlet weak var imvAvata: UIImageView!
     @IBOutlet weak var btnChangeAvata: UIButton!
     @IBOutlet weak var btnPlus: UIButton!
     @IBOutlet weak var lbUsername: UILabel!
+    
+    private lazy var vDetailAvata: DetailImageView = {
+        let v = DetailImageView()
+        v.isHidden = true
+        v.configBtnSend(isHidden: true)
+        return v
+    }()
+    
     let settingViewModel = SettingViewModel()
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.settingViewModel.getInfoUser()
         // Do any additional setup after loading the view.
     }
     
@@ -30,8 +38,18 @@ class SettingViewController: BaseViewController {
         
         self.btnPlus.addConnerRadius(radius: self.btnPlus.frame.width/2)
         self.btnPlus.addBorder(borderWidth: 2, borderColor: .black)
+        self.btnPlus.backgroundColor = Constants.Color.mainColor
         self.btnChangeAvata.addConnerRadius(radius: self.btnChangeAvata.frame.width/2)
-        self.btnChangeAvata.addBorder(borderWidth: 4, borderColor: .systemYellow)
+        self.btnChangeAvata.addBorder(borderWidth: 4, borderColor: Constants.Color.mainColor)
+        self.view.addSubview(self.vDetailAvata)
+        self.vDetailAvata.snp.makeConstraints { make in
+            make.top.bottom.equalTo(self.view.safeAreaLayoutGuide)
+            make.leading.trailing.equalToSuperview().inset(5)
+        }
+        
+        self.vDetailAvata.actionCancelTapped = { [weak self] in
+            self?.vDetailAvata.isHidden = true
+        }
     }
     
     override func bindViewModel() {
@@ -86,9 +104,18 @@ class SettingViewController: BaseViewController {
     
     private func openCamera() {
         let filterVC = FilterViewController()
-        filterVC.delegate = self
         filterVC.titleButonSend = "Update"
         filterVC.modalPresentationStyle = .fullScreen
+        filterVC.actionSendImage = { [weak self] image in
+            guard let strongSelf = self else {
+                return
+            }
+            strongSelf.settingViewModel.updateAvata(image: image)
+                .subscribe(onNext: { [weak self] url in
+                    self?.imvAvata.image = image
+                })
+                .disposed(by: strongSelf.disposeBag)
+        }
         self.present(filterVC, animated: true, completion: nil)
     }
     
@@ -96,15 +123,10 @@ class SettingViewController: BaseViewController {
         guard let image = self.imvAvata.image else {
             return
         }
+        self.vDetailAvata.configImage(image: image)
+        self.vDetailAvata.isHidden = false
+        self.hidesBottomBarWhenPushed = true
+
     }
 }
 
-extension SettingViewController: CameraProtocol {
-    func didSendImageCaptured(image: UIImage) {
-        self.settingViewModel.updateAvata(image: image)
-            .subscribe(onNext: { [weak self] url in
-                self?.imvAvata.image = image
-            })
-            .disposed(by: disposeBag)
-    }
-}

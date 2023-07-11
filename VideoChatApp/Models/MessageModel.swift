@@ -45,6 +45,13 @@ class MediaModel: NSObject {
         self.duration = asset.duration
     }
     
+    convenience init(image: UIImage) {
+        self.init()
+        self.filePath = image.convertImageToURL()
+        self.type = .image
+        self.ratio = image.size.width/image.size.height
+    }
+    
     convenience init(fileURL: URL, fileName: String, fileSize: Double) {
         self.init()
         self.filePath = fileURL
@@ -72,7 +79,10 @@ class MessageModel: NSObject, JsonInitObject {
     var fileName: String?
     var senderID: String?
     var created: Timestamp?
+    var isShowStatus = false
+    var isShowTime = false
     var isBubble = false
+    var isSameTime = false
     var status: MessageStatus = .sending
 
     convenience init(type: MessageType, messageID: String? = nil, message: String? = nil, imageURL: [String]? = nil, fileURL: String? = nil, ratioImage: Double? = nil, duration: Double? = nil, fileName: String? = nil, senderID: String, created: Timestamp) {
@@ -145,6 +155,31 @@ class MessageModel: NSObject, JsonInitObject {
         }
     }
     
+    func isCurrentDay(preMessage: MessageModel) -> Bool {
+        guard let created = created, let preCreated = preMessage.created else {
+            return false
+        }
+
+        return created.isCurrentDay(with: preCreated)
+    }
+    
+    func isShowTime(preMessage: MessageModel) -> Bool {
+        guard let date = created?.dateValue(), let preDate = preMessage.created?.dateValue(), senderID == preMessage.senderID else {
+            return false
+        }
+        let miliseconds = date.timeIntervalSince(preDate)
+        return miliseconds > 600
+    }
+    
+    func isSameTime(preMessage: MessageModel) -> Bool {
+        guard let date = created?.dateValue(), let preDate = preMessage.created?.dateValue(), senderID == preMessage.senderID else {
+            return false
+        }
+        let miliseconds = date.timeIntervalSince(preDate)
+//        print(miliseconds)
+        return miliseconds < 60
+    }
+    
     func convertToDictionary() -> [String: Any] {
         return [
             "type": self.type?.rawValue ?? 1,
@@ -157,7 +192,7 @@ class MessageModel: NSObject, JsonInitObject {
             "fileName": self.fileName ?? "",
             "senderID": self.senderID ?? "",
             "created": self.created ?? "",
-            "status": self.status.rawValue ?? "sending"
+            "status": self.status.rawValue 
         ] as [String : Any]
     }
 }

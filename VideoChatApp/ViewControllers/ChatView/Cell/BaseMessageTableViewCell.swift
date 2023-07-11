@@ -46,8 +46,15 @@ class BaseMessageTableViewCell: UITableViewCell {
     lazy var imvAvata:  UIImageView = {
         let imvAvata = UIImageView()
         imvAvata.contentMode = .scaleAspectFill
-        imvAvata.circleClip()
+        
         return imvAvata
+    }()
+    
+    lazy var vAvata: UIView = {
+        let vAvata = UIView()
+        vAvata.addSubview(imvAvata)
+        vAvata.backgroundColor = .clear
+        return vAvata
     }()
     
     lazy var vContentMessage:  UIView = {
@@ -68,7 +75,7 @@ class BaseMessageTableViewCell: UITableViewCell {
     
     lazy var stvContentMessage:  UIStackView = {
         let stvContentMessage = UIStackView()
-        [imvAvata,stvMessage].forEach { sub in
+        [vAvata,stvMessage].forEach { sub in
             stvContentMessage.addArrangedSubview(sub)
         }
         stvContentMessage.distribution = .fill
@@ -91,6 +98,7 @@ class BaseMessageTableViewCell: UITableViewCell {
     }()
 
     var topStvConstraint: Constraint?
+    var bottomStvConstraint: Constraint?
     let uid = UserDefaultManager.shared.getID()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -116,16 +124,16 @@ class BaseMessageTableViewCell: UITableViewCell {
 
         }
         self.stvContentCell.snp.makeConstraints { make in
-            topStvConstraint = make.top.equalToSuperview().offset(5).constraint
+            topStvConstraint = make.top.equalToSuperview().constraint
             make.leading.equalToSuperview().offset(10)
             make.trailing.equalToSuperview().offset(-20)
-            make.bottom.equalToSuperview()
+            bottomStvConstraint = make.bottom.equalToSuperview().offset(-8).constraint
         }
         
         self.lbTime.snp.makeConstraints { make in
             make.top.equalToSuperview().offset(10)
             make.centerX.equalTo(vTime)
-            make.bottom.equalToSuperview().offset(-5)
+            make.bottom.equalToSuperview().offset(-2)
         }
         
         self.lbStatus.snp.makeConstraints { make in
@@ -133,9 +141,15 @@ class BaseMessageTableViewCell: UITableViewCell {
             make.leading.equalToSuperview().offset(38) // 25+8+5
             make.trailing.equalToSuperview().offset(-5)
         }
-        self.imvAvata.snp.makeConstraints { make in
+        self.vAvata.snp.makeConstraints { make in
             make.width.height.equalTo(25)
         }
+        
+        self.imvAvata.snp.makeConstraints { make in
+            make.top.leading.trailing.bottom.equalToSuperview()
+        }
+        
+        self.imvAvata.addConnerRadius(radius: 12.5)
     }
     func configure(item: MessageModel, user: UserModel, indexPath: IndexPath) {
         UIView.performWithoutAnimation { [weak self] in
@@ -144,13 +158,31 @@ class BaseMessageTableViewCell: UITableViewCell {
             }
             self.stvMessage.alignment = item.senderID == uid ? .trailing : .leading
             self.lbStatus.textAlignment = item.senderID == uid ? .right : .left
-            self.vContentMessage.backgroundColor = item.senderID == uid ? Constants.Color.mainColor : .gray.withAlphaComponent(0.2)
-            self.imvAvata.isHidden = item.senderID == uid ? true : false
+            self.vContentMessage.backgroundColor = item.senderID == uid ? Constants.Color.mainColor : Constants.Color.guestColor
+            self.imvAvata.isHidden = (item.senderID == uid || item.isSameTime) ? true : false
             self.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
-            self.vTime.isHidden = !item.isBubble
+            self.vTime.isHidden = item.isShowTime ? false : !item.isBubble
             self.lbTime.text = item.created?.convertTimestampToTimeString()
-            self.vStatus.isHidden = !item.isBubble
+//            self.vStatus.isHidden = !item.isShowStatus
+            if item.senderID == self.uid {
+                self.vContentMessage.backgroundColor = !item.isBubble ? Constants.Color.mainColor : Constants.Color.tapBubleColor
+                self.vStatus.isHidden = item.isShowStatus ? false : !item.isBubble
+            } else {
+                self.vStatus.isHidden = true
+            }
             self.lbStatus.text = item.status.rawValue
+            self.lbStatus.alpha = self.vStatus.isHidden ? 0 : 0.8
+            self.lbTime.alpha = self.vTime.isHidden ? 0 : 0.8
+            bottomStvConstraint?.deactivate()
+            if item.isSameTime || item.isShowStatus {
+                self.stvContentCell.snp.makeConstraints { make in
+                    bottomStvConstraint = make.bottom.equalToSuperview().offset(-2).constraint
+                }
+            } else {
+                self.stvContentCell.snp.makeConstraints { make in
+                    bottomStvConstraint = make.bottom.equalToSuperview().offset(-10).constraint
+                }
+            }
         }
     }
 }

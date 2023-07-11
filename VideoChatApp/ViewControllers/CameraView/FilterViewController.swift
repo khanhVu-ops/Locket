@@ -9,23 +9,14 @@ import UIKit
 import SnapKit
 import AVFoundation
 import Vision
-import Photos
-import Toast_Swift
-import ProgressHUD
-protocol CameraProtocol: NSObject {
-    func didSendImageCaptured(image: UIImage)
-}
+
 class FilterViewController: UIViewController {
 
     private var cameraView = CameraView(cameraType: .photo)
     private var detailView = DetailImageView()
-    weak var delegate: CameraProtocol?
+    var actionSendImage: ((UIImage) -> Void)?
     private var imagePicker = UIImagePickerController()
-    private lazy var vPopupSaved: PopupSavedView = {
-        let v = PopupSavedView()
-        v.isHidden = true
-        return v
-    }()
+    
     
     var titleButonSend: String = "Send" {
         didSet {
@@ -47,34 +38,40 @@ class FilterViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.cameraView.stopSession()
+        
     }
+
     
     func setUpView() {
         self.view.backgroundColor = UIColor(hexString: "#242121")
         self.cameraView.delegate = self
         self.cameraView.isHidden = false
-        self.detailView.delegate = self
         self.detailView.isHidden = true
+        detailView.actionCancelTapped = { [weak self] in
+            self?.detailView.isHidden = true
+            self?.cameraView.isHidden = false
+        }
+        detailView.actionSendImageTapped = { [weak self] image in
+            if let actionSendImage = self?.actionSendImage {
+                actionSendImage(image)
+            }
+            self?.dismiss(animated: true)
+        }
         
-        [cameraView, detailView, vPopupSaved].forEach { sub in
+        [cameraView, detailView].forEach { sub in
             self.view.addSubview(sub)
         }
         cameraView.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-            make.leading.equalTo(self.view.snp.leading)
-            make.trailing.equalTo(self.view.snp.trailing)
+            make.leading.trailing.equalToSuperview().inset(5)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
         }
         detailView.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide.snp.top)
-            make.leading.equalTo(self.view.snp.leading)
-            make.trailing.equalTo(self.view.snp.trailing)
+            make.leading.trailing.equalToSuperview().inset(5)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
         }
-        vPopupSaved.snp.makeConstraints { make in
-            make.centerX.centerY.equalToSuperview()
-            make.width.height.equalTo(self.vPopupSaved.popupWidth)
-        }
+        
     }
 }
 extension FilterViewController: CameraViewDelegate {
@@ -87,9 +84,11 @@ extension FilterViewController: CameraViewDelegate {
     }
     
     func didCapturedImage(imageCaptured: UIImage) {
-        self.detailView.configImage(image: imageCaptured)
-        self.detailView.isHidden = false
-        self.cameraView.isHidden = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2, execute: {
+            self.detailView.configImage(image: imageCaptured)
+            self.detailView.isHidden = false
+            self.cameraView.isHidden = true
+        })
     }
     
     func btnCancelTapped() {
@@ -107,36 +106,6 @@ extension FilterViewController: CameraViewDelegate {
     
 }
 
-extension FilterViewController: DetailImageViewProtocol {
-    func btnSendImageTapped(image: UIImage) {
-        self.delegate?.didSendImageCaptured(image: image)
-        self.dismiss(animated: true)
-    }
-    
-    func btnCancelImageTapped() {
-        self.detailView.isHidden = true
-        self.cameraView.isHidden = false
-    }
-    
-    func btnDownloadTapped(image: UIImage) {
-        ProgressHUD.show()
-        PHPhotoLibrary.shared().performChanges({
-            PHAssetChangeRequest.creationRequestForAsset(from: image)
-        }) { saved, error in
-            guard error == nil  else {
-                self.view.makeToast("Error saving image to library: \(error!.localizedDescription)")
-                return
-            }
-            DispatchQueue.main.async {
-                ProgressHUD.dismiss()
-                self.vPopupSaved.isHidden = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    self.vPopupSaved.isHidden = true
-                }
-            }
-        }
-    }
-}
 extension FilterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         

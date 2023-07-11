@@ -48,7 +48,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillTerminate(_ application: UIApplication) {
         print("tẻminate")
-        FirebaseService.shared.updateStatusChating(isChating: false)
+//        AuthFirebaseService.shared.updateUserActive(isActive: false)
+//        FirebaseService.shared.updateStatusChating(isChating: false)
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -101,7 +102,7 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
                 navigation.popToRootViewController(animated: false)
                 if let tabbar = navigation.topViewController as? UITabBarController {
                     tabbar.selectedIndex = 0
-                    let chatVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ChatViewController") as! ChatViewController
+                    let chatVC = ChatViewController()
                     chatVC.viewModel.uid2 = uid ?? ""
                     navigation.pushViewController(chatVC, animated: true)
                 }

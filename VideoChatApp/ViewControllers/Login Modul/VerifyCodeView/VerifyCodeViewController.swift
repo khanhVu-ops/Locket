@@ -48,7 +48,7 @@ class VerifyCodeViewController: BaseViewController {
         self.view.backgroundColor = Constants.Color.background
         self.btnBack.backgroundColor = Constants.Color.bgrTextField
         self.btnBack.circleClip()
-        self.vContinue.backgroundColor = Constants.Color.bgrButton
+        self.vContinue.backgroundColor = Constants.Color.mainColor
         self.vContinue.addConnerRadius(radius: 20)
         self.enableButton(btnContinue, vContinue, isEnable: false)
         stvOTP.configTextFieldView(backgroundColor: Constants.Color.bgrTextField,
@@ -88,7 +88,6 @@ class VerifyCodeViewController: BaseViewController {
                 self.btnTryAgain.dimButton()
                 self.viewModel.sendCodeAgain()
                     .drive(onNext: { [weak self] code in
-                        print("again", code)
                         self?.viewModel.verificationID = code
                         self?.viewModel.countDounBehavior.accept(60)
                     })

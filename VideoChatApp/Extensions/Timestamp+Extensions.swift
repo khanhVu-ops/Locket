@@ -30,4 +30,9 @@ extension Timestamp {
         let dateString = dateFormatter.string(from: self.dateValue()).uppercased()
         return dateString
     }
+    
+    func isCurrentDay(with timestamp: Timestamp) -> Bool {
+        let dateValue = timestamp.dateValue()
+        return Calendar.current.isDate(dateValue, inSameDayAs: self.dateValue())
+    }
 }

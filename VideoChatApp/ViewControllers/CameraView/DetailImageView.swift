@@ -7,24 +7,22 @@
 
 import UIKit
 import SnapKit
+import Photos
+import ProgressHUD
 
-protocol DetailImageViewProtocol: NSObject {
-    func btnCancelImageTapped()
-    func btnDownloadTapped(image: UIImage)
-    func btnSendImageTapped(image: UIImage)
-}
 class DetailImageView: UIView {
 
     private lazy var imvDetail: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFit
         imv.backgroundColor = UIColor(hexString: "#242121")
+        imv.addConnerRadius(radius: 20)
         return imv
     }()
     
     private lazy var btnCancel: UIButton = {
         let btn = UIButton()
-        btn.setBackgroundImage(UIImage(systemName: "chevron.left"), for: .normal)
+        btn.setImage(UIImage(systemName: "chevron.left"), for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnCancelImageTapped), for: .touchUpInside)
         return btn
@@ -32,7 +30,7 @@ class DetailImageView: UIView {
     
     private lazy var btnDownload: UIButton = {
         let btn = UIButton()
-        btn.setBackgroundImage(UIImage(systemName: "arrow.down.to.line.compact"), for: .normal)
+        btn.setImage(UIImage(systemName: "arrow.down.to.line.compact"), for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnDownloadTapped), for: .touchUpInside)
         return btn
@@ -53,14 +51,23 @@ class DetailImageView: UIView {
         [imvDetail, btnCancel, btnDownload].forEach { sub in
             v.addSubview(sub)
         }
-        v.layer.cornerRadius = 15
-        v.layer.masksToBounds = true
-        v.backgroundColor = .white
+        v.addConnerRadius(radius: 20)
+        v.backgroundColor = .clear
         return v
     }()
     
-    weak var delegate: DetailImageViewProtocol?
+    private lazy var vPopupSaved: PopupSavedView = {
+        let v = PopupSavedView()
+        v.isHidden = true
+        return v
+    }()
     
+
+    var maxWidth: CGFloat = 0.0
+    var maxHeight: CGFloat = 0.0
+
+    var actionCancelTapped: (() -> Void)?
+    var actionSendImageTapped: ((UIImage) -> Void)?
     init() {
         super.init(frame: .zero)
         self.setUpView()
@@ -75,36 +82,59 @@ class DetailImageView: UIView {
     }
     func setUpView() {
         self.backgroundColor = UIColor(hexString: "#242121")
-        [vContent, btnSendImage].forEach { sub in
+        [vContent, btnSendImage, vPopupSaved].forEach { sub in
             self.addSubview(sub)
         }
         self.vContent.snp.makeConstraints { make in
             make.top.equalToSuperview()
-            make.leading.trailing.equalToSuperview().inset(5)
-        }
-        self.imvDetail.snp.makeConstraints { make in
-            make.top.leading.trailing.bottom.equalToSuperview()
+            make.leading.trailing.equalToSuperview()
+            make.height.equalTo(self.vContent.snp.width).multipliedBy(1920.0/1080.0)
         }
         self.btnCancel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.width.height.equalTo(30)
-            make.leading.equalToSuperview().offset(20)
+            make.top.equalToSuperview().offset(10)
+            make.width.height.equalTo(50)
+            make.leading.equalToSuperview().offset(10)
         }
         self.btnDownload.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(20)
-            make.width.height.equalTo(30)
+            make.top.equalTo(btnCancel)
+            make.width.height.equalTo(btnCancel)
             make.trailing.equalToSuperview().offset(-20)
         }
         self.btnSendImage.snp.makeConstraints { make in
-            make.top.equalTo(self.vContent.snp.bottom).offset(10)
+            make.top.greaterThanOrEqualTo(self.vContent.snp.bottom).offset(10)
             make.trailing.equalToSuperview().offset(-15)
-            make.height.equalTo(40)
+            make.height.equalTo(35)
             make.width.equalTo(80)
             make.bottom.equalToSuperview().offset(-10)
+        }
+        
+        vPopupSaved.snp.makeConstraints { make in
+            make.centerX.centerY.equalToSuperview()
+            make.width.height.equalTo(self.vPopupSaved.popupWidth)
         }
     }
     
     func configImage(image: UIImage) {
+        self.maxWidth = self.vContent.frame.width
+        self.maxHeight = self.vContent.frame.height
+        
+        let ratio = image.size.height/image.size.width
+        self.imvDetail.snp.removeConstraints()
+        print(maxWidth)
+        print(maxHeight)
+        if ratio <= 1920.0/1080.0 {
+            self.imvDetail.snp.makeConstraints { make in
+                make.leading.trailing.equalToSuperview()
+                make.centerY.equalToSuperview()
+                make.height.equalTo(maxWidth * ratio)
+            }
+        } else {
+            self.imvDetail.snp.makeConstraints { make in
+                make.top.bottom.equalToSuperview()
+                make.centerX.equalToSuperview()
+                make.width.equalTo(maxHeight / ratio)
+            }
+        }
         self.imvDetail.image = image
     }
     
@@ -114,7 +144,9 @@ class DetailImageView: UIView {
     }
     
     @objc func btnCancelImageTapped() {
-        delegate?.btnCancelImageTapped()
+        if let actionCancelTapped = self.actionCancelTapped {
+            actionCancelTapped()
+        }
     }
     
     @objc func btnDownloadTapped() {
@@ -122,10 +154,27 @@ class DetailImageView: UIView {
             print("Can't not fetch Image to Save!")
             return
         }
-        delegate?.btnDownloadTapped(image: image)
+        ProgressHUD.show()
+        PHPhotoLibrary.shared().performChanges({
+            PHAssetChangeRequest.creationRequestForAsset(from: image)
+        }) { saved, error in
+            guard error == nil  else {
+                self.makeToast("Error saving image to library: \(error!.localizedDescription)")
+                return
+            }
+            DispatchQueue.main.async {
+                ProgressHUD.dismiss()
+                self.vPopupSaved.isHidden = false
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.vPopupSaved.isHidden = true
+                }
+            }
+        }
     }
     
     @objc func btnSendImageTapped() {
-        delegate?.btnSendImageTapped(image: self.imvDetail.image!)
+        if let actionSendImageTapped = actionSendImageTapped, let image = imvDetail.image {
+            actionSendImageTapped(image)
+        }
     }
 }

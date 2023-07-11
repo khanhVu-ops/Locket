@@ -40,21 +40,12 @@ class ChatViewController: BaseViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        FirebaseService.shared.updateStatusChating(isChating: true)
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        FirebaseService.shared.updateStatusChating(isChating: false)
+        self.viewModel.updateWhenLoadChat()
     }
     
     deinit {
         self.viewModel.removeFileDownload()
+        FirebaseService.shared.updateStatusChating(isChating: false)
     }
 //MARK: SetupUI
     override func setUpUI() {
@@ -81,12 +72,11 @@ class ChatViewController: BaseViewController {
         self.vBorderTxt.addConnerRadius(radius: 15)
         self.txtTypeHere.backgroundColor = .white
         self.txtTypeHere.delegate = self
-        self.vBodyScreen.backgroundColor = UIColor(hexString: "#F8F8F8")
-        self.vTypeHere.backgroundColor = UIColor(hexString: "#F8F8F8")
-        self.viewModel.defaultHeightTv = self.getSizeOfTextView().height
+        self.vBodyScreen.backgroundColor = Constants.Color.inputTxtChatColor
+        self.vTypeHere.backgroundColor = Constants.Color.inputTxtChatColor
+        self.viewModel.defaultHeightTv = self.txtTypeHere.getSize().height
         self.viewModel.currentHeightTv = self.viewModel.defaultHeightTv
         self.heightTxtConstraint.constant = self.viewModel.defaultHeightTv
-        print("height: ", self.viewModel.defaultHeightTv)
         self.txtTypeHere.text = ""
         let txtGesture = UITapGestureRecognizer(target: self, action: #selector(tapTxtTypeHere))
         self.txtTypeHere.addGestureRecognizer(txtGesture)
@@ -183,9 +173,13 @@ class ChatViewController: BaseViewController {
             .subscribe(onNext: { [weak self] _ in
                 self?.btnCamera.dimButton()
                 let filterVC = FilterViewController()
-                filterVC.delegate = self
                 filterVC.modalPresentationStyle = .fullScreen
+                filterVC.actionSendImage = { [weak self] image in
+                    let media = MediaModel(image: image)
+                    self?.viewModel.handleSendNewMessage(type: .image, media: [media])
+                }
                 self?.present(filterVC, animated: true, completion: nil)
+                
             })
             .disposed(by: disposeBag)
         
@@ -231,8 +225,8 @@ class ChatViewController: BaseViewController {
         self.viewModel.user
             .subscribe(onNext: { [weak self] user in
                 self?.lbUsername.text = user.username
-                self?.lbActive.text = user.isActive! ? "Online" : "Offline"
-                self?.vActive.backgroundColor = user.isActive! ? .green : .gray
+                self?.lbActive.text = user.isActive == true ? "Online" : "Offline"
+                self?.vActive.backgroundColor = user.isActive == true ? .green : .gray
                 self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
             })
             .disposed(by: disposeBag)
@@ -248,7 +242,7 @@ class ChatViewController: BaseViewController {
                 if self.btnArrowRight.isHidden {
                     self.updateWhenInputText(isEdit: true)
                 }
-                let newSize = self.getSizeOfTextView()
+                let newSize = self.txtTypeHere.getSize()
                 if newSize.height < self.viewModel.maxheightTv {
                     self.txtTypeHere.isScrollEnabled = false
                     self.heightTxtConstraint.constant = newSize.height
@@ -300,7 +294,6 @@ class ChatViewController: BaseViewController {
         self.keyboardTrigger.skip(1).asDriverComplete()
             .drive(onNext: { [weak self] keyboard in
                 guard let self = self else { return }
-                print(keyboard.height)
                 self.bottomConstraint.constant = keyboard.height > 0 ? (keyboard.height) : 20
                 UIView.animate(withDuration: keyboard.duration) { [weak self] in
                     self?.view.layoutIfNeeded()
@@ -318,12 +311,6 @@ class ChatViewController: BaseViewController {
             self.updateWhenInputText(isEdit: true)
             self.view.layoutIfNeeded()
         }
-    }
-    
-    func getSizeOfTextView() -> CGSize {
-        let fixedWidth = txtTypeHere.frame.size.width
-        let newSize = txtTypeHere.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
-        return newSize
     }
 }
 
@@ -378,11 +365,8 @@ extension ChatViewController {
                     self.isLoadingData = false
                     self.tbvListMessage.tableFooterView = nil
                     var old = self.viewModel.listMessages.value
-                    
-                    print("count: ", new.count)
                     old.append(contentsOf: new)
-                    print("old: ", old.count)
-                    self.viewModel.listMessages.accept(old)
+                    self.viewModel.listMessages.accept(self.viewModel.prehandleMessages(messages: old))
                 } else {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                         self.isLoadingData = false

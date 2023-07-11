@@ -60,7 +60,7 @@ class BaseViewController: UIViewController {
     }
     
     func enableButton(_ buttonTap: UIButton?, _ viewBorder: UIView?, isEnable: Bool) {
-        viewBorder?.backgroundColor = isEnable ? Constants.Color.bgrButton : Constants.Color.bgrTextField
+        viewBorder?.backgroundColor = isEnable ? Constants.Color.mainColor : Constants.Color.bgrTextField
         buttonTap?.isEnabled = isEnable
     }
     

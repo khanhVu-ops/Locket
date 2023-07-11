@@ -47,7 +47,7 @@ class MessageTextCell: BaseMessageTableViewCell {
         self.indexPath = indexPath
         self.item = item
         self.tvMessage.attributedText = item.senderID == uid ? item.message?.detectAndStyleLinks(foregroundColor: .white, fontSize: 17) : item.message?.detectAndStyleLinks(foregroundColor: .black, fontSize: 17)
-        let size = tvMessage.sizeThatFits(CGSize(width: tvMessage.frame.width, height: CGFloat.greatestFiniteMagnitude))
+        let size = tvMessage.getSize()
         tvMessage.frame.size.height = size.height
         super.configure(item: item, user: user, indexPath: indexPath)
     }
@@ -62,19 +62,22 @@ class MessageTextCell: BaseMessageTableViewCell {
             guard let self = self else {
                 return
             }
+            self.vTime.isHidden = item.isShowTime ? false : !item.isBubble
             if item.senderID == self.uid {
                 self.vContentMessage.backgroundColor = !item.isBubble ? Constants.Color.mainColor : Constants.Color.tapBubleColor
+                self.vStatus.isHidden = item.isShowStatus ? false : !item.isBubble
+            } else {
+                self.vStatus.isHidden = true
             }
-            self.vTime.isHidden = !item.isBubble
-            self.vStatus.isHidden = !item.isBubble
-        }
-        UIView.animate(withDuration: 0.5) { [weak self] in
-            guard let self = self else {
-                return
+            UIView.animate(withDuration: 0.5) { [weak self] in
+                guard let self = self else {
+                    return
+                }
+                self.lbStatus.alpha = self.vStatus.isHidden ? 0 : 0.8
+                self.lbTime.alpha = self.vTime.isHidden ? 0 : 0.8
             }
-            self.lbStatus.alpha = item.isBubble ? 0.8 : 0
-            self.lbTime.alpha = item.isBubble ? 0.8 : 0
         }
+        
         if let actionTapBubble = actionTapBubble {
             actionTapBubble()
         }

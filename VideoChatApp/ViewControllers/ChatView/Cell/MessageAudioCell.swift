@@ -175,7 +175,6 @@ class MessageAudioCell: BaseMessageTableViewCell, AVAudioPlayerDelegate {
     
     public func playVideo() {
         guard let audioURL = URL(string: item?.fileURL ?? "") else {
-            print("audio: ",item?.fileURL)
             return
         }
         self.loadAudio(url: audioURL)

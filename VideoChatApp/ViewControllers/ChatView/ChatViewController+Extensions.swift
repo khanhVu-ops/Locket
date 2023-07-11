@@ -20,12 +20,12 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
         switch item.type {
         case .audio:
             let cell = tableView.dequeueReusableCell(withIdentifier: MessageAudioCell.nibNameClass, for: indexPath) as! MessageAudioCell
-            cell.configure(item: item, user: UserModel(), indexPath: indexPath)
+            cell.configure(item: item, user: self.viewModel.user.value, indexPath: indexPath)
             return cell
         case .file:
             let cell = tableView.dequeueReusableCell(withIdentifier: MessageFileCell.nibNameClass, for: indexPath) as! MessageFileCell
 //            cell.delegate = self
-            cell.configure(item: item, user: UserModel(), indexPath: indexPath)
+            cell.configure(item: item, user: self.viewModel.user.value, indexPath: indexPath)
             cell.actionOpenFile = { [weak self] fileURL in
                 guard let self = self else {
                     return
@@ -46,7 +46,7 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
         case .text:
             let cell = tableView.dequeueReusableCell(withIdentifier: MessageTextCell.nibNameClass, for: indexPath) as! MessageTextCell
-            cell.configure(item: item, user: UserModel(), indexPath: indexPath)
+            cell.configure(item: item, user:  self.viewModel.user.value, indexPath: indexPath)
             cell.actionTapBubble = { [weak self] in
                 self?.tbvListMessage.beginUpdates()
                 self?.tbvListMessage.endUpdates()
@@ -54,7 +54,7 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
         default:
             let cell = tableView.dequeueReusableCell(withIdentifier: MessagePhotosCell.nibNameClass, for: indexPath) as! MessagePhotosCell
-            cell.configure(item: item, user: UserModel(), indexPath: indexPath)
+            cell.configure(item: item, user: self.viewModel.user.value, indexPath: indexPath)
             cell.actionSelectImage = { [weak self] url in
                 print(url)
                 guard let self = self else {
@@ -91,17 +91,6 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
 extension ChatViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         return !isRecoding
-    }
-}
-
-extension ChatViewController: CameraProtocol {
-    func didSendImageCaptured(image: UIImage) {
-//        self.viewModel.sendImage(images: [image], videos: []) { [weak self] error in
-//            guard let error = error else {
-//                return
-//            }
-//            self?.showAlert(title: "Send Image Error!", message: error.localizedDescription)
-//        }
     }
 }
 

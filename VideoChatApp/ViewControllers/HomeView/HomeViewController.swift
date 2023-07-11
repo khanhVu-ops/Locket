@@ -66,7 +66,6 @@ class HomeViewController: BaseViewController {
             .subscribe(onNext: { [weak self] chats, users in
                 self?.viewModel.listChats.accept([ConverationModel()] + chats)
                 self?.viewModel.listUsers.accept(users)
-                print("users", users.count)
                 self?.tbvListChats.reloadData()
             })
             .disposed(by: disposeBag)
@@ -106,7 +105,6 @@ class HomeViewController: BaseViewController {
 extension HomeViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if tableView == tbvListChats {
-            print(self.viewModel.listChats.value.count)
             return self.viewModel.listChats.value.count
         } else {
             return self.viewModel.listSearchs.value.count

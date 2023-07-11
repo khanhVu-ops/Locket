@@ -23,16 +23,25 @@ class TabBarController: UITabBarController {
         self.setupTabBarUI()
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         self.setupCustomTabBarFrame()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
     }
     
     // MARK: Private methods
     func setUpView() {
         let homeVC = HomeViewController()
         homeVC.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), tag: 0)
-        let settingVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingViewController") as! SettingViewController
+        let settingVC = SettingViewController()
         settingVC.tabBarItem = UITabBarItem(title: "Setting", image: UIImage(systemName: "gearshape"), tag: 1)
         self.viewControllers = [homeVC, settingVC]
     }
@@ -51,6 +60,8 @@ class TabBarController: UITabBarController {
                 }
                 AuthFirebaseService.shared.updateUserActive(isActive: true)
                 Utilitis.shared.setBadgeIcon(number: user.totalBadge ?? 0)
+                print("badge:", user.totalBadge)
+                UserDefaultManager.shared.setUsername(username: user.username ?? "")
             })
             .disposed(by: disposeBag)
     }
