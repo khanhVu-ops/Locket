@@ -121,8 +121,8 @@ class BaseMessageTableViewCell: UITableViewCell {
                 return
             }
             self.contentView.transform = CGAffineTransform(rotationAngle: CGFloat.pi)
-
         }
+        self.backgroundColor = .clear
         self.stvContentCell.snp.makeConstraints { make in
             topStvConstraint = make.top.equalToSuperview().constraint
             make.leading.equalToSuperview().offset(10)
@@ -158,14 +158,13 @@ class BaseMessageTableViewCell: UITableViewCell {
             }
             self.stvMessage.alignment = item.senderID == uid ? .trailing : .leading
             self.lbStatus.textAlignment = item.senderID == uid ? .right : .left
-            self.vContentMessage.backgroundColor = item.senderID == uid ? Constants.Color.mainColor : Constants.Color.guestColor
             self.imvAvata.isHidden = (item.senderID == uid || item.isSameTime) ? true : false
-            self.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
+            self.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvataImage)
+            self.vContentMessage.backgroundColor = item.senderID == uid ? RCValues.shared.color(forKey: .appPrimaryColor) : RCValues.shared.color(forKey: .guestChatColor)
             self.vTime.isHidden = item.isShowTime ? false : !item.isBubble
             self.lbTime.text = item.created?.convertTimestampToTimeString()
-//            self.vStatus.isHidden = !item.isShowStatus
             if item.senderID == self.uid {
-                self.vContentMessage.backgroundColor = !item.isBubble ? Constants.Color.mainColor : Constants.Color.tapBubleColor
+                self.vContentMessage.backgroundColor = !item.isBubble ? RCValues.shared.color(forKey: .appPrimaryColor) : RCValues.shared.color(forKey: .tapBubleChatColor)
                 self.vStatus.isHidden = item.isShowStatus ? false : !item.isBubble
             } else {
                 self.vStatus.isHidden = true

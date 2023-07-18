@@ -14,6 +14,7 @@
                 <outlet property="btnChangeAvata" destination="cPq-Hk-e2p" id="ncU-vX-vav"/>
                 <outlet property="btnPlus" destination="hZH-aE-0Tl" id="hxf-kN-voa"/>
                 <outlet property="imvAvata" destination="FqT-Vi-Law" id="IfM-Se-fUN"/>
+                <outlet property="lbAvata" destination="x7C-5e-4kS" id="zpA-XG-kCg"/>
                 <outlet property="lbUsername" destination="mqj-gi-y2S" id="gkH-z8-V1u"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -66,22 +67,32 @@
                     <nil key="textColor"/>
                     <nil key="highlightedColor"/>
                 </label>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="KV" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="x7C-5e-4kS">
+                    <rect key="frame" x="147" y="84" width="120" height="120"/>
+                    <fontDescription key="fontDescription" type="boldSystem" pointSize="35"/>
+                    <nil key="textColor"/>
+                    <nil key="highlightedColor"/>
+                </label>
             </subviews>
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
                 <constraint firstItem="cPq-Hk-e2p" firstAttribute="bottom" secondItem="FqT-Vi-Law" secondAttribute="bottom" id="3Yw-lu-Wyh"/>
+                <constraint firstItem="x7C-5e-4kS" firstAttribute="bottom" secondItem="FqT-Vi-Law" secondAttribute="bottom" id="4va-9d-Iac"/>
                 <constraint firstItem="mqj-gi-y2S" firstAttribute="top" secondItem="FqT-Vi-Law" secondAttribute="bottom" constant="20" id="5XP-3S-0z3"/>
                 <constraint firstItem="cPq-Hk-e2p" firstAttribute="leading" secondItem="FqT-Vi-Law" secondAttribute="leading" id="67X-ej-Vnh"/>
                 <constraint firstItem="hZH-aE-0Tl" firstAttribute="trailing" secondItem="FqT-Vi-Law" secondAttribute="trailing" id="BCk-7N-XoY"/>
                 <constraint firstItem="mqj-gi-y2S" firstAttribute="centerX" secondItem="cPq-Hk-e2p" secondAttribute="centerX" id="Eql-sd-Ko8"/>
                 <constraint firstItem="cPq-Hk-e2p" firstAttribute="top" secondItem="FqT-Vi-Law" secondAttribute="top" id="Nkk-MN-Krp"/>
+                <constraint firstItem="x7C-5e-4kS" firstAttribute="leading" secondItem="FqT-Vi-Law" secondAttribute="leading" id="S8e-4k-JxG"/>
                 <constraint firstItem="FqT-Vi-Law" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="YDe-uK-WyD"/>
                 <constraint firstItem="EcH-JL-sAD" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Ygq-k9-G6b"/>
                 <constraint firstItem="hZH-aE-0Tl" firstAttribute="bottom" secondItem="FqT-Vi-Law" secondAttribute="bottom" id="b1F-c3-AVp"/>
+                <constraint firstItem="x7C-5e-4kS" firstAttribute="trailing" secondItem="FqT-Vi-Law" secondAttribute="trailing" id="eQB-6j-f1V"/>
                 <constraint firstItem="FqT-Vi-Law" firstAttribute="top" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="40" id="lBj-LH-UAn"/>
                 <constraint firstItem="cPq-Hk-e2p" firstAttribute="trailing" secondItem="FqT-Vi-Law" secondAttribute="trailing" id="nDl-yo-WU4"/>
                 <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" secondItem="EcH-JL-sAD" secondAttribute="bottom" constant="79" id="olS-jt-rmU"/>
+                <constraint firstItem="x7C-5e-4kS" firstAttribute="top" secondItem="FqT-Vi-Law" secondAttribute="top" id="rym-iS-8Yr"/>
             </constraints>
             <point key="canvasLocation" x="139" y="79"/>
         </view>

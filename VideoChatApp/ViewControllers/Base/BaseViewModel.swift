@@ -37,20 +37,20 @@ class BaseViewModel {
             if !error.message.isEmpty {
                 errorMsg.accept(error.message)
             } else {
-                errorMsg.accept(Constants.L10n.commonError)
+                errorMsg.accept(Constants.L10n.commonErrorText)
             }
             errorAppCode.accept(error.code.rawValue)
         }
         else if let error = error as? RxSwift.RxError {
             switch error {
             case .timeout:
-                errorMsg.accept(Constants.L10n.commonErrorTimeout)
+                errorMsg.accept(Constants.L10n.commonErrorTimeoutText)
             default:
-                errorMsg.accept(Constants.L10n.commonError)
+                errorMsg.accept(Constants.L10n.commonErrorText)
             }
         }
         else {
-            errorMsg.accept(Constants.L10n.commonError)
+            errorMsg.accept(Constants.L10n.commonErrorText)
         }
     }
 }

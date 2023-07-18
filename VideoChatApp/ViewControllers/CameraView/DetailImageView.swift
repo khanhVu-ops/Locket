@@ -15,14 +15,14 @@ class DetailImageView: UIView {
     private lazy var imvDetail: UIImageView = {
         let imv = UIImageView()
         imv.contentMode = .scaleAspectFit
-        imv.backgroundColor = UIColor(hexString: "#242121")
+        imv.backgroundColor = RCValues.shared.color(forKey: .backgroundColor)
         imv.addConnerRadius(radius: 20)
         return imv
     }()
     
     private lazy var btnCancel: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "chevron.left"), for: .normal)
+        btn.setImage(Constants.Image.backButtonSystem, for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnCancelImageTapped), for: .touchUpInside)
         return btn
@@ -30,7 +30,7 @@ class DetailImageView: UIView {
     
     private lazy var btnDownload: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "arrow.down.to.line.compact"), for: .normal)
+        btn.setImage(Constants.Image.downloadSystem, for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnDownloadTapped), for: .touchUpInside)
         return btn
@@ -81,7 +81,7 @@ class DetailImageView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     func setUpView() {
-        self.backgroundColor = UIColor(hexString: "#242121")
+        self.backgroundColor = RCValues.shared.color(forKey: .backgroundColor)
         [vContent, btnSendImage, vPopupSaved].forEach { sub in
             self.addSubview(sub)
         }

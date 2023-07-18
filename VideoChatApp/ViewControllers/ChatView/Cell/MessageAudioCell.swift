@@ -96,10 +96,10 @@ class MessageAudioCell: BaseMessageTableViewCell, AVAudioPlayerDelegate {
         super.configure(item: item, user: user, indexPath: indexPath)
         
         self.item = item
-        self.btnPlay.tintColor = item.senderID != self.uid ? Constants.Color.mainColor : .white
-        self.slider.minimumTrackTintColor = item.senderID != self.uid ? Constants.Color.mainColor : .white
-        self.lbDuration.textColor = item.senderID != self.uid ? Constants.Color.mainColor : .white
-        self.activityIndicator.color = item.senderID != self.uid ? Constants.Color.mainColor : .white
+        self.btnPlay.tintColor = item.senderID != self.uid ? RCValues.shared.color(forKey: .appPrimaryColor) : .white
+        self.slider.minimumTrackTintColor = item.senderID != self.uid ? RCValues.shared.color(forKey: .appPrimaryColor) : .white
+        self.lbDuration.textColor = item.senderID != self.uid ? RCValues.shared.color(forKey: .appPrimaryColor) : .white
+        self.activityIndicator.color = item.senderID != self.uid ? RCValues.shared.color(forKey: .appPrimaryColor) : .white
         self.lbDuration.text = Utilitis.shared.convertDurationToTime(duration: item.duration ?? 0.0)
         
     }

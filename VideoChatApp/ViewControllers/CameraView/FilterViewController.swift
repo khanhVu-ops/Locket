@@ -10,12 +10,12 @@ import SnapKit
 import AVFoundation
 import Vision
 
-class FilterViewController: UIViewController {
+class FilterViewController: BaseViewController {
 
     private var cameraView = CameraView(cameraType: .photo)
     private var detailView = DetailImageView()
     var actionSendImage: ((UIImage) -> Void)?
-    private var imagePicker = UIImagePickerController()
+    
     
     
     var titleButonSend: String = "Send" {
@@ -32,7 +32,12 @@ class FilterViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        self.cameraView.startSession()
+//        self.cameraView.startSession()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        self.cameraView.setUpPreviewLayer()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -41,9 +46,14 @@ class FilterViewController: UIViewController {
         
     }
 
+    override func configImageSelect(image: UIImage) {
+        self.detailView.configImage(image: image)
+        self.detailView.isHidden = false
+        self.cameraView.isHidden = true
+    }
     
     func setUpView() {
-        self.view.backgroundColor = UIColor(hexString: "#242121")
+        self.view.backgroundColor = RCValues.shared.color(forKey: .backgroundColor)
         self.cameraView.delegate = self
         self.cameraView.isHidden = false
         self.detailView.isHidden = true
@@ -71,7 +81,6 @@ class FilterViewController: UIViewController {
             make.leading.trailing.equalToSuperview().inset(5)
             make.bottom.equalTo(self.view.safeAreaLayoutGuide.snp.bottom)
         }
-        
     }
 }
 extension FilterViewController: CameraViewDelegate {
@@ -96,31 +105,8 @@ extension FilterViewController: CameraViewDelegate {
     }
     
     func btnLibraryTapped() {
-        self.imagePicker.delegate = self
-        self.imagePicker.sourceType = .photoLibrary
-        present(imagePicker, animated: true, completion: nil)
-//        let photosVC = PhotosViewController()
-//        photosVC.delegate = self
-//        self.present(photosVC, animated: true, completion: nil)
-    }
-    
-}
-
-extension FilterViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        
-        let img = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
-        guard let image = img else {
-            return
-        }
-        self.detailView.configImage(image: image)
-        self.detailView.isHidden = false
-        self.cameraView.isHidden = true
-
-        picker.dismiss(animated: true, completion: nil)
-    }
-    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        picker.dismiss(animated: true, completion: nil)
+        self.openLibrary()
     }
 }
+
 

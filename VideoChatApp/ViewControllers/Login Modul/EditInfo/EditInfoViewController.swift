@@ -28,16 +28,17 @@ class EditInfoViewController: BaseViewController {
     }
     
     override func setUpUI() {
-        self.view.backgroundColor = Constants.Color.background
-        self.btnBack.backgroundColor = Constants.Color.bgrTextField
+        self.view.backgroundColor = RCValues.shared.color(forKey: .backgroundColor)
+        self.btnBack.backgroundColor = RCValues.shared.color(forKey: .bgrTextFieldLogin)
         self.btnBack.circleClip()
-        self.vContinue.backgroundColor = Constants.Color.mainColor
+        self.btnBack.setImage(Constants.Image.backButtonSystem, for: .normal)
+        self.vContinue.backgroundColor = RCValues.shared.color(forKey: .appPrimaryColor)
         self.vContinue.addConnerRadius(radius: 20)
         self.enableButton(btnContinue, vContinue, isEnable: false)
-        self.vFirstname.backgroundColor = Constants.Color.bgrTextField
+        self.vFirstname.backgroundColor = RCValues.shared.color(forKey: .bgrTextFieldLogin)
         self.vFirstname.addConnerRadius(radius: 15)
         self.tfFirstname.attributedPlaceholder = "First name".toAttributedStringWithColor(color: .white.withAlphaComponent(0.4))
-        self.vLastname.backgroundColor = Constants.Color.bgrTextField
+        self.vLastname.backgroundColor = RCValues.shared.color(forKey: .bgrTextFieldLogin)
         self.vLastname.addConnerRadius(radius: 15)
         self.tfLastname.attributedPlaceholder = "Last name".toAttributedStringWithColor(color: .white.withAlphaComponent(0.4))
         self.addGestureDismissKeyboard(view: self.view)

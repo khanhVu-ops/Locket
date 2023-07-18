@@ -28,7 +28,6 @@
 		3315354929D5471000100006 /* MessageModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315354629D5471000100006 /* MessageModel.swift */; };
 		3315354A29D5471000100006 /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315354729D5471000100006 /* UserModel.swift */; };
 		3315357829D5472500100006 /* UserDefaultManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315354C29D5472500100006 /* UserDefaultManager.swift */; };
-		3315357929D5472500100006 /* FirebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315354D29D5472500100006 /* FirebaseManager.swift */; };
 		3315357B29D5472500100006 /* SettingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315355129D5472500100006 /* SettingViewModel.swift */; };
 		3315357E29D5472500100006 /* ListUserCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3315355729D5472500100006 /* ListUserCollectionViewCell.swift */; };
 		3315357F29D5472500100006 /* ListUserCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 3315355829D5472500100006 /* ListUserCollectionViewCell.xib */; };
@@ -51,6 +50,8 @@
 		333637E72A58786000B1DE15 /* SettingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 333637E52A58786000B1DE15 /* SettingViewController.xib */; };
 		333ABA6B2A386E2400037620 /* VerifyCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333ABA6A2A386E2400037620 /* VerifyCodeViewModel.swift */; };
 		3347D7A62A4831B400840655 /* BaseMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347D7A52A4831B400840655 /* BaseMessageTableViewCell.swift */; };
+		3347E20D2A630BCD006FC2A1 /* RCValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347E20C2A630BCD006FC2A1 /* RCValues.swift */; };
+		336201692A65478D00251A91 /* AppObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336201682A65478D00251A91 /* AppObserver.swift */; };
 		337C03202A36B6CB002231ED /* ObservableType+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337C031F2A36B6CB002231ED /* ObservableType+Extensions.swift */; };
 		337C03222A36B90B002231ED /* BaseFirebaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337C03212A36B90B002231ED /* BaseFirebaseService.swift */; };
 		337D53A129E8E3370067EC0F /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 337D53A029E8E3370067EC0F /* String+Extensions.swift */; };
@@ -130,7 +131,6 @@
 		3315354629D5471000100006 /* MessageModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageModel.swift; sourceTree = "<group>"; };
 		3315354729D5471000100006 /* UserModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 		3315354C29D5472500100006 /* UserDefaultManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultManager.swift; sourceTree = "<group>"; };
-		3315354D29D5472500100006 /* FirebaseManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FirebaseManager.swift; sourceTree = "<group>"; };
 		3315355129D5472500100006 /* SettingViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingViewModel.swift; sourceTree = "<group>"; };
 		3315355729D5472500100006 /* ListUserCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ListUserCollectionViewCell.swift; sourceTree = "<group>"; };
 		3315355829D5472500100006 /* ListUserCollectionViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = ListUserCollectionViewCell.xib; sourceTree = "<group>"; };
@@ -153,6 +153,8 @@
 		333637E52A58786000B1DE15 /* SettingViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingViewController.xib; sourceTree = "<group>"; };
 		333ABA6A2A386E2400037620 /* VerifyCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeViewModel.swift; sourceTree = "<group>"; };
 		3347D7A52A4831B400840655 /* BaseMessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMessageTableViewCell.swift; sourceTree = "<group>"; };
+		3347E20C2A630BCD006FC2A1 /* RCValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCValues.swift; sourceTree = "<group>"; };
+		336201682A65478D00251A91 /* AppObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppObserver.swift; sourceTree = "<group>"; };
 		337C031F2A36B6CB002231ED /* ObservableType+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ObservableType+Extensions.swift"; sourceTree = "<group>"; };
 		337C03212A36B90B002231ED /* BaseFirebaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseFirebaseService.swift; sourceTree = "<group>"; };
 		337D53A029E8E3370067EC0F /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
@@ -310,7 +312,6 @@
 			isa = PBXGroup;
 			children = (
 				3315354C29D5472500100006 /* UserDefaultManager.swift */,
-				3315354D29D5472500100006 /* FirebaseManager.swift */,
 				33E1FA6329FC2E6200DDA614 /* APIService.swift */,
 				33F461E92A371CA1008A0DF6 /* Firebase */,
 			);
@@ -408,7 +409,9 @@
 			children = (
 				33F3D1912A0903370037CF6A /* Utilities.swift */,
 				33F461E72A371ACC008A0DF6 /* Constants.swift */,
+				3347E20C2A630BCD006FC2A1 /* RCValues.swift */,
 				3315357229D5472500100006 /* CommonView */,
+				336201682A65478D00251A91 /* AppObserver.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -778,6 +781,7 @@
 				33D081E12A5589D0004715DF /* MessageFileCell.swift in Sources */,
 				33F461E32A36E787008A0DF6 /* AppError.swift in Sources */,
 				3315358429D5472500100006 /* ListFriendCell.swift in Sources */,
+				3347E20D2A630BCD006FC2A1 /* RCValues.swift in Sources */,
 				33F461F32A3720E6008A0DF6 /* RegisterViewController.swift in Sources */,
 				339365082A38389F004EB336 /* VerifyCodeViewController.swift in Sources */,
 				3309BC072A36AB28002D7034 /* ProgressHub+Rx.swift in Sources */,
@@ -788,7 +792,6 @@
 				333637E62A58786000B1DE15 /* SettingViewController.swift in Sources */,
 				3315359329D5472500100006 /* UIView+Extensions.swift in Sources */,
 				331534DC29D5446A00100006 /* SceneDelegate.swift in Sources */,
-				3315357929D5472500100006 /* FirebaseManager.swift in Sources */,
 				33F461EF2A372083008A0DF6 /* BaseViewController.swift in Sources */,
 				338C679529E3C060002474B9 /* CustomCaptureButton.swift in Sources */,
 				3399E1D929D6922000DF8021 /* DetailImageCollectionViewCell.swift in Sources */,
@@ -807,6 +810,7 @@
 				33F461EB2A371CC9008A0DF6 /* AuthFirebaseService.swift in Sources */,
 				3315359229D5472500100006 /* UIViewController+Extensions.swift in Sources */,
 				3309BC092A36AB59002D7034 /* ErrorTracker.swift in Sources */,
+				336201692A65478D00251A91 /* AppObserver.swift in Sources */,
 				3347D7A62A4831B400840655 /* BaseMessageTableViewCell.swift in Sources */,
 				33C715852A4A78EE00353BF8 /* TappableLabel.swift in Sources */,
 				338AE90C2A4BEA9300892BD2 /* Video.swift in Sources */,
@@ -967,6 +971,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JQH2B3Y9K7;
+				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoChatApp/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please access camera!";
@@ -1003,6 +1008,7 @@
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = JQH2B3Y9K7;
+				ENABLE_BITCODE = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = VideoChatApp/Info.plist;
 				INFOPLIST_KEY_NSCameraUsageDescription = "Please access camera!";

@@ -29,13 +29,14 @@ class RegisterViewController: BaseViewController {
     }
     
     override func setUpUI() {
-        self.view.backgroundColor = Constants.Color.background
-        self.btnBack.backgroundColor = Constants.Color.bgrTextField
+        self.view.backgroundColor = RCValues.shared.color(forKey: .backgroundColor)
+        self.btnBack.backgroundColor = RCValues.shared.color(forKey: .bgrTextFieldLogin)
         self.btnBack.circleClip()
-        self.vContinue.backgroundColor = Constants.Color.mainColor
+        self.btnBack.setImage(Constants.Image.backButtonSystem, for: .normal)
+        self.vContinue.backgroundColor = RCValues.shared.color(forKey: .appPrimaryColor)
         self.vContinue.addConnerRadius(radius: 20)
         self.enableButton(btnContinue, vContinue, isEnable: false)
-        self.vPhoneNumber.backgroundColor = Constants.Color.bgrTextField
+        self.vPhoneNumber.backgroundColor = RCValues.shared.color(forKey: .bgrTextFieldLogin)
         self.vPhoneNumber.addConnerRadius(radius: 15)
         self.tfPhoneNumber.attributedPlaceholder = "123456789".addSpaceToPhoneNumber().toAttributedStringWithColor(color: .gray.withAlphaComponent(0.2))
         self.addGestureDismissKeyboard(view: self.view)

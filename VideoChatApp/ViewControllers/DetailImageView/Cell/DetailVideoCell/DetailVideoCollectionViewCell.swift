@@ -15,8 +15,8 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         let slider = UISlider()
         slider.minimumValue = 0
         slider.maximumTrackTintColor = .gray
-        slider.minimumTrackTintColor = Constants.Color.mainColor
-        slider.setThumbImage(UIImage(named: "ic_play_circle")?.resize(with: CGSize(width: 20, height: 20)), for: .normal)
+        slider.minimumTrackTintColor = RCValues.shared.color(forKey: .appPrimaryColor)
+        slider.setThumbImage(Constants.Image.playCircleIcon.resize(with: CGSize(width: 20, height: 20)), for: .normal)
         slider.addTarget(self, action: #selector(sliderDidChangeValue), for: .valueChanged)
         return slider
     }()
@@ -24,14 +24,14 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     private var btnPlay: UIButton = {
         let btn = UIButton()
         btn.setImage(nil, for: .normal)
-        btn.tintColor = Constants.Color.mainColor
+        btn.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
         btn.addTarget(self, action: #selector(btnPlayTapped), for: .touchUpInside)
         return btn
     }()
     
     private var lbTime: UILabel = {
         let lb = UILabel()
-        lb.textColor = Constants.Color.mainColor
+        lb.textColor = RCValues.shared.color(forKey: .appPrimaryColor)
         return lb
     }()
     
@@ -46,7 +46,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     private lazy var activityIndicator: UIActivityIndicatorView = {
         let indicator = UIActivityIndicatorView()
         indicator.style = .medium
-        indicator.color = Constants.Color.mainColor
+        indicator.color = RCValues.shared.color(forKey: .appPrimaryColor)
         indicator.isHidden = true
         indicator.stopAnimating()
         return indicator

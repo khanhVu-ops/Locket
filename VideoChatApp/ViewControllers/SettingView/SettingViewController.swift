@@ -16,13 +16,8 @@ class SettingViewController: BaseViewController {
     @IBOutlet weak var btnChangeAvata: UIButton!
     @IBOutlet weak var btnPlus: UIButton!
     @IBOutlet weak var lbUsername: UILabel!
+    @IBOutlet weak var lbAvata: UILabel!
     
-    private lazy var vDetailAvata: DetailImageView = {
-        let v = DetailImageView()
-        v.isHidden = true
-        v.configBtnSend(isHidden: true)
-        return v
-    }()
     
     let settingViewModel = SettingViewModel()
     
@@ -38,18 +33,10 @@ class SettingViewController: BaseViewController {
         
         self.btnPlus.addConnerRadius(radius: self.btnPlus.frame.width/2)
         self.btnPlus.addBorder(borderWidth: 2, borderColor: .black)
-        self.btnPlus.backgroundColor = Constants.Color.mainColor
+        self.btnPlus.backgroundColor = RCValues.shared.color(forKey: .appPrimaryColor)
         self.btnChangeAvata.addConnerRadius(radius: self.btnChangeAvata.frame.width/2)
-        self.btnChangeAvata.addBorder(borderWidth: 4, borderColor: Constants.Color.mainColor)
-        self.view.addSubview(self.vDetailAvata)
-        self.vDetailAvata.snp.makeConstraints { make in
-            make.top.bottom.equalTo(self.view.safeAreaLayoutGuide)
-            make.leading.trailing.equalToSuperview().inset(5)
-        }
-        
-        self.vDetailAvata.actionCancelTapped = { [weak self] in
-            self?.vDetailAvata.isHidden = true
-        }
+        self.btnChangeAvata.addBorder(borderWidth: 4, borderColor: RCValues.shared.color(forKey: .appPrimaryColor))
+        self.lbAvata.textColor = RCValues.shared.color(forKey: .appPrimaryColor)
     }
     
     override func bindViewModel() {
@@ -57,24 +44,31 @@ class SettingViewController: BaseViewController {
         self.settingViewModel.getInfoUser()
             .drive(onNext: { [weak self] user in
                 self?.settingViewModel.user = user
-                self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
+                self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvataImage)
                 self?.lbUsername.text = user.username
+                self?.lbAvata.text = user.username?.getInitials()
+                if let avataURL = URL(string: user.avataURL ?? "") {
+                    self?.imvAvata.sd_setImage(with: avataURL, placeholderImage: Constants.Image.defaultAvataImage)
+                    self?.lbAvata.isHidden = true
+                } else {
+                    self?.imvAvata.image = nil
+                    self?.lbAvata.isHidden = false
+                }
             })
             .disposed(by: disposeBag)
+    }
+    
+    override func configImageSelect(image: UIImage) {
+        self.settingViewModel.updateAvata(image: image)
+            .subscribe(onNext: { [weak self] url in
+                self?.imvAvata.image = image
+            })
+            .disposed(by: self.disposeBag)
     }
     
     @IBAction func btnLogOutTapped(_sender: UIButton) {
         self.settingViewModel.handleLogOut()
             .subscribe(onNext: { [weak self] in
-                AuthFirebaseService.shared.updateUserActive(isActive: false)
-                Utilitis.shared.setBadgeIcon(number: 0)
-                var fcm = self?.settingViewModel.user.fcmToken ?? []
-                let fcmToken = UserDefaultManager.shared.getNotificationToken()
-                print("token", fcmToken)
-                fcm.remove(object: fcmToken)
-                print("fcm: ", fcm.count)
-                AuthFirebaseService.shared.updateFcmToken(fcmToken: fcm)
-                UserDefaultManager.shared.setID(id: nil)
                 self?.goToSetRootIntroVC()
             })
             .disposed(by: disposeBag)
@@ -92,11 +86,14 @@ class SettingViewController: BaseViewController {
         alert.addAction(UIAlertAction(title: "Camera", style: .default, handler: { [weak self] _ in
             self?.openCamera()
         }))
-        
-        alert.addAction(UIAlertAction(title: "Avata Detail", style: .default, handler: { [weak self] _ in
-            self?.openDetailAvata()
+        alert.addAction(UIAlertAction(title: "Library", style: .default, handler: { [weak self] _ in
+            self?.openLibrary()
         }))
-        
+        if imvAvata.image != nil {
+            alert.addAction(UIAlertAction(title: "Remove avata", style: .default) { [weak self] _ in
+                self?.removeAvata()
+            })
+        }
         alert.addAction(UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil))
         
         self.present(alert, animated: true, completion: nil)
@@ -116,17 +113,13 @@ class SettingViewController: BaseViewController {
                 })
                 .disposed(by: strongSelf.disposeBag)
         }
-        self.present(filterVC, animated: true, completion: nil)
+        self.present(filterVC, animated: false, completion: nil)
     }
     
-    private func openDetailAvata() {
-        guard let image = self.imvAvata.image else {
-            return
-        }
-        self.vDetailAvata.configImage(image: image)
-        self.vDetailAvata.isHidden = false
-        self.hidesBottomBarWhenPushed = true
-
+    private func removeAvata() {
+        self.imvAvata.image = nil
+        self.lbAvata.isHidden = false
+        FirebaseService.shared.updateAvatar(url: "")
     }
 }
 

@@ -113,4 +113,40 @@ extension String {
         }
         return "+84" + phone
     }
+    
+    func getInitials() -> String {
+        // Tách chuỗi thành các từ
+        let words = self.components(separatedBy: " ")
+        
+        // Kiểm tra số từ trong chuỗi
+        let wordCount = words.count
+        
+        if wordCount >= 1 {
+            // Lấy từ đầu tiên
+            let firstWord = words[0]
+            
+            if wordCount >= 2 {
+                // Lấy từ thứ hai
+                let secondWord = words[1]
+                
+                // Lấy hai chữ cái đầu tiên của từ đầu tiên
+                let firstTwoChars = firstWord.prefix(1)
+                
+                // Lấy hai chữ cái đầu tiên của từ thứ hai
+                let secondTwoChars = secondWord.prefix(1)
+                
+                // Kết hợp hai chuỗi lại
+                let result = String(firstTwoChars) + String(secondTwoChars)
+                
+                return result
+            } else {
+                // Chỉ có một từ trong chuỗi
+                let firstChar = firstWord.prefix(1)
+                return String(firstChar)
+            }
+        } else {
+            // Chuỗi không có từ
+            return ""
+        }
+    }
 }

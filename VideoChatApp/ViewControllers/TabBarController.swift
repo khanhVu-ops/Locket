@@ -79,9 +79,9 @@ class TabBarController: UITabBarController {
     
     private func setupTabBarUI() {
         // Setup your colors and corner radius
-        self.tabBar.backgroundColor = Constants.Color.tabbarColor
+        self.tabBar.backgroundColor = RCValues.shared.color(forKey: .tabbarColor)
         self.tabBar.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-        self.tabBar.tintColor = Constants.Color.mainColor
+        self.tabBar.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
         self.tabBar.unselectedItemTintColor = UIColor.gray
         self.tabBar.addConnerRadius(radius: 15)
         self.tabBar.addShadow(color: .black, opacity: 0.3, radius: 2, offset: CGSize(width: 0, height: 0))

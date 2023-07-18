@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import RxSwift
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var window: UIWindow?
   
@@ -43,6 +43,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     func sceneDidBecomeActive(_ scene: UIScene) {
         print("active")
+        if let uid = UserDefaultManager.shared.getID() {
+            FirebaseService.shared.getUserByUID(uid: uid)
+                .subscribe(onNext: { user in
+                Utilitis.shared.setBadgeIcon(number: user.totalBadge ?? 0)
+                })
+                .disposed(by: DisposeBag())
+        }
         if let scene = UIApplication.shared.connectedScenes.first,
            let windowScene = scene as? UIWindowScene,
            let window = windowScene.windows.first,
@@ -59,6 +66,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillResignActive(_ scene: UIScene) {
         print("resign")
         FirebaseService.shared.updateStatusChating(isChating: false)
+        
         // Called when the scene will move from an active state to an inactive state.
         // This may occur due to temporary interruptions (ex. an incoming phone call).
     }

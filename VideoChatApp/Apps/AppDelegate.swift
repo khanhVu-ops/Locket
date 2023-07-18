@@ -20,6 +20,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         self.window = UIApplication.shared.keyWindow?.window
         FirebaseApp.configure()
+        _ = RCValues.shared
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
         do {

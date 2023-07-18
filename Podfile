@@ -9,6 +9,8 @@ target 'VideoChatApp' do
 pod 'FirebaseFirestore'
 pod 'FirebaseStorage'
 pod 'FirebaseMessaging'
+pod 'Firebase/RemoteConfig'
+pod 'Firebase/Auth'
 pod 'RxSwift', '6.5.0'
 pod 'RxCocoa', '6.5.0'
 pod 'SDWebImage'
@@ -17,5 +19,5 @@ pod 'SnapKit'
 pod 'Alamofire'
 pod 'SwiftGen'
 pod 'ProgressHUD'
-pod 'Firebase/Auth'
+
 end

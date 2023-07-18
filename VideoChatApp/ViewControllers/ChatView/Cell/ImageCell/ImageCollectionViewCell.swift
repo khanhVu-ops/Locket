@@ -27,7 +27,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
     
     func setUpView() {
         self.imv.addConnerRadius(radius: 5)
-        imv.contentMode = .scaleToFill
+        imv.contentMode = .scaleAspectFill
         imv.isUserInteractionEnabled = true
         imv.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapSelect)))
         btnPlay.circleClip()
@@ -43,7 +43,7 @@ class ImageCollectionViewCell: UICollectionViewCell {
     
     func configure(item: String, message: MessageModel) {
         self.url = message.type == .video ? message.fileURL : item
-        self.imv.setImage(urlString: item, placeHolder: Constants.Image.imageDefault)
+        self.imv.setImage(urlString: item, placeHolder: Constants.Image.defaultImage)
         btnPlay.isHidden = !(message.type == .video)
         lbDuration.isHidden = !(message.type == .video)
         lbDuration.text = " " + Utilitis.shared.convertDurationToTime(duration: message.duration ?? 0.0) + " "

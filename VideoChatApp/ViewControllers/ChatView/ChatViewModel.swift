@@ -202,8 +202,7 @@ class ChatViewModel: BaseViewModel {
         }
     }
     
-    func updateStatusMessage(messageID: String, status: MessageStatus) {
-        FirebaseService.shared.updateStatus(messageID: messageID, conversationID: conversationID.value, status: status)
+    func updateWhenSentMessage(messageID: String, status: MessageStatus) {
         if user.value.isChating == false {
             FirebaseService.shared.updateUnreadMessage(conversationID: conversationID.value, uid: uid2, clearUnread: false)
             APIService.shared.pushNotificationMessage(fcmToken: self.user.value.fcmToken, uid: self.uid2, title: UserDefaultManager.shared.getUsername(), body: bodyNotification, badge: self.user.value.totalBadge ?? 0 + 1)
@@ -241,6 +240,12 @@ class ChatViewModel: BaseViewModel {
     }
     
     func prehandleMessages(messages: [MessageModel]) -> [MessageModel] {
+        var messages = messages
+        for message in messages {
+            if message.status == .sending && message.senderID == uid2 {
+                messages.remove(object: message)
+            }
+        }
         messages.first?.isShowStatus = true
         messages.last?.isShowTime = true
         let count = messages.count
@@ -252,5 +257,9 @@ class ChatViewModel: BaseViewModel {
         }
         
         return messages
+    }
+    
+    func updateStatus() {
+        
     }
 }

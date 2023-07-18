@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseCoreInternal
 
 class VerifyCodeViewController: BaseViewController {
 
@@ -45,13 +46,14 @@ class VerifyCodeViewController: BaseViewController {
     }
     
     override func setUpUI() {
-        self.view.backgroundColor = Constants.Color.background
-        self.btnBack.backgroundColor = Constants.Color.bgrTextField
+        self.view.backgroundColor = RCValues.shared.color(forKey: .backgroundColor)
+        self.btnBack.backgroundColor = RCValues.shared.color(forKey: .bgrTextFieldLogin)
         self.btnBack.circleClip()
-        self.vContinue.backgroundColor = Constants.Color.mainColor
+        self.btnBack.setImage(Constants.Image.backButtonSystem, for: .normal)
+        self.vContinue.backgroundColor = RCValues.shared.color(forKey: .appPrimaryColor)
         self.vContinue.addConnerRadius(radius: 20)
         self.enableButton(btnContinue, vContinue, isEnable: false)
-        stvOTP.configTextFieldView(backgroundColor: Constants.Color.bgrTextField,
+        stvOTP.configTextFieldView(backgroundColor: RCValues.shared.color(forKey: .bgrTextFieldLogin),
                                    tintColor: .white,
                                    textAlignment: .center,
                                    borderStyle: .none,

@@ -46,12 +46,12 @@ class HomeViewController: BaseViewController {
         self.tbvSearch.rowHeight = UITableView.automaticDimension
         self.tbvSearch.isHidden = true
         
-        self.lbTitle.textColor = Constants.Color.mainColor
+        self.lbTitle.textColor = RCValues.shared.color(forKey: .appPrimaryColor)
         
         self.searchBar.returnKeyType = .search
         self.searchBar.delegate = self
         self.searchBar.showsCancelButton = false
-        
+        self.searchBar.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
         self.tbvListChats.register(ListChatTableViewCell.nibClass, forCellReuseIdentifier: ListChatTableViewCell.nibNameClass)
         self.tbvListChats.register(ListFriendCell.nibClass, forCellReuseIdentifier: ListFriendCell.nibNameClass)
         self.tbvSearch.register(SearchTableViewCell.nibClass, forCellReuseIdentifier: SearchTableViewCell.nibNameClass)

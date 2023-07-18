@@ -20,7 +20,7 @@ class BaseViewController: UIViewController {
 
     let disposeBag = DisposeBag()
     let keyboardTrigger = BehaviorRelay<KeyboardData>(value: KeyboardData(isShow: false, duration: 0, height: 0))
-
+    private var imagePicker = UIImagePickerController()
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUI()
@@ -53,6 +53,26 @@ class BaseViewController: UIViewController {
     
     func bindViewModel() {}
     
+    func openLibrary() {
+        self.requestPermissionAccessPhotos { [weak self] isEnable in
+            guard let self = self else {
+                return
+            }
+            DispatchQueue.main.async {
+                if isEnable {
+                    self.imagePicker.delegate = self
+                    self.imagePicker.sourceType = .photoLibrary
+                    self.present(self.imagePicker, animated: true, completion: nil)
+                } else {
+                    self.showAlertOpenSettingPhotos()
+                }
+            }
+        }
+    }
+    
+    func configImageSelect(image: UIImage) {
+    }
+    
     func trackShowToastError(_ viewModel: BaseViewModel, assignView: UIView? = nil) {
         viewModel.errorMsg.asDriverComplete().drive(onNext: { message in
             Toast.show(message)
@@ -60,7 +80,7 @@ class BaseViewController: UIViewController {
     }
     
     func enableButton(_ buttonTap: UIButton?, _ viewBorder: UIView?, isEnable: Bool) {
-        viewBorder?.backgroundColor = isEnable ? Constants.Color.mainColor : Constants.Color.bgrTextField
+        viewBorder?.backgroundColor = isEnable ? RCValues.shared.color(forKey: .appPrimaryColor) : RCValues.shared.color(forKey: .bgrTextFieldLogin)
         buttonTap?.isEnabled = isEnable
     }
     
@@ -133,6 +153,24 @@ extension BaseViewController {
         animator.startAnimation()
     }
 }
+
+//MARK: library
+extension BaseViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        
+        let img = info[UIImagePickerController.InfoKey.originalImage] as? UIImage
+        guard let image = img else {
+            return
+        }
+        configImageSelect(image: image)
+
+        picker.dismiss(animated: true, completion: nil)
+    }
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        picker.dismiss(animated: true, completion: nil)
+    }
+}
+
 
 //MARK: Navigation
 extension BaseViewController {

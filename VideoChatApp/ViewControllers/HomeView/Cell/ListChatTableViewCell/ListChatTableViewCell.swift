@@ -43,7 +43,7 @@ class ListChatTableViewCell: UITableViewCell {
     
     func setUpView() {
         self.vBorder.addConnerRadius(radius: 15)
-        self.vBorder.addBorder(borderWidth: 2, borderColor: Constants.Color.mainColor)
+        self.vBorder.addBorder(borderWidth: 2, borderColor: RCValues.shared.color(forKey: .appPrimaryColor))
         self.imvAvata.addConnerRadius(radius: self.imvAvata.frame.width/2)
         self.lbNewMessage.textColor = self.colorMessage
         self.lbTime.textColor = self.colorMessage
@@ -60,7 +60,7 @@ class ListChatTableViewCell: UITableViewCell {
         self.conversationID = item.conversationID
         self.user = viewModel.getUserLocalFromUID(uid: item.uid2)
         self.lbUsername.text = user?.username
-        self.imvAvata.setImage(urlString: user?.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
+        self.imvAvata.setImage(urlString: user?.avataURL ?? "", placeHolder: Constants.Image.defaultAvataImage)
         self.vStatusActive.backgroundColor = (user?.isActive == true) ? .green : .gray
         var txt = ""
         txt = item.lastSenderID == uid ? "You: " : ""

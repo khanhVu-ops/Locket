@@ -57,22 +57,22 @@ class ChatViewController: BaseViewController {
         self.tbvListMessage.register(MessagePhotosCell.self, forCellReuseIdentifier: MessagePhotosCell.nibNameClass)
         self.tbvListMessage.register(MessageFileCell.self, forCellReuseIdentifier: MessageFileCell.nibNameClass)
         self.tbvListMessage.register(MessageAudioCell.self, forCellReuseIdentifier: MessageAudioCell.nibNameClass)
-        
+        self.tbvListMessage.backgroundColor = UIColor(hexString: "#F9F9F9")
         self.tbvListMessage.dataSource = self
         self.tbvListMessage.delegate = self
         
         self.btnSend.isHidden = true
         self.btnArrowRight.isHidden = true
-        self.btnFile.tintColor = Constants.Color.mainColor
-        self.btnCamera.tintColor = Constants.Color.mainColor
-        self.btnAudio.tintColor = Constants.Color.mainColor
-        self.btnLibrary.tintColor = Constants.Color.mainColor
-        self.btnArrowRight.tintColor = Constants.Color.mainColor
+        self.btnFile.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
+        self.btnCamera.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
+        self.btnAudio.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
+        self.btnLibrary.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
+        self.btnArrowRight.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
         self.vBorderTxt.addConnerRadius(radius: 15)
         self.txtTypeHere.backgroundColor = .white
         self.txtTypeHere.delegate = self
-        self.vBodyScreen.backgroundColor = Constants.Color.inputTxtChatColor
-        self.vTypeHere.backgroundColor = Constants.Color.inputTxtChatColor
+        self.vBodyScreen.backgroundColor = RCValues.shared.color(forKey: .inputTxtChatColor)
+        self.vTypeHere.backgroundColor = RCValues.shared.color(forKey: .inputTxtChatColor)
         self.viewModel.defaultHeightTv = self.txtTypeHere.getSize().height
         self.viewModel.currentHeightTv = self.viewModel.defaultHeightTv
         self.heightTxtConstraint.constant = self.viewModel.defaultHeightTv
@@ -170,14 +170,17 @@ class ChatViewController: BaseViewController {
         
         self.btnCamera.defaultTap()
             .subscribe(onNext: { [weak self] _ in
-                self?.btnCamera.dimButton()
+//                self?.btnCamera.dimButton()
                 let filterVC = FilterViewController()
                 filterVC.modalPresentationStyle = .fullScreen
                 filterVC.actionSendImage = { [weak self] image in
                     let media = MediaModel(image: image)
                     self?.viewModel.handleSendNewMessage(type: .image, media: [media])
                 }
-                self?.present(filterVC, animated: true, completion: nil)
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                    self?.present(filterVC, animated: true, completion: nil)
+                }
+                
                 
             })
             .disposed(by: disposeBag)
@@ -216,18 +219,23 @@ class ChatViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
         
-        self.viewModel.newMessageID
+//        self.viewModel.newMessageID
+//            .subscribe(onNext: { [weak self] messageID in
+//                self?.viewModel.updateWhenSentMessage(messageID: messageID, status: .sent)
+//            })
+//            .disposed(by: disposeBag)
+//
+        AppObserver.shared.messageSentObservable()
             .subscribe(onNext: { [weak self] messageID in
-                self?.viewModel.updateStatusMessage(messageID: messageID, status: .sent)
+                self?.viewModel.updateWhenSentMessage(messageID: messageID, status: .sent)
             })
             .disposed(by: disposeBag)
-        
         self.viewModel.user
             .subscribe(onNext: { [weak self] user in
                 self?.lbUsername.text = user.username
                 self?.lbActive.text = user.isActive == true ? "Online" : "Offline"
                 self?.vActive.backgroundColor = user.isActive == true ? .green : .gray
-                self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvata)
+                self?.imvAvata.setImage(urlString: user.avataURL ?? "", placeHolder: Constants.Image.defaultAvataImage)
             })
             .disposed(by: disposeBag)
         

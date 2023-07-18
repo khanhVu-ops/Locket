@@ -64,7 +64,7 @@ class MessageTextCell: BaseMessageTableViewCell {
             }
             self.vTime.isHidden = item.isShowTime ? false : !item.isBubble
             if item.senderID == self.uid {
-                self.vContentMessage.backgroundColor = !item.isBubble ? Constants.Color.mainColor : Constants.Color.tapBubleColor
+                self.vContentMessage.backgroundColor = !item.isBubble ? RCValues.shared.color(forKey: .appPrimaryColor) : RCValues.shared.color(forKey: .tapBubleChatColor)
                 self.vStatus.isHidden = item.isShowStatus ? false : !item.isBubble
             } else {
                 self.vStatus.isHidden = true

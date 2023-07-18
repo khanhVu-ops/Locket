@@ -19,6 +19,7 @@ import CoreMotion
 import Vision
 import Photos
 import Toast_Swift
+import FirebaseCoreInternal
 enum OutputType {
     case video
     case photo
@@ -39,7 +40,7 @@ class CameraView: UIView {
         let v = UIView()
         v.layer.cornerRadius = 20
         v.layer.masksToBounds = true
-        v.backgroundColor = UIColor(hexString: "#242121")
+        v.backgroundColor = RCValues.shared.color(forKey: .backgroundColor)
         return v
     }()
     
@@ -54,7 +55,7 @@ class CameraView: UIView {
     private lazy var btnSwitchCamera: UIButton = {
         let btn = UIButton()
         btn.addTarget(self, action: #selector(btnSwitchcameraTapped), for: .touchUpInside)
-        btn.setImage(UIImage(systemName: "camera.rotate.fill"), for: .normal)
+        btn.setImage(Constants.Image.switchCameraSystem, for: .normal)
         btn.tintColor = .white
         return btn
     }()
@@ -73,7 +74,7 @@ class CameraView: UIView {
     
     private lazy var btnCancel: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "xmark"), for: .normal)
+        btn.setImage(Constants.Image.cancelSystem, for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnCancelTapped), for: .touchUpInside)
         return btn
@@ -81,18 +82,20 @@ class CameraView: UIView {
     
     private lazy var btnFlash: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "bolt.slash.fill"), for: .normal)
+        btn.setImage(Constants.Image.flashSystem, for: .normal)
         btn.tintColor = .white
         btn.addTarget(self, action: #selector(btnFlashTapped), for: .touchUpInside)
         return btn
     }()
     
-    private lazy var btnLibrary: UIButton = {
-        let btn = UIButton()
-        btn.addConnerRadius(radius: 10)
-        btn.addBorder(borderWidth: 2, borderColor: .white)
-        btn.addTarget(self, action: #selector(btnLibraryTapped), for: .touchUpInside)
-        return btn
+    private lazy var imvLibrary: UIImageView = {
+        let imv = UIImageView()
+        imv.addConnerRadius(radius: 10)
+        imv.addBorder(borderWidth: 2, borderColor: .white)
+        imv.contentMode = .scaleAspectFill
+        imv.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(btnLibraryTapped)))
+        imv.isUserInteractionEnabled = true
+        return imv
     }()
     
     var session = AVCaptureSession()
@@ -113,7 +116,6 @@ class CameraView: UIView {
     init(cameraType: OutputType) {
         super.init(frame: .zero)
         self.outputType = cameraType
-        self.previewLayer.session = self.session
         self.checkPermissions()
         self.configView()
         sessionQueue.async {
@@ -127,7 +129,7 @@ class CameraView: UIView {
     
     func configView() {
         self.backgroundColor = UIColor(hexString: "#242121")
-        [self.vPreviewVideo,self.btnCancel, self.btnSwitchCamera, self.btnFlash, self.vCapture, self.btnCapture, self.btnLibrary].forEach { subView in
+        [self.vPreviewVideo,self.btnCancel, self.btnSwitchCamera, self.btnFlash, self.vCapture, self.btnCapture, self.imvLibrary].forEach { subView in
             self.addSubview(subView)
         }
         self.vPreviewVideo.snp.makeConstraints { make in
@@ -167,14 +169,14 @@ class CameraView: UIView {
         self.btnCapture.snp.makeConstraints { make in
             make.leading.trailing.top.bottom.equalTo(self.vCapture).inset(-5)
         }
-        self.btnLibrary.snp.makeConstraints { make in
+        self.imvLibrary.snp.makeConstraints { make in
             make.width.height.equalTo(60)
             make.centerY.equalTo(self.vCapture.snp.centerY)
             make.leading.equalToSuperview().offset(20)
         }
         self.fetchFirstAssets {[weak self] image in
             DispatchQueue.main.async {
-                self?.btnLibrary.setBackgroundImage(image, for: .normal)
+                self?.imvLibrary.image = image
             }
         }
         
@@ -201,10 +203,13 @@ class CameraView: UIView {
         }
         
         // Add preview
-        DispatchQueue.main.async {
-            self.setUpPreviewLayer()
-        }
+//        DispatchQueue.main.async {
+//            self.setUpPreviewLayer()
+//        }
         self.session.commitConfiguration()
+        
+        self.session.startRunning()
+
     }
     
     func startSession() {
@@ -321,6 +326,7 @@ class CameraView: UIView {
     
     //MARK: Set up output
     func setUpPreviewLayer() {
+        self.previewLayer.session = self.session
         self.previewLayer.videoGravity = .resizeAspectFill
         self.vPreviewVideo.layer.insertSublayer(self.previewLayer, above: self.vPreviewVideo.layer)
         self.previewLayer.frame = self.vPreviewVideo.bounds
@@ -624,7 +630,7 @@ extension CameraView {
     func fetchFirstAssets(completion: @escaping (UIImage?)->Void)  {
         let options = PHFetchOptions()
         options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        let imageSize = self.btnLibrary.frame.size
+        let imageSize = self.imvLibrary.frame.size
         DispatchQueue.global(qos: .background).async {
             guard let result = PHAsset.fetchAssets(with: options).firstObject else {
                 completion(nil)

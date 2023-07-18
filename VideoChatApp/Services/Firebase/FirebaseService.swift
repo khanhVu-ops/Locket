@@ -62,9 +62,7 @@ final class FirebaseService: BaseFirebaseService {
     }
     
     func getConversationID(from uid2: String, completion: @escaping(String?) -> Void) {
-        print("uid2: ", uid2)
         let uid = UserDefaultManager.shared.getID() ?? ""
-        print("uid: ", uid)
         let path = fireStore.collection(chatsClt).whereField("users", arrayContains: uid)
         path.getDocuments { snapshot, error in
             guard let snapshot = snapshot, error == nil else {
@@ -97,6 +95,7 @@ final class FirebaseService: BaseFirebaseService {
             self.updateConversationsWhenAddMessage(conversationID: conversationID, message: message)
             self.setData(path: path, data: data) { [weak self] documentID in
                 if type == .text {
+                    self?.updateStatus(messageID: documentID, conversationID: conversationID, status: .sent)
                     observable.onNext(documentID)
                 } else if type == .image {
                     self?.uploadImageMedia(messageID: documentID, conversationID: conversationID, media: media)
@@ -123,7 +122,6 @@ final class FirebaseService: BaseFirebaseService {
                     "lastMessage": message.message ?? "",
                     "lastCreated": message.created ?? "",
                     "lastSenderID": message.senderID ?? ""] as [String : Any]
-        print(message.senderID)
         let path = fireStore.collection(chatsClt).document(conversationID)
         self.updateData(path: path, data: data)
     }
@@ -157,18 +155,20 @@ final class FirebaseService: BaseFirebaseService {
 
     func updateFileMedia(messageID: String, conversationID: String, url: String) {
         let path = fireStore.collection(chatsClt).document(conversationID).collection(conversationsClt).document(messageID)
-        
         self.updateData(path: path, data: ["fileURL": url])
+        self.updateStatus(messageID: messageID, conversationID: conversationID, status: .sent)
     }
     
     func updateImageMedia(messageID: String, conversationID: String, url: [String]) {
         let path = fireStore.collection(chatsClt).document(conversationID).collection(conversationsClt).document(messageID)
             self.updateData(path: path, data: ["imageURL": url])
+        self.updateStatus(messageID: messageID, conversationID: conversationID, status: .sent)
     }
     
     func updateStatus(messageID: String, conversationID: String, status: MessageStatus) {
         let path = fireStore.collection(chatsClt).document(conversationID).collection(conversationsClt).document(messageID)
         self.updateData(path: path, data: ["status": status.rawValue])
+        AppObserver.shared.messageSentSubject().onNext(messageID)
     }
     
     func updateThumbVideo(image: UIImage?, messageID: String, conversationID: String) {

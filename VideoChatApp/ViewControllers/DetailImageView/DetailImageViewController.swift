@@ -14,7 +14,7 @@ class DetailImageViewController: UIViewController {
     
     private lazy var btnCancel: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "xmark"), for: .normal)
+        btn.setImage(Constants.Image.cancelSystem, for: .normal)
         btn.tintColor = .black
         btn.addTarget(self, action: #selector(btnCancelTapped), for: .touchUpInside)
         return btn
@@ -22,7 +22,7 @@ class DetailImageViewController: UIViewController {
     
     private lazy var btnDownload: UIButton = {
         let btn = UIButton()
-        btn.setImage(UIImage(systemName: "arrow.down.to.line.compact"), for: .normal)
+        btn.setImage(Constants.Image.downloadSystem, for: .normal)
         btn.tintColor = .black
         btn.addTarget(self, action: #selector(btnDownloadTapped), for: .touchUpInside)
         return btn
@@ -115,24 +115,6 @@ class DetailImageViewController: UIViewController {
         return page
     }()
     
-    private lazy var btnNext: UIButton = {
-        let btn = UIButton()
-        btn.isHidden = true
-        btn.setBackgroundImage(UIImage(systemName: "chevron.right"), for: .normal)
-        btn.tintColor = .gray.withAlphaComponent(0.4)
-        btn.addTarget(self, action: #selector(btnNextTapped), for: .touchUpInside)
-        return btn
-    }()
-    
-    private lazy var btnPrevious: UIButton = {
-        let btn = UIButton()
-        btn.isHidden = true
-        btn.setBackgroundImage(UIImage(systemName: "chevron.left"), for: .normal)
-        btn.tintColor = .gray.withAlphaComponent(0.4)
-        btn.addTarget(self, action: #selector(btnPreviousTapped), for: .touchUpInside)
-        return btn
-    }()
-    
     let detailImageViewModel = DetailImageViewModel()
     let disposeBag = DisposeBag()
     
@@ -145,7 +127,7 @@ class DetailImageViewController: UIViewController {
     }
     
     func configureView() {
-        [stvTop, myPageControl, cltvListImage, btnPrevious, btnNext, vPopUpSaved].forEach { subView in
+        [stvTop, myPageControl, cltvListImage, vPopUpSaved].forEach { subView in
             self.view.addSubview(subView)
         }
         self.view.backgroundColor = .white
@@ -172,18 +154,6 @@ class DetailImageViewController: UIViewController {
             make.top.equalTo(self.stvTop.snp.bottom).offset(20)
             make.leading.trailing.equalToSuperview()
             make.bottom.equalTo(self.myPageControl.snp.top).offset(-20)
-        }
-        self.btnNext.snp.makeConstraints { make in
-            make.height.equalTo(40)
-            make.width.equalTo(30)
-            make.trailing.equalToSuperview().offset(-10)
-            make.centerY.equalTo(self.cltvListImage.snp.centerY)
-        }
-        self.btnPrevious.snp.makeConstraints { make in
-            make.height.equalTo(40)
-            make.width.equalTo(30)
-            make.leading.equalToSuperview().offset(10)
-            make.centerY.equalTo(self.cltvListImage.snp.centerY)
         }
         self.vPopUpSaved.snp.makeConstraints { make in
             make.centerX.centerY.equalToSuperview()
@@ -214,12 +184,12 @@ class DetailImageViewController: UIViewController {
                 }
                 switch element.type {
                 case .image:
-                    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DetailImageCollectionViewCell", for: IndexPath(row: index, section: 0)) as! DetailImageCollectionViewCell
+                    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DetailImageCollectionViewCell.nibNameClass, for: IndexPath(row: index, section: 0)) as! DetailImageCollectionViewCell
                     let frameScroll = CGRect(x: 0, y: -(strongSelf.cltvListImage.frame.origin.y), width: strongSelf.view.frame.width, height: strongSelf.view.frame.height)
                     cell.loadImage(url: element.url ,frameScroll: frameScroll, cellSize: self?.cltvListImage.frame.size ?? .zero)
                     return cell
                 case.video:
-                    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "DetailVideoCollectionViewCell", for: IndexPath(row: index, section: 0)) as! DetailVideoCollectionViewCell
+                    let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DetailVideoCollectionViewCell.nibNameClass, for: IndexPath(row: index, section: 0)) as! DetailVideoCollectionViewCell
                     
                     cell.configure(item: element, viewModel: self?.detailImageViewModel)
                     return cell

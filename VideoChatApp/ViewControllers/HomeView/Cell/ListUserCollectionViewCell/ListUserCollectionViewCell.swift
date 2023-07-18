@@ -30,7 +30,7 @@ class ListUserCollectionViewCell: UICollectionViewCell {
         if let url = URL(string: item.avataURL ?? "") {
             self.imvAvata.sd_setImage(with: url)
         } else {
-            self.imvAvata.image = Constants.Image.defaultAvata
+            self.imvAvata.image = Constants.Image.defaultAvataImage
         }
         self.vActive.backgroundColor = item.isActive! ? .green : .gray
         self.lbUsername.text = item.username

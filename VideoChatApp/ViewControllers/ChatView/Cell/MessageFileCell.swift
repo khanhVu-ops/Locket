@@ -18,7 +18,7 @@ class MessageFileCell: BaseMessageTableViewCell {
     
     private lazy var lbFileName: UILabel = {
         let lb = UILabel()
-        lb.font = UIFont.systemFont(ofSize: 16)
+        lb.font = UIFont.boldSystemFont(ofSize: 16)
         lb.textColor = .black
         lb.numberOfLines = 2
         lb.textAlignment = .left
@@ -86,7 +86,7 @@ class MessageFileCell: BaseMessageTableViewCell {
         }
         
         self.vContentMessage.snp.makeConstraints { make in
-            make.width.lessThanOrEqualTo(self).multipliedBy(0.65)
+            make.width.equalTo(self).multipliedBy(0.65)
         }
         
         imvIconFile.circleClip()
@@ -94,12 +94,14 @@ class MessageFileCell: BaseMessageTableViewCell {
     
     override func configure(item: MessageModel, user: UserModel, indexPath: IndexPath) {
         super.configure(item: item, user: user, indexPath: indexPath)
+        self.vContentMessage.backgroundColor = .white
+        self.vContentMessage.addBorder(borderWidth: 1, borderColor: .gray.withAlphaComponent(0.5))
+        self.lbFileName.text = item.fileName
+        self.lbFileSize.text = "\((item.duration ?? 0.0).rounded(toPlaces: 2)) Mb"
         guard let fileURL = URL(string: item.fileURL ?? "") else {
             return
         }
         self.fileURL = fileURL
-        self.lbFileName.text = item.fileName
-        self.lbFileSize.text = "\((item.duration ?? 0.0).rounded(toPlaces: 2)) Mb"
     }
     
     @objc func tapOpenFile() {

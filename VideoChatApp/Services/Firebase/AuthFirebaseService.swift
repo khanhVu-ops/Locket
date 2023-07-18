@@ -93,8 +93,20 @@ final class AuthFirebaseService: BaseFirebaseService {
     
     func updateFcmToken(fcmToken: [String]) {
         guard let uid = UserDefaultManager.shared.getID() else {
+            print("nil")
             return
         }
-        fireStore.collection(usersClt).document(uid).updateData(["fcmToken": fcmToken])
+//        var fcm = fcmToken
+//        if fcmToken.count == 0 {
+//            fcm = [""]
+//        }
+        print("uid", uid)
+        fireStore.collection(usersClt).document(uid).updateData(["fcmToken": fcmToken]) { error in
+            if let error = error {
+                print(error.localizedDescription)
+            } else {
+                print("succes", fcmToken)
+            }
+        }
     }
 }

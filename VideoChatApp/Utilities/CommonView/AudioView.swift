@@ -35,7 +35,7 @@ class AudioView: UIView {
         let btn = UIButton()
         btn.backgroundColor = .clear
         btn.setImage(UIImage(systemName: "trash.fill"), for: .normal)
-        btn.tintColor = Constants.Color.mainColor
+        btn.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
         btn.addTarget(self, action: #selector(btnDeleteTapped), for: .touchUpInside)
         return btn
     }()
@@ -64,7 +64,7 @@ class AudioView: UIView {
             v.addSubview(sub)
         }
         v.addConnerRadius(radius: 10)
-        v.backgroundColor = Constants.Color.mainColor
+        v.backgroundColor = RCValues.shared.color(forKey: .appPrimaryColor)
         return v
     }()
     

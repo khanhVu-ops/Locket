@@ -9,24 +9,22 @@ import Foundation
 import UIKit
 struct Constants {
     struct Color {
-        static let tapBubleColor = UIColor(hexString: "#328A0A")
-        static let mainColor = UIColor(hexString: "#57da50")
-        static let guestColor = UIColor(hexString: "#f1fff1")
-        static let inputTxtChatColor = UIColor(hexString: "dbffed")
-        static let tabbarColor = UIColor(hexString: "#F8F8F8")
-        static let background = UIColor(hexString: "#242121")
-        static let bgrTextField = UIColor(hexString: "#403E3E")
-        static let bgrButton = UIColor(hexString: "#f8bb01")
+
     }
     struct Image {
-        static let defaultAvata = UIImage(named: "person_default")!
-        static let imageDefault = UIImage(named: "library")!
-        static let backButton = UIImage(systemName: "chevron.left")!
-        static let ic_flag_vn = UIImage(named: "ic_flag_vn")!
+        static let defaultAvataImage = UIImage(named: "avata_default")!
+        static let defaultImage = UIImage(named: "image")!
+        static let flagVNIcon = UIImage(named: "ic_flag_vn")!
+        static let playCircleIcon = UIImage(named: "ic_play_circle")!
+        static let switchCameraSystem = UIImage(systemName: "camera.rotate.fill")!
+        static let backButtonSystem = UIImage(systemName: "chevron.left")!
+        static let downloadSystem = UIImage(systemName: "arrow.down.to.line.compact")!
+        static let cancelSystem = UIImage(systemName: "xmark")!
+        static let flashSystem = UIImage(systemName: "bolt.slash.fill")!
     }
     
     struct L10n {
-        static let commonError = "Oops! Something went wrong. Please try again later!"
-        static let commonErrorTimeout = "Oops! Request timeout. Please try again later!"
+        static let commonErrorText = "Oops! Something went wrong. Please try again later!"
+        static let commonErrorTimeoutText = "Oops! Request timeout. Please try again later!"
     }
 }

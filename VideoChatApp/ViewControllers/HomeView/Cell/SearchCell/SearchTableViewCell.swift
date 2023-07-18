@@ -30,7 +30,7 @@ class SearchTableViewCell: UITableViewCell {
     
     func setUpView() {
         self.imvAvata.addConnerRadius(radius: 30)
-        self.imvAvata.addBorder(borderWidth: 1, borderColor: Constants.Color.mainColor)
+        self.imvAvata.addBorder(borderWidth: 1, borderColor: RCValues.shared.color(forKey: .appPrimaryColor))
         self.vActive.circleClip()
         self.vActive.addBorder(borderWidth: 1, borderColor: .white)
     }
@@ -39,9 +39,9 @@ class SearchTableViewCell: UITableViewCell {
         self.uid2 = item.id
         self.user = item
         if let url = URL(string: item.avataURL!) {
-            self.imvAvata.sd_setImage(with: url, placeholderImage: Constants.Image.defaultAvata)
+            self.imvAvata.sd_setImage(with: url, placeholderImage: Constants.Image.defaultAvataImage)
         } else {
-            self.imvAvata.image = Constants.Image.defaultAvata
+            self.imvAvata.image = Constants.Image.defaultAvataImage
         }
         self.vActive.backgroundColor = item.isActive! ? .green : .gray
         self.lbUsername.text = item.username

@@ -43,11 +43,11 @@ class DetailImageCollectionViewCell: UICollectionViewCell {
                 if let image = image {
                     self.scrollView.set(image: image)
                 } else {
-                    self.scrollView.set(image: Constants.Image.imageDefault)
+                    self.scrollView.set(image: Constants.Image.defaultImage)
                 }
             })
         } else {
-            self.scrollView.set(image: Constants.Image.imageDefault)
+            self.scrollView.set(image: Constants.Image.defaultImage)
             print("Invalid URL")
         }
     }
