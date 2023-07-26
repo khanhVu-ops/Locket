@@ -19,19 +19,10 @@ import CoreMotion
 import Vision
 import Photos
 import Toast_Swift
-import FirebaseCoreInternal
 enum OutputType {
     case video
     case photo
     case portrait
-}
-
-protocol CameraViewDelegate: AnyObject {
-    func btnCancelTapped()
-    func didShowAlertSetting()
-    func didShowAlert(title: String, message: String)
-    func didCapturedImage(imageCaptured: UIImage)
-    func btnLibraryTapped()
 }
 
 class CameraView: UIView {
@@ -40,7 +31,7 @@ class CameraView: UIView {
         let v = UIView()
         v.layer.cornerRadius = 20
         v.layer.masksToBounds = true
-        v.backgroundColor = RCValues.shared.color(forKey: .backgroundColor)
+        v.backgroundColor = .white
         return v
     }()
     
@@ -57,46 +48,20 @@ class CameraView: UIView {
         btn.addTarget(self, action: #selector(btnSwitchcameraTapped), for: .touchUpInside)
         btn.setImage(Constants.Image.switchCameraSystem, for: .normal)
         btn.tintColor = .white
-        return btn
-    }()
-    
-    private lazy var vCapture: CustomCaptureButton = {
-        let vCapture = CustomCaptureButton(frame: CGRect(x: 0, y: 0, width: 60, height: 60))
-        return vCapture
-    }()
-    
-    private lazy var btnCapture: UIButton = {
-        let btn = UIButton()
-        btn.backgroundColor = .clear
-        btn.addTarget(self, action: #selector(didTapCaptureImage), for: .touchUpInside)
-        return btn
-    }()
-    
-    private lazy var btnCancel: UIButton = {
-        let btn = UIButton()
-        btn.setImage(Constants.Image.cancelSystem, for: .normal)
-        btn.tintColor = .white
-        btn.addTarget(self, action: #selector(btnCancelTapped), for: .touchUpInside)
+        btn.backgroundColor = .clear.withAlphaComponent(0.1)
         return btn
     }()
     
     private lazy var btnFlash: UIButton = {
         let btn = UIButton()
-        btn.setImage(Constants.Image.flashSystem, for: .normal)
-        btn.tintColor = .white
+        btn.setImage(Constants.Image.flashSlashSystem, for: .normal)
         btn.addTarget(self, action: #selector(btnFlashTapped), for: .touchUpInside)
+        btn.tintColor = .white
+        btn.backgroundColor = .clear.withAlphaComponent(0.1)
         return btn
     }()
     
-    private lazy var imvLibrary: UIImageView = {
-        let imv = UIImageView()
-        imv.addConnerRadius(radius: 10)
-        imv.addBorder(borderWidth: 2, borderColor: .white)
-        imv.contentMode = .scaleAspectFill
-        imv.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(btnLibraryTapped)))
-        imv.isUserInteractionEnabled = true
-        return imv
-    }()
+   
     
     var session = AVCaptureSession()
     var previewLayer = AVCaptureVideoPreviewLayer()
@@ -106,16 +71,20 @@ class CameraView: UIView {
     
     var outputType = OutputType.photo
     var flash: AVCaptureDevice.FlashMode = .off
-    private var isCapture = false
+    var isCapture = false
     private let sessionQueue = DispatchQueue(label: "session queue")// Communicate with the session and other session objects on this queue.
     private var setupResult: SessionSetupResult = .success
     private let videoDeviceDiscoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera, .builtInDualCamera], mediaType: .video, position: .unspecified)
     
+    var actionShowAlertSettingCamera: (() -> Void)?
+    var actionShowAlertWithMessage: ((String) -> Void)?
+    var actionCaptureImage: ((UIImage) -> Void)?
+    var actionGetFrameCamera:((CVPixelBuffer) -> Void)?
     
-    weak var delegate: CameraViewDelegate?
     init(cameraType: OutputType) {
         super.init(frame: .zero)
         self.outputType = cameraType
+        self.previewLayer.session = self.session
         self.checkPermissions()
         self.configView()
         sessionQueue.async {
@@ -127,59 +96,31 @@ class CameraView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.btnSwitchCamera.circleClip()
+        self.btnFlash.circleClip()
+    }
+    
     func configView() {
-        self.backgroundColor = UIColor(hexString: "#242121")
-        [self.vPreviewVideo,self.btnCancel, self.btnSwitchCamera, self.btnFlash, self.vCapture, self.btnCapture, self.imvLibrary].forEach { subView in
+        self.backgroundColor = .clear
+        [self.vPreviewVideo, self.btnSwitchCamera, self.btnFlash].forEach { subView in
             self.addSubview(subView)
         }
         self.vPreviewVideo.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.top.equalTo(self.snp.top)
-            make.leading.trailing.equalToSuperview()
-            if outputType == .portrait {
-                make.height.equalTo(self.snp.width).multipliedBy(Double(4.0/3.0))
-            } else {
-                make.height.equalTo(self.snp.width).multipliedBy(Double(1920.0/1080.0))
-            }
-        }
-        self.btnCancel.snp.makeConstraints { make in
-            make.top.equalToSuperview().offset(10)
-            make.width.height.equalTo(50)
-            make.leading.equalToSuperview().offset(10)
-        }
-        self.btnSwitchCamera.snp.makeConstraints { make in
-            make.top.equalTo(self.btnCancel)
-            make.width.height.equalTo(50)
-            make.trailing.equalTo(self.snp.centerX).offset(-10)
-        }
-        self.btnFlash.snp.makeConstraints { make in
-            make.top.equalTo(self.btnCancel)
-            make.width.height.equalTo(50)
-            make.leading.equalTo(self.snp.centerX).offset(10)
-        }
-        self.vCapture.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.width.height.equalTo(60)
-            if outputType == .portrait {
-                make.top.equalTo(self.vPreviewVideo.snp.bottom).offset(40)
-            } else {
-                make.bottom.equalTo(self.vPreviewVideo.snp.bottom).offset(-40)
-            }
-        }
-        self.btnCapture.snp.makeConstraints { make in
-            make.leading.trailing.top.bottom.equalTo(self.vCapture).inset(-5)
-        }
-        self.imvLibrary.snp.makeConstraints { make in
-            make.width.height.equalTo(60)
-            make.centerY.equalTo(self.vCapture.snp.centerY)
-            make.leading.equalToSuperview().offset(20)
-        }
-        self.fetchFirstAssets {[weak self] image in
-            DispatchQueue.main.async {
-                self?.imvLibrary.image = image
-            }
+            make.top.leading.trailing.bottom.equalToSuperview()
         }
         
+        self.btnSwitchCamera.snp.makeConstraints { make in
+            make.top.equalToSuperview().offset(10)
+            make.width.height.equalTo(40)
+            make.trailing.equalToSuperview().offset(-10)
+        }
+        self.btnFlash.snp.makeConstraints { make in
+            make.top.equalTo(self.btnSwitchCamera.snp.bottom).offset(20)
+            make.width.height.equalTo(40)
+            make.centerX.equalTo(self.btnSwitchCamera)
+        }
         
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinch(_:)))
         self.addGestureRecognizer(pinchGesture)
@@ -202,14 +143,9 @@ class CameraView: UIView {
             self.setUpPhotoOutput()
         }
         
-        // Add preview
-//        DispatchQueue.main.async {
-//            self.setUpPreviewLayer()
-//        }
         self.session.commitConfiguration()
         
         self.session.startRunning()
-
     }
     
     func startSession() {
@@ -218,12 +154,12 @@ class CameraView: UIView {
             case .success:
                 self.session.startRunning()
             case .notAuthorized:
-                DispatchQueue.main.async {
-                    self.delegate?.didShowAlertSetting()
+                if let actionShowAlertSettingCamera = self.actionShowAlertSettingCamera {
+                    actionShowAlertSettingCamera()
                 }
             case .configurationFailed:
-                DispatchQueue.main.async {
-                    self.delegate?.didShowAlert(title: "App", message: "Unable to capture media")
+                if let actionShowAlertWithMessage = self.actionShowAlertWithMessage {
+                    actionShowAlertWithMessage("Config input camera failed!")
                 }
             }
         }
@@ -264,14 +200,15 @@ class CameraView: UIView {
             switch outputType {
             case .portrait:
                 guard let backCameraDevice = AVCaptureDevice.default(.builtInDualCamera, for: .video, position: .back) else {
-                    self.delegate?.didShowAlert(title: "App", message: "No Camera Portrait!")
+                    if let actionShowAlertWithMessage = actionShowAlertWithMessage {
+                        actionShowAlertWithMessage("No Camera Portrait!")
+                    }
                     return
                 }
                 defaultVideoDevice = backCameraDevice
             default :
                 if let backCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back) {
                     // If the back dual camera is not available, default to the back wide angle camera.
-                    self.session.sessionPreset = .hd1920x1080
                     defaultVideoDevice = backCameraDevice
                 } else if let frontCameraDevice = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front) {
                     defaultVideoDevice = frontCameraDevice
@@ -326,7 +263,6 @@ class CameraView: UIView {
     
     //MARK: Set up output
     func setUpPreviewLayer() {
-        self.previewLayer.session = self.session
         self.previewLayer.videoGravity = .resizeAspectFill
         self.vPreviewVideo.layer.insertSublayer(self.previewLayer, above: self.vPreviewVideo.layer)
         self.previewLayer.frame = self.vPreviewVideo.bounds
@@ -399,24 +335,22 @@ class CameraView: UIView {
         
     }
     
-    @objc func btnCancelTapped() {
-        self.delegate?.btnCancelTapped()
-    }
-    
-    
-    @objc func btnFlashTapped() {
+    @objc func btnFlashTapped(_ sender: UIButton) {
+        sender.dimButton()
         switch self.outputType {
         case .video:
             let device = self.videoDeviceInput.device
-            guard device.isTorchAvailable else { return }
+            guard device.isTorchAvailable else {
+                return
+            }
             do {
                 try device.lockForConfiguration()
                 if device.torchMode == .off {
-                    self.btnFlash.setImage(UIImage(systemName: "bolt.slash.fill"), for: .normal)
+                    self.btnFlash.setImage(Constants.Image.flashSystem, for: .normal)
                     device.torchMode = .on
                     try device.setTorchModeOn(level: 0.7)
                 } else {
-                    self.btnFlash.setImage(UIImage(systemName: "bolt.fill"), for: .normal)
+                    self.btnFlash.setImage(Constants.Image.flashSlashSystem, for: .normal)
                     device.torchMode = .off
                 }
                 device.unlockForConfiguration()
@@ -426,17 +360,26 @@ class CameraView: UIView {
             }
         default:
             if flash == .off {
-                self.btnFlash.setImage(UIImage(systemName: "bolt.fill"), for: .normal)
+                self.btnFlash.setImage(Constants.Image.flashSystem, for: .normal)
                 flash = .on
             } else {
-                self.btnFlash.setImage(UIImage(systemName: "bolt.slash.fill"), for: .normal)
+                self.btnFlash.setImage(Constants.Image.flashSlashSystem, for: .normal)
                 flash = .off
             }
         
         }
         
     }
-    @objc func btnSwitchcameraTapped() {
+    
+    func isHiddenIconFlast(isHidden: Bool) {
+        if outputType == .video {
+            DispatchQueue.main.async {
+                self.btnFlash.isHidden = isHidden
+            }
+        }
+    }
+    @objc func btnSwitchcameraTapped(_ sender: UIButton) {
+        sender.dimButton()
         sessionQueue.async {
             let currentVideoDevice = self.videoDeviceInput.device
             let currentPosition = currentVideoDevice.position
@@ -448,10 +391,11 @@ class CameraView: UIView {
             case .unspecified, .front:
                 preferredPosition = .back
                 preferredDeviceType = .builtInDualCamera
-                
+                self.isHiddenIconFlast(isHidden: false)
             case .back:
                 preferredPosition = .front
                 preferredDeviceType = .builtInWideAngleCamera
+                self.isHiddenIconFlast(isHidden: true)
             }
             
             let devices = self.videoDeviceDiscoverySession.devices
@@ -494,28 +438,6 @@ class CameraView: UIView {
         }
     }
     
-    @objc func didTapCaptureImage() {
-        UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseInOut) {
-            self.vCapture.layer.borderWidth = 12
-        } completion: { _ in
-            self.vCapture.layer.borderWidth = 6
-        }
-        switch self.outputType {
-        case .video:
-            self.isCapture = true
-        default:
-            DispatchQueue.main.async {
-                let photoSettings = AVCapturePhotoSettings()
-                photoSettings.flashMode = self.flash
-                self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
-            }
-        }
-    }
-    
-    @objc func btnLibraryTapped() {
-        self.delegate?.btnLibraryTapped()
-    }
-    
     private func focus(with focusMode: AVCaptureDevice.FocusMode, exposureMode: AVCaptureDevice.ExposureMode, at devicePoint: CGPoint, monitorSubjectAreaChange: Bool) {
         sessionQueue.async {
             let device = self.videoDeviceInput.device
@@ -536,13 +458,23 @@ class CameraView: UIView {
             }
         }
     }
-        
+    
+    func handleCapturePhoto() {
+        DispatchQueue.main.async {
+            let photoSettings = AVCapturePhotoSettings()
+            photoSettings.flashMode = self.flash
+            self.photoOutput.capturePhoto(with: photoSettings, delegate: self)
+        }
+    }
 }
 
 extension CameraView: AVCaptureVideoDataOutputSampleBufferDelegate {
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let cvPixel = CMSampleBufferGetImageBuffer(sampleBuffer) else {
             return
+        }
+        if let actionGetFrameCamera = self.actionGetFrameCamera {
+            actionGetFrameCamera(cvPixel)
         }
         if self.isCapture {
             self.isCapture = false
@@ -553,10 +485,10 @@ extension CameraView: AVCaptureVideoDataOutputSampleBufferDelegate {
             default:
                 img = convertToUIImage(pixelBuffer: cvPixel)
             }
-            guard let img = img else {
+            guard let img = img, let actionCaptureImage = actionCaptureImage else {
                 return
             }
-            self.delegate?.didCapturedImage(imageCaptured: img)
+            actionCaptureImage(img)
         }
     }
 }
@@ -576,7 +508,9 @@ extension CameraView: AVCapturePhotoCaptureDelegate {
         default:
             img = UIImage(cgImage: capturedImage.cgImage!, scale: capturedImage.scale, orientation: .leftMirrored)
         }
-        self.delegate?.didCapturedImage(imageCaptured: img)
+        if let actionCaptureImage = actionCaptureImage {
+            actionCaptureImage(img)
+        }
     }
 }
 
@@ -625,37 +559,5 @@ extension CameraView {
             return flippedImage
         }
         return nil
-    }
-    
-    func fetchFirstAssets(completion: @escaping (UIImage?)->Void)  {
-        let options = PHFetchOptions()
-        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: false)]
-        let imageSize = self.imvLibrary.frame.size
-        DispatchQueue.global(qos: .background).async {
-            guard let result = PHAsset.fetchAssets(with: options).firstObject else {
-                completion(nil)
-                return
-            }
-            let key = "thumbnailFirst-\(result.localIdentifier)"
-            if let cachedImage = ImageCache.shared.image(forKey: key) {
-                completion(cachedImage)
-            } else {
-                let imageManager = PHImageManager.default()
-                let thumbnailOptions = PHImageRequestOptions()
-                thumbnailOptions.deliveryMode = .fastFormat
-                thumbnailOptions.resizeMode = .exact
-                thumbnailOptions.isNetworkAccessAllowed = false
-                thumbnailOptions.isSynchronous = true
-                
-                imageManager.requestImage(for: result, targetSize: imageSize, contentMode: .aspectFill, options: thumbnailOptions) { (image, info) in
-                    guard let image = image else {
-                        completion(nil)
-                        return
-                    }
-                    completion(image)
-                    ImageCache.shared.setImage(image, forKey: key)
-                }
-            }
-        }
     }
 }

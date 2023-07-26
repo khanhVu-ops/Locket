@@ -24,7 +24,6 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
             return cell
         case .file:
             let cell = tableView.dequeueReusableCell(withIdentifier: MessageFileCell.nibNameClass, for: indexPath) as! MessageFileCell
-//            cell.delegate = self
             cell.configure(item: item, user: self.viewModel.user.value, indexPath: indexPath)
             cell.actionOpenFile = { [weak self] fileURL in
                 guard let self = self else {
@@ -79,9 +78,7 @@ extension ChatViewController: UITableViewDataSource, UITableViewDelegate {
          let offsetY = scrollView.contentOffset.y
          let contentHeight = scrollView.contentSize.height
          let tableViewHeight = scrollView.frame.size.height
-         
          if offsetY > contentHeight - tableViewHeight && !isLoadingData {
-             // User has scrolled to the last row, fetch more data
              self.loadMoreMessages()
              print("fetch more")
          }
@@ -96,7 +93,6 @@ extension ChatViewController: UITextViewDelegate {
 
 extension ChatViewController: UIDocumentPickerDelegate {
     func documentPicker(_ controller: UIDocumentPickerViewController, didPickDocumentsAt urls: [URL]) {
-           // Handle the selected file URLs here
         guard let fileURL = urls.first else {
             return
         }
@@ -110,7 +106,6 @@ extension ChatViewController: UIDocumentPickerDelegate {
     }
     
     func documentPickerWasCancelled(_ controller: UIDocumentPickerViewController) {
-        // Handle cancellation
     }
 }
 

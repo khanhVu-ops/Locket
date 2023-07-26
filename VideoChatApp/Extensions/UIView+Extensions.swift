@@ -121,4 +121,10 @@ extension UIView {
             aSub.removeFromSuperview()
         }
     }
+    
+    func animateScale(scale: CGFloat, completion: (() -> Void)? = nil) {
+        UIView.animate(withDuration: 0.2) {
+            self.transform = CGAffineTransform(scaleX: scale, y: scale)
+        }
+    }
 }

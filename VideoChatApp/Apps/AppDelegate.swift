@@ -82,7 +82,6 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
         completionHandler([.alert, .badge, .sound])
     }
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
-//        print( "respone",response)
         let userInfo = response.notification.request.content.userInfo
         print(userInfo)
         

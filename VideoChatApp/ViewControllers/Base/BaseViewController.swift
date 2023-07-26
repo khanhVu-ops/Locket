@@ -20,7 +20,7 @@ class BaseViewController: UIViewController {
 
     let disposeBag = DisposeBag()
     let keyboardTrigger = BehaviorRelay<KeyboardData>(value: KeyboardData(isShow: false, duration: 0, height: 0))
-    private var imagePicker = UIImagePickerController()
+    private lazy var imagePicker = UIImagePickerController()
     override func viewDidLoad() {
         super.viewDidLoad()
         setUpUI()
@@ -53,6 +53,8 @@ class BaseViewController: UIViewController {
     
     func bindViewModel() {}
     
+    func setImageFromImagePicker(image: UIImage) {}
+    
     func openLibrary() {
         self.requestPermissionAccessPhotos { [weak self] isEnable in
             guard let self = self else {
@@ -68,9 +70,6 @@ class BaseViewController: UIViewController {
                 }
             }
         }
-    }
-    
-    func configImageSelect(image: UIImage) {
     }
     
     func trackShowToastError(_ viewModel: BaseViewModel, assignView: UIView? = nil) {
@@ -128,7 +127,6 @@ extension BaseViewController {
         // Extract the duration of the keyboard animation
         let durationKey = UIResponder.keyboardAnimationDurationUserInfoKey
         let duration = notification.userInfo![durationKey] as! Double
-        
         // Extract the final frame of the keyboard
         let frameKey = UIResponder.keyboardFrameEndUserInfoKey
         let keyboardFrameValue = notification.userInfo![frameKey] as! NSValue
@@ -136,7 +134,6 @@ extension BaseViewController {
         let curveKey = UIResponder.keyboardAnimationCurveUserInfoKey
         let curveValue = notification.userInfo![curveKey] as! Int
         let curve = UIView.AnimationCurve(rawValue: curveValue)!
-        
         // Create a property animator to manage the animation
         let animator = UIViewPropertyAnimator(
             duration: duration,
@@ -162,7 +159,7 @@ extension BaseViewController: UIImagePickerControllerDelegate, UINavigationContr
         guard let image = img else {
             return
         }
-        configImageSelect(image: image)
+        self.setImageFromImagePicker(image: image)
 
         picker.dismiss(animated: true, completion: nil)
     }

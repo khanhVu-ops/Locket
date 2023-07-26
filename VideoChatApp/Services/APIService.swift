@@ -41,11 +41,9 @@ final class APIService {
         self.requestAPI(url: RCValues.shared.string(forKey: .fcmURL), method: .post, headers: headers, parameters: parameters) { result in
             switch result {
                 case .success(let value):
-                    // Xử lý dữ liệu thành công
                     print("push notification success")
                 case .failure(let error):
-                    // Xử lý lỗi
-                print(error.localizedDescription)
+                    print(error.localizedDescription)
             }
         }
     }

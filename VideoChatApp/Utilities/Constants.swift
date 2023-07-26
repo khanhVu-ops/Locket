@@ -20,7 +20,11 @@ struct Constants {
         static let backButtonSystem = UIImage(systemName: "chevron.left")!
         static let downloadSystem = UIImage(systemName: "arrow.down.to.line.compact")!
         static let cancelSystem = UIImage(systemName: "xmark")!
-        static let flashSystem = UIImage(systemName: "bolt.slash.fill")!
+        static let flashSlashSystem = UIImage(systemName: "bolt.slash.fill")!
+        static let flashSystem = UIImage(systemName: "bolt.fill")!
+        static let reloadSystem = UIImage(systemName: "arrow.counterclockwise")!
+        static let checkMarkSystem = UIImage(systemName: "checkmark")!
+
     }
     
     struct L10n {

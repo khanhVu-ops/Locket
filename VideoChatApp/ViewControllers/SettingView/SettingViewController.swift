@@ -57,8 +57,7 @@ class SettingViewController: BaseViewController {
             })
             .disposed(by: disposeBag)
     }
-    
-    override func configImageSelect(image: UIImage) {
+    override func setImageFromImagePicker(image: UIImage) {
         self.settingViewModel.updateAvata(image: image)
             .subscribe(onNext: { [weak self] url in
                 self?.imvAvata.image = image
@@ -101,7 +100,6 @@ class SettingViewController: BaseViewController {
     
     private func openCamera() {
         let filterVC = FilterViewController()
-        filterVC.titleButonSend = "Update"
         filterVC.modalPresentationStyle = .fullScreen
         filterVC.actionSendImage = { [weak self] image in
             guard let strongSelf = self else {

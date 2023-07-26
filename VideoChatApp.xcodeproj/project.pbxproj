@@ -103,6 +103,7 @@
 		33F537AC2A47057E00597E17 /* ChatViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F537AB2A47057E00597E17 /* ChatViewController+Extensions.swift */; };
 		33F537B22A4759E000597E17 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F537B12A4759E000597E17 /* ChatViewModel.swift */; };
 		33F789842A4D60FD00B49B0E /* ProgessView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33F789832A4D60FD00B49B0E /* ProgessView.swift */; };
+		33FE42432A7159F6007947C2 /* FilterViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33FE42422A7159F6007947C2 /* FilterViewModel.swift */; };
 		F3068D253D04C3E39A2EEF27 /* Pods_VideoChatApp.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DE276C1B375774EA4390EA98 /* Pods_VideoChatApp.framework */; };
 /* End PBXBuildFile section */
 
@@ -207,6 +208,7 @@
 		33F537AB2A47057E00597E17 /* ChatViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatViewController+Extensions.swift"; sourceTree = "<group>"; };
 		33F537B12A4759E000597E17 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		33F789832A4D60FD00B49B0E /* ProgessView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgessView.swift; sourceTree = "<group>"; };
+		33FE42422A7159F6007947C2 /* FilterViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilterViewModel.swift; sourceTree = "<group>"; };
 		62FF8305E2210ECFEA311FC6 /* Pods-VideoChatApp.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-VideoChatApp.release.xcconfig"; path = "Target Support Files/Pods-VideoChatApp/Pods-VideoChatApp.release.xcconfig"; sourceTree = "<group>"; };
 		DE276C1B375774EA4390EA98 /* Pods_VideoChatApp.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_VideoChatApp.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -494,6 +496,7 @@
 			isa = PBXGroup;
 			children = (
 				338C679A29E3C094002474B9 /* FilterViewController.swift */,
+				33FE42422A7159F6007947C2 /* FilterViewModel.swift */,
 				338C679429E3C05F002474B9 /* CameraView.swift */,
 				338C679829E3C08D002474B9 /* DetailImageView.swift */,
 			);
@@ -770,6 +773,7 @@
 				3315358F29D5472500100006 /* TabBarController.swift in Sources */,
 				33F537B22A4759E000597E17 /* ChatViewModel.swift in Sources */,
 				3309BC0B2A36AB74002D7034 /* ActivityIndicator.swift in Sources */,
+				33FE42432A7159F6007947C2 /* FilterViewModel.swift in Sources */,
 				338C679B29E3C094002474B9 /* FilterViewController.swift in Sources */,
 				33F789842A4D60FD00B49B0E /* ProgessView.swift in Sources */,
 				33E1FA6429FC2E6200DDA614 /* APIService.swift in Sources */,
