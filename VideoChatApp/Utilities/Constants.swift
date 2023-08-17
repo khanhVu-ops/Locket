@@ -24,7 +24,7 @@ struct Constants {
         static let flashSystem = UIImage(systemName: "bolt.fill")!
         static let reloadSystem = UIImage(systemName: "arrow.counterclockwise")!
         static let checkMarkSystem = UIImage(systemName: "checkmark")!
-
+        static let settingIcon = UIImage(named: "setting")
     }
     
     struct L10n {

@@ -34,6 +34,10 @@ class MessagePhotosCell: BaseMessageTableViewCell {
     var actionSelectImage: ((String) -> Void)?
     var widthCltvContraints: Constraint?
     var heightltvContraints: Constraint?
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        self.listPhotos = []
+    }
     override func setUpView() {
         super.setUpView()
         self.maxWidth = rounded(self.contentView.frame.size.width * 0.65)
@@ -66,7 +70,7 @@ class MessagePhotosCell: BaseMessageTableViewCell {
             let width = rounded((maxWidth - spaceItem) / 2)
             return CGSize(width: width, height: width)
         } else if count == 1{
-            return ratio < 3/4 ? CGSize(width: rounded(maxHeight * ratio), height: maxHeight) : CGSize(width: maxWidth, height: rounded(maxWidth * 1/ratio))
+            return ratio < 0.75 ? CGSize(width: rounded(maxHeight * ratio), height: maxHeight) : CGSize(width: maxWidth, height: rounded(maxWidth * 1/ratio))
         } else {
             let width = rounded((maxWidth - spaceItem * 2) / 3)
             return CGSize(width: width, height: width)
@@ -77,6 +81,7 @@ class MessagePhotosCell: BaseMessageTableViewCell {
     
     func checkSizeCltv() {
         let sizeItem = checkItem()
+        print("size item cltv", sizeItem)
         let count = self.listPhotos.count
         self.heightltvContraints?.deactivate()
         self.widthCltvContraints?.deactivate()
@@ -124,6 +129,10 @@ extension MessagePhotosCell: UICollectionViewDataSource, UICollectionViewDelegat
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return checkItem()
+        if self.listPhotos.count > 1 {
+            return checkItem()
+        } else {
+            return CGSize(width: self.cltvPhotos.frame.width, height: self.cltvPhotos.frame.height)
+        }
     }
 }

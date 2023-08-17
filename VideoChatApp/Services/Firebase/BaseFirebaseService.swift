@@ -126,10 +126,11 @@ class BaseFirebaseService {
             }
             storageRef.putData(data, metadata: metaData
                                , completion: { (metadata, error) in
-                guard error == nil else {
+                guard let metadata = metadata, error == nil else {
                     failure(error!.localizedDescription)
                     return
                 }
+                print("File size: \(Utilitis.shared.bytesToMegabytes(bytes: metadata.size))")
 
                 storageRef.downloadURL { (url, err) in
                     guard let url = url else {
@@ -267,6 +268,15 @@ extension BaseFirebaseService {
                 } failure: { message in
                     observable.onError(AppError(code: .firebase, message: message))
                 }
+//                Utilitis.shared.compressVideo(url: fileURL, type: fileType) { urlCompressed in
+//                    print("compressed: \(urlCompressed)")
+//                    self.uploadMedia(fileType: fileType, fileURL: urlCompressed) { url in
+//                        observable.onNext(url)
+//                        observable.onCompleted()
+//                    } failure: { message in
+//                        observable.onError(AppError(code: .firebase, message: message))
+//                    }
+//                }
             } else {
                  observable.onError(AppError(code: .firebase, message: "Not found URL!"))
             }

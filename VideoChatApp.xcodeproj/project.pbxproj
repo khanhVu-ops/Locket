@@ -49,6 +49,8 @@
 		333637E62A58786000B1DE15 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333637E42A58786000B1DE15 /* SettingViewController.swift */; };
 		333637E72A58786000B1DE15 /* SettingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 333637E52A58786000B1DE15 /* SettingViewController.xib */; };
 		333ABA6B2A386E2400037620 /* VerifyCodeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333ABA6A2A386E2400037620 /* VerifyCodeViewModel.swift */; };
+		333F28A02A86437B00D526F6 /* PopOverViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 333F289E2A86437B00D526F6 /* PopOverViewController.swift */; };
+		333F28A12A86437B00D526F6 /* PopOverViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 333F289F2A86437B00D526F6 /* PopOverViewController.xib */; };
 		3347D7A62A4831B400840655 /* BaseMessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347D7A52A4831B400840655 /* BaseMessageTableViewCell.swift */; };
 		3347E20D2A630BCD006FC2A1 /* RCValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3347E20C2A630BCD006FC2A1 /* RCValues.swift */; };
 		336201692A65478D00251A91 /* AppObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 336201682A65478D00251A91 /* AppObserver.swift */; };
@@ -153,6 +155,8 @@
 		333637E42A58786000B1DE15 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		333637E52A58786000B1DE15 /* SettingViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SettingViewController.xib; sourceTree = "<group>"; };
 		333ABA6A2A386E2400037620 /* VerifyCodeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyCodeViewModel.swift; sourceTree = "<group>"; };
+		333F289E2A86437B00D526F6 /* PopOverViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PopOverViewController.swift; sourceTree = "<group>"; };
+		333F289F2A86437B00D526F6 /* PopOverViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PopOverViewController.xib; sourceTree = "<group>"; };
 		3347D7A52A4831B400840655 /* BaseMessageTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseMessageTableViewCell.swift; sourceTree = "<group>"; };
 		3347E20C2A630BCD006FC2A1 /* RCValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RCValues.swift; sourceTree = "<group>"; };
 		336201682A65478D00251A91 /* AppObserver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppObserver.swift; sourceTree = "<group>"; };
@@ -228,6 +232,7 @@
 		33069F1729DBCE5F00617A00 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
+				333F289D2A86436200D526F6 /* PopOver */,
 				33E8288429D8210600259447 /* DetailVideoCell */,
 				33E8288329D820F400259447 /* DetailImageCell */,
 			);
@@ -456,6 +461,15 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		333F289D2A86436200D526F6 /* PopOver */ = {
+			isa = PBXGroup;
+			children = (
+				333F289E2A86437B00D526F6 /* PopOverViewController.swift */,
+				333F289F2A86437B00D526F6 /* PopOverViewController.xib */,
+			);
+			path = PopOver;
+			sourceTree = "<group>";
+		};
 		334DA79B29E2C84C0067F235 /* Cell */ = {
 			isa = PBXGroup;
 			children = (
@@ -678,6 +692,7 @@
 				333637E72A58786000B1DE15 /* SettingViewController.xib in Resources */,
 				3399E1D629D6714100DF8021 /* ImageCollectionViewCell.xib in Resources */,
 				3315358529D5472500100006 /* ListFriendCell.xib in Resources */,
+				333F28A12A86437B00D526F6 /* PopOverViewController.xib in Resources */,
 				331034222A3F264000ECB040 /* HomeViewController.xib in Resources */,
 				3315357F29D5472500100006 /* ListUserCollectionViewCell.xib in Resources */,
 				331534E329D5446B00100006 /* Assets.xcassets in Resources */,
@@ -772,6 +787,7 @@
 				338C679629E3C060002474B9 /* CameraView.swift in Sources */,
 				3315358F29D5472500100006 /* TabBarController.swift in Sources */,
 				33F537B22A4759E000597E17 /* ChatViewModel.swift in Sources */,
+				333F28A02A86437B00D526F6 /* PopOverViewController.swift in Sources */,
 				3309BC0B2A36AB74002D7034 /* ActivityIndicator.swift in Sources */,
 				33FE42432A7159F6007947C2 /* FilterViewModel.swift in Sources */,
 				338C679B29E3C094002474B9 /* FilterViewController.swift in Sources */,

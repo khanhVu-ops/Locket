@@ -190,7 +190,15 @@ class DetailImageViewController: UIViewController {
                     return cell
                 case.video:
                     let cell = collectionView.dequeueReusableCell(withReuseIdentifier: DetailVideoCollectionViewCell.nibNameClass, for: IndexPath(row: index, section: 0)) as! DetailVideoCollectionViewCell
-                    
+                    cell.actionTapSpeed = { [weak self] sender in
+                        guard let self = self, let ourPopOver = self.preparePopUp(sender: sender, popoverContentController: PopOverViewController()) as? PopOverViewController else {
+                            return
+                        }
+                        ourPopOver.actionTappedSpeed = { speed in
+                            cell.rate = speed
+                        }
+                        self.present(ourPopOver, animated: true, completion: nil)
+                    }
                     cell.configure(item: element, viewModel: self?.detailImageViewModel)
                     return cell
                 }
@@ -245,18 +253,28 @@ class DetailImageViewController: UIViewController {
                 return
             }
             if isEnable {
-                strongSelf.detailImageViewModel.saveToPhotos()
-                    .trackActivity(strongSelf.detailImageViewModel.loading)
-                    .trackError(strongSelf.detailImageViewModel.errorTracker)
-                    .subscribe(onNext: { [weak self] in
-                        self?.showPopupSaved()
-                    })
-                    .disposed(by: strongSelf.disposeBag)
+                let index = strongSelf.detailImageViewModel.indexItemBehavior.value
+                let item = strongSelf.detailImageViewModel.listImages.value[index]
+                if item.type == .video {
+                    strongSelf.detailImageViewModel.saveVideoWithURL(urlString: item.url)
+                } else {
+                    strongSelf.savePhotos(url: item.url, type: item.type)
+                }
             } else {
                 strongSelf.showAlertOpenSettingPhotos()
             }
         }
         
+    }
+    
+    func savePhotos(url: String, type: AssetType) {
+        self.detailImageViewModel.saveToPhotos(with: url, type: type)
+            .trackActivity(self.detailImageViewModel.loading)
+            .trackError(self.detailImageViewModel.errorTracker)
+            .subscribe(onNext: { [weak self] in
+                self?.showPopupSaved()
+            })
+            .disposed(by: self.disposeBag)
     }
     
     func showPopupSaved() {
@@ -301,10 +319,7 @@ extension DetailImageViewController: UICollectionViewDelegate, UICollectionViewD
         myPageControl.currentPage = indexPath.row
         self.detailImageViewModel.indexItemBehavior.accept(indexPath.row)
     }
-    
-    
-    
-    
+
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
         if let myCell = cell as? DetailVideoCollectionViewCell {
             myCell.player.pause()
@@ -313,11 +328,29 @@ extension DetailImageViewController: UICollectionViewDelegate, UICollectionViewD
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         var currentPage = Int(scrollView.contentOffset.x/UIScreen.main.bounds.width)
-        
         currentPage = min(currentPage, self.detailImageViewModel.listImages.value.count - 1)
         currentPage = max(currentPage, 0)
         myPageControl.currentPage = currentPage
         self.detailImageViewModel.indexItemBehavior.accept(currentPage)
     }
     
+}
+extension UIViewController: UIPopoverPresentationControllerDelegate {
+  
+    public func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle { return .none }
+    public func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {}
+    public func popoverPresentationControllerShouldDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) -> Bool { return true }
+        
+    func preparePopUp(sender : UIButton, popoverContentController: UIViewController) -> UIViewController? {
+        popoverContentController.modalPresentationStyle = .popover
+        popoverContentController.preferredContentSize = CGSize(width: 200, height: 300)
+        if let popoverPresentationController = popoverContentController.popoverPresentationController {
+            popoverPresentationController.permittedArrowDirections = .init([.up,.down])
+            popoverPresentationController.sourceView = sender
+            popoverPresentationController.sourceRect = sender.bounds
+            popoverPresentationController.delegate = self
+            return popoverContentController
+        }
+    return nil
+    }
 }

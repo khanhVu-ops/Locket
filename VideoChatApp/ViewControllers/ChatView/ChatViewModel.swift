@@ -162,7 +162,10 @@ class ChatViewModel: BaseViewModel {
         if videoMedia.count > 0 {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 for videoMedium in videoMedia {
-                    self?.handleSendNewMessage(type: .video, media: [videoMedium])
+                    Utilitis.shared.compressVideo(url: videoMedium.filePath) { urlCompressed in
+                        videoMedium.filePath = urlCompressed
+                        self?.handleSendNewMessage(type: .video, media: [videoMedium])
+                    }
                 }
             }
         }

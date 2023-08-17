@@ -11,6 +11,15 @@ import SnapKit
 import AVKit
 class DetailVideoCollectionViewCell: UICollectionViewCell {
 
+    private var btnSpeed: UIButton = {
+        let btn = UIButton()
+        btn.setImage(Constants.Image.settingIcon, for: .normal)
+        btn.tintColor = RCValues.shared.color(forKey: .appPrimaryColor)
+        btn.backgroundColor = .white.withAlphaComponent(0.8)
+        btn.addTarget(self, action: #selector(btnSpeedTapped), for: .touchUpInside)
+        return btn
+    }()
+    
     private var slider: UISlider = {
         let slider = UISlider()
         slider.minimumValue = 0
@@ -56,7 +65,12 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     var item: DetailItem?
     var timeRecord = 0
     private var timeObserver: Any?
-    
+    var rate: Float = 1 {
+        didSet {
+            self.player.rate = rate
+        }
+    }
+    var actionTapSpeed: ((UIButton) -> Void)?
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.setUpView()
@@ -68,8 +82,15 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
 
     private func setUpView() {
         self.addSubview(self.stvStatus)
-        [btnPlay, slider, lbTime].forEach { sub in
+        [btnSpeed, btnPlay, slider, lbTime].forEach { sub in
             stvStatus.addArrangedSubview(sub)
+        }
+        [btnSpeed, activityIndicator].forEach { sub in
+            self.addSubview(sub)
+        }
+        self.btnSpeed.snp.makeConstraints { make in
+            make.top.leading.equalToSuperview().inset(20)
+            make.width.height.equalTo(40)
         }
         self.stvStatus.snp.makeConstraints { make in
             make.trailing.leading.equalToSuperview().inset(30)
@@ -79,7 +100,6 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         self.btnPlay.snp.makeConstraints { make in
             make.width.height.equalTo(30)
         }
-        self.addSubview(activityIndicator)
         activityIndicator.snp.makeConstraints { make in
             make.width.height.equalTo(10)
             make.centerY.equalTo(self.stvStatus.snp.centerY)
@@ -130,6 +150,7 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             let playerItem = AVPlayerItem(asset: asset)
             self.player.replaceCurrentItem(with: playerItem)
             self.player.volume = 0.9
+            self.player.rate = 3
             DispatchQueue.main.async {
                 self.playerLayer?.frame = CGRect(x: 20, y: 0, width: self.bounds.width-40, height: self.bounds.height)
                 self.addObserverPeriodicTime()
@@ -154,23 +175,6 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             }
             
             self.updateVideoPlayerState(progressTime: time)
-//            if let item = self.item {
-//                if item.duration > 0 {
-//                    self.slider.maximumValue = Float(item.duration)
-//                    let currentTime = time.seconds
-//                    self.item?.currentTime = currentTime
-//                    if currentTime == item.duration {
-//                        self.pauseVideo()
-//                        self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
-//                    } else {
-//                        self.slider.value = Float(currentTime)
-//                        self.lbTime.text = Utilitis.shared.convertDurationToTime(duration: item.duration - currentTime)
-//                    }
-//                } else {
-//                    item.duration = self.player.currentItem?.duration.seconds ?? 10.0
-//                }
-//            } else {
-//                print("NO tiems")
             }
         }
     
@@ -205,6 +209,9 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
     }
     
     public func playVideo() {
+        if slider.value == slider.maximumValue {
+            self.player.seek(to: CMTime(seconds: 0, preferredTimescale: 1))
+        }
         player.play()
         self.setPlayImage(isPlay: true)
     }
@@ -236,6 +243,8 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
         self.activityIndicator.stopAnimating()
     }
     
+    //MARK: objc func
+    
     @objc func sliderDidChangeValue() {
         // Chuyển đổi giá trị của slider thành thời gian phát của video
         let time = CMTime(seconds: Double(self.slider.value * Float(timeRecord)), preferredTimescale: 1)
@@ -252,5 +261,12 @@ class DetailVideoCollectionViewCell: UICollectionViewCell {
             playVideo()
             self.item?.isPlaying = true
         }
+    }
+    
+    @objc func btnSpeedTapped() {
+        guard let actionTapSpeed = actionTapSpeed else {
+            return
+        }
+        actionTapSpeed(btnSpeed)
     }
 }
